@@ -1,0 +1,1407 @@
+{
+  "armyName": "Unknown Army",
+  "faction": "Mont'ka",
+  "pointsTotal": 0,
+  "rules": {
+    "eeb6-c42-48f7-cc21": {
+      "id": "eeb6-c42-48f7-cc21",
+      "name": "For The Greater Good",
+      "description": "If your Army Faction is T’AU EMPIRE, then in your Shooting phase units from your army can work in pairs to help each other target specific enemy units. When they do this, one unit is the Observer unit and the other is their Guided unit. The enemy they are targeting is called their Spotted unit.\n\n\nEach time you select this unit to shoot, if it is not an Observer unit, it can use this ability. If it does, select one other friendly unit with this ability that is also eligible to shoot (excluding FORTIFICATION, Battle-shocked and Observer units). Until the end of the phase, this unit is considered a Guided unit, and that friendly unit is considered an Observer unit. Then select one enemy unit that is visible to both your units to be their Spotted unit.\n\nUntil the end of the phase:\n\n- Each time a model in a Guided unit makes an attack that targets their Spotted unit, improve the Ballistic Skill characteristic of the attack by 1 and, if their Observer unit has the MARKERLIGHT keyword, the attack has the [IGNORES COVER] ability.\n- Each time a model in a Guided unit makes an attack that does not target their Spotted unit, worsen the Ballistic Skill characteristic of the attack by 1.",
+      "hidden": false
+    },
+    "1f2b-315c-b0e4-b993": {
+      "id": "1f2b-315c-b0e4-b993",
+      "name": "Independent Power",
+      "description": "If your army includes COMMANDER FARSIGHT, it cannot include any ETHEREAL units. If your army includes any ETHEREAL units, it cannot include COMMANDER FARSIGHT.",
+      "hidden": false
+    },
+    "7cb5-dd6b-dd87-ad3b": {
+      "id": "7cb5-dd6b-dd87-ad3b",
+      "name": "Deep Strike",
+      "description": "During the Declare Battle Formations step, if every model in a unit has this ability, you can set it up in Reserves instead of setting it up on the battlefield. If you do, in the Reinforcements step of one of your Movement phases you can set up this unit anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.\n\nIf a unit with the Deep Strike ability arrives from Strategic Reserves, the controlling player can choose for that unit to be set up either using the rules for Strategic Reserves or using the Deep Strike ability.",
+      "hidden": false
+    },
+    "b4dd-3e1f-41cb-218f": {
+      "id": "b4dd-3e1f-41cb-218f",
+      "name": "Leader",
+      "description": "While a Bodyguard unit contains a Leader, it is known as an Attached unit and, with the exception of rules that are triggered when units are destroyed (pg 12), it is treated as a single unit for all rules purposes. Each time an attack targets an Attached unit, until the attacking unit has resolved all of its attacks, you must use the Toughness characteristic of the Bodyguard models in that unit, even if a Leader in that unit has a different Toughness characteristic. Each time an attack successfully wounds an Attached unit, that attack cannot be allocated to a Character model in that unit, even if that Character model has lost one or more wounds or has already had attacks allocated to it this phase. As soon as the last Bodyguard model in an Attached unit has been destroyed, any attacks made against that unit that have yet to be allocated can then be allocated to Character models in that unit.\n\nEach time the last model in a Bodyguard unit is destroyed, each CHARACTER unit that is part of that Attached unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time the last model in a CHARACTER unit that is attached to a Bodyguard unit is destroyed and there is not another CHARACTER unit attached, that Attached unit’s Bodyguard unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time a unit that is part of an Attached unit is destroyed, it does not have the keywords of any other units that make up that Attached unit (unless it has those keywords on its own datasheet) for the purposes of any rules that would be triggered when that unit is destroyed.",
+      "hidden": false
+    },
+    "c05d-f4c3-f091-4938": {
+      "id": "c05d-f4c3-f091-4938",
+      "name": "Infiltrators",
+      "description": "During deployment, if every model in a unit has this ability, then when you set it up, it can be set up anywhere on the battlefield that is more than 9\" horizontally away from the enemy deployment zone and all enemy models.",
+      "hidden": false
+    },
+    "a8a0-8fe7-898-e0f3": {
+      "id": "a8a0-8fe7-898-e0f3",
+      "name": "Lone Operative",
+      "description": "Unless part of an Attached unit, this unit can only be selected as the target of a ranged attack if the attacking model is within 12\".",
+      "hidden": false
+    },
+    "bec5-4288-34a6-ccfa": {
+      "id": "bec5-4288-34a6-ccfa",
+      "name": "Stealth",
+      "description": "If every model in a unit has this ability, then each time a ranged attack is made against it, subtract 1 from that attack’s Hit roll.",
+      "hidden": false
+    },
+    "7cdb-fb99-44a9-8849": {
+      "id": "7cdb-fb99-44a9-8849",
+      "name": "Melta",
+      "description": "Weapons with [MELTA X] in their profile are known as Melta weapons. Each time an attack made with such a weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "8bf7-8812-923d-29e4": {
+      "id": "8bf7-8812-923d-29e4",
+      "name": "Pistol",
+      "description": "Weapons with [PISTOL] in their profile are known as Pistols. If a unit contains any models equipped with Pistols, that unit is eligible to shoot in its controlling player’s Shooting phase even while it is within Engagement Range of one or more enemy units. When such a unit is selected to shoot, it can only resolve attacks using its Pistols and can only target one of the enemy units it is within Engagement Range of. In such circumstances, a Pistol can target an enemy unit even if other friendly units are within Engagement Range of the same enemy unit. \n\nIf a model is equipped with one or more Pistols, unless it is a MONSTER or VEHICLE model, it can either shoot with its Pistols or with all of its other ranged weapons. Declare whether such a model will shoot with its Pistols or its other ranged weapons before selecting targets.",
+      "hidden": false
+    },
+    "ada6-bac1-ffe0-d6f7": {
+      "id": "ada6-bac1-ffe0-d6f7",
+      "name": "Scouts 7\"",
+      "description": "Some units have ‘Scouts x\"’ listed in their abilities. If every model in a unit has this ability, then at the start of the first battle round, before the first turn begins, it can make a Normal move of up to x\", with the exception that, while making that move, the distance moved by each model in that unit can be greater than that model's Move characteristic, as long as it is not greater than x\". \n\nDEDICATED TRANSPORT models can make use of any Scouts x\" ability listed in their abilities, or a Scouts x\" ability that a unit that starts the battle embarked within that DEDICATED TRANSPORT  model has (provided only models with this ability are embarked within that Dedicated Transport model), regardless of how that embarked unit gained this ability (e.g. listed in their abilities, conferred by an Enhancement or by an attached Character, etc.). \n\nA unit that moves using this ability must end that move more than 9\" horizontally away from all enemy models. If both players have units that can do this, the player who is taking the first turn moves their units first.",
+      "hidden": false
+    },
+    "fc8a-8c24-bae9-cc1c": {
+      "id": "fc8a-8c24-bae9-cc1c",
+      "name": "Assault",
+      "description": "Weapons with [ASSAULT] in their profile are known as Assault weapons. If a unit that Advanced this turn contains any models equipped with Assault weapons, it is still eligible to shoot in this turn’s Shooting phase. When such a unit is selected to shoot, you can only resolve attacks using Assault weapons its models are equipped with.",
+      "hidden": false
+    },
+    "b68a-5ded-65ac-98c": {
+      "id": "b68a-5ded-65ac-98c",
+      "name": "Deadly Demise D3",
+      "description": "Some models have 'Deadly Demise x' listed in their abilities. When such a model is destroyed, roll one D6 before removing it from play (if such a model is a TRANSPORT, roll before any embarked models disembark). On a 6, each unit within 6\" of that model suffers a number of mortal wounds denoted by 'x' (if this is a random number, roll separately for each unit within 6\").",
+      "hidden": false
+    },
+    "d1d1-611e-5191-1095": {
+      "id": "d1d1-611e-5191-1095",
+      "name": "Lethal Hits",
+      "description": "Weapons with [LETHAL HITS] in their profile are known as Lethal Hits weapons. Each time an attack is made with such a weapon, a Critical Hit automatically wounds the target.",
+      "hidden": false
+    },
+    "be1e-ac8e-1e2c-3528": {
+      "id": "be1e-ac8e-1e2c-3528",
+      "name": "Devastating Wounds",
+      "description": "Weapons with [DEVASTATING WOUNDS] in their profile are known as Devastating Wounds weapons. Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of any kind can be made against that attack (including invulnerable saving throws). Such attacks are only allocated to models after all other attacks made by the attacking unit have been allocated and resolved. After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.",
+      "hidden": false
+    },
+    "1202-10a8-78e9-4c67": {
+      "id": "1202-10a8-78e9-4c67",
+      "name": "Heavy",
+      "description": "Weapons with [HEAVY] in their profile are known as Heavy weapons. Each time an attack is made with such a weapon, if the attacking model’s unit Remained Stationary this turn, add 1 to that attack’s Hit roll.",
+      "hidden": false
+    },
+    "cf93-ad4d-2f08-a79d": {
+      "id": "cf93-ad4d-2f08-a79d",
+      "name": "Twin-linked",
+      "description": "Weapons with [TWIN-LINKED] in their profile are known as Twin-linked weapons. Each time an attack is made with such a weapon, you can re-roll that attack’s Wound roll.",
+      "hidden": false
+    },
+    "c5c8-8b58-b8b6-7786": {
+      "id": "c5c8-8b58-b8b6-7786",
+      "name": "Rapid Fire",
+      "description": "Weapons with [RAPID FIRE X] in their profile are known as Rapid Fire weapons. Each time such a weapon targets a unit within half that weapon’s range, the Attacks characteristic of that weapon is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "4ddd-4e29-acdd-5e6d": {
+      "id": "4ddd-4e29-acdd-5e6d",
+      "name": "Indirect Fire",
+      "description": "Weapons with [INDIRECT FIRE] in their profile are known as Indirect Fire weapons, and attacks can be made with them even if the target is not visible to the attacking model. These attacks can destroy enemy models in a target unit even though none may have been visible to the attacking unit when you selected that target.\n\n\nIf no models in a target unit are visible to the attacking unit when you select that target, then each time a model in the attacking unit makes an attack against that target using an Indirect Fire weapon, subtract 1 from that attack’s Hit roll, an unmodified Hit roll of 1-3 always fails, and the target has the Benefit of Cover against that attack. Weapons with the [TORRENT] ability cannot be fired using the [INDIRECT FIRE] ability.",
+      "hidden": false
+    },
+    "4111-82e3-9444-e942": {
+      "id": "4111-82e3-9444-e942",
+      "name": "Anti-",
+      "description": "Weapons with [ANTI-KEYWORD X+] in their profile are known as Anti weapons. Each time an attack is made with such a weapon against a target with the keyword after the word ‘Anti-’, an unmodified Wound roll of ‘x+’ scores a Critical Wound.",
+      "hidden": false
+    },
+    "8367-374c-f87-c627": {
+      "id": "8367-374c-f87-c627",
+      "name": "Hazardous",
+      "description": "Weapons with [HAZARDOUS] in their profile are known as Hazardous weapons. Each time a unit is selected to shoot or fight, after that unit has resolved all of its attacks, for each Hazardous weapon that targets were selected for when resolving those attacks, that unit must take one Hazardous test. To do so, roll one D6: on a 1, that test is failed. For each failed test you must resolve the following sequence (resolve each failed test one at a time): \n\n■ If possible, select one model in that unit that has lost one or more wounds and is equipped with one or more Hazardous weapons. \n■ Otherwise, if possible, select one model in that unit (excluding CHARACTER models) equipped with one or more Hazardous weapons. \n■ Otherwise, select one CHARACTER model in that unit equipped with one or more Hazardous weapons. \n\nIf a model was selected, that unit suffers 3 mortal wounds and when allocating those mortal wounds, they must be allocated to the selected model. \n\nIf a unit from a player’s army is selected as the target of the Fire Overwatch Stratagem in their opponent’s Charge phase, any mortal wounds inflicted by Hazardous tests are allocated after the charging unit has ended its Charge move.",
+      "hidden": false
+    },
+    "9bf4-280f-bbe2-6fbb": {
+      "id": "9bf4-280f-bbe2-6fbb",
+      "name": "Feel No Pain",
+      "description": "Some models have 'Feel No Pain x+' listed in their abilities. Each time a model with this ability suffers damage and so would lose a wound (including wounds lost due to mortal wounds), roll one D6: if the result is greater than or equal to the number denoted by 'x: that wound is ignored and is not lost. If a model has more than one Feel No Pain ability, you can only use one of those abilities each time that model suffers damage and so would lose a wound.",
+      "hidden": false
+    },
+    "cd26-1611-860a-91e4": {
+      "id": "cd26-1611-860a-91e4",
+      "name": "One Shot",
+      "description": "The bearer can only shoot with this weapon once per battle.",
+      "hidden": false
+    }
+  },
+  "abilities": {
+    "b518-dfb4-ed41-6393": {
+      "id": "b518-dfb4-ed41-6393",
+      "name": "Way of the Short Blade",
+      "description": "While this model is leading a unit, each time a model in that unit makes an attack that targets an enemy unit within 9\", add 1 to the Wound roll."
+    },
+    "49a3-e55-9ec9-32fd": {
+      "id": "49a3-e55-9ec9-32fd",
+      "name": "Puretide's Teachings",
+      "description": "Once per battle round, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP."
+    },
+    "5b77-29f8-7b77-75e3": {
+      "id": "5b77-29f8-7b77-75e3",
+      "name": "Invulnerable Save (4+)",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "a15a-7948-3ddb-ebd4": {
+      "id": "a15a-7948-3ddb-ebd4",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n- CRISIS SUNFORGE BATTLESUITS\n- CRISIS FIREKNIFE BATTLESUITS\n- CRISIS STARSCYTHE BATTLESUITS"
+    },
+    "79c3-f1c9-8372-de8b": {
+      "id": "79c3-f1c9-8372-de8b",
+      "name": "Agile Combatant",
+      "description": "This model is eligible to shoot in a turn in which it Fell Back."
+    },
+    "b13-dc2f-2104-2ba2": {
+      "id": "b13-dc2f-2104-2ba2",
+      "name": "Hero of the Empire (Aura)",
+      "description": "While a friendly T’AU EMPIRE unit is within 6\" of this model, each time a model in that unit makes a ranged attack, re-roll a Hit roll of 1."
+    },
+    "d1d-2e4f-db3d-b3c4": {
+      "id": "d1d-2e4f-db3d-b3c4",
+      "name": "Advanced Guardian Drone",
+      "description": "Each time a ranged attack targets the bearer, subtract 1 from the Wound roll."
+    },
+    "8d40-9af2-d279-b0e2": {
+      "id": "8d40-9af2-d279-b0e2",
+      "name": "Command-link Drone (Aura)",
+      "description": "While a friendly T’AU EMPIRE unit is within 6\" of the bearer, each time you select that unit as the target of a Stratagem, roll one D6: on a 5+, you gain 1CP."
+    },
+    "8bf2-521f-d66-b9c": {
+      "id": "8bf2-521f-d66-b9c",
+      "name": "Supreme Commander",
+      "description": "If this model is in your army, it must be your WARLORD."
+    },
+    "27f4-7449-a636-ae8c": {
+      "id": "27f4-7449-a636-ae8c",
+      "name": "Invulnerable Save (5+)",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "2760-a977-5b19-6364": {
+      "id": "2760-a977-5b19-6364",
+      "name": "Structural Analyser",
+      "description": "While this model is leading a unit, each time a model in that unit makes a ranged attack, add 1 to the Wound roll."
+    },
+    "784c-ed1d-8f6-7c7b": {
+      "id": "784c-ed1d-8f6-7c7b",
+      "name": "Jammer Array",
+      "description": "Enemy units that are set up on the battlefield from Reserves cannot be set up within 12\" of this model."
+    },
+    "7872-ee2c-cffa-7dfb": {
+      "id": "7872-ee2c-cffa-7dfb",
+      "name": "Leader",
+      "description": "This model can be attached to the following unit:\n- PATHFINDER TEAM"
+    },
+    "db46-1f35-2996-964f": {
+      "id": "db46-1f35-2996-964f",
+      "name": "Armour Hunter",
+      "description": "Each time this model makes an attack that targets a MONSTER or VEHICLE, add 1 to the Hit roll."
+    },
+    "4f24-6581-c017-3daa": {
+      "id": "4f24-6581-c017-3daa",
+      "name": "Damaged: 1-5 Wounds Remaining",
+      "description": "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "6c1e-179e-a2dc-85d6": {
+      "id": "6c1e-179e-a2dc-85d6",
+      "name": "Targeting Array",
+      "description": "Each time this model is selected to shoot, you can re-roll one Hit roll or you can re-roll one Wound roll when resolving those attacks."
+    },
+    "fefe-3546-8754-2e26": {
+      "id": "fefe-3546-8754-2e26",
+      "name": "XV02 Pilot Battlesuit",
+      "description": "In your Command phase, you can select one friendly HAMMERHEAD GUNSHIP unit within 12\". Until the start of your next Command phase, ranged weapons equipped by models in that unit have the [LETHAL HITS] ability."
+    },
+    "5fe0-afe2-451c-38d2": {
+      "id": "5fe0-afe2-451c-38d2",
+      "name": "Volley Fire",
+      "description": "While this model is leading a unit, add 1 to the Attacks characteristic of ranged weapons equipped by models in that unit."
+    },
+    "7c91-fe45-cd-7abc": {
+      "id": "7c91-fe45-cd-7abc",
+      "name": "Crack Shot",
+      "description": "Each time this model makes a ranged attack, on a Critical Wound, that attack has an Armour Penetration characteristic of -3."
+    },
+    "e084-9d6c-36d3-d635": {
+      "id": "e084-9d6c-36d3-d635",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n- BREACHER TEAM\n- STRIKE TEAM"
+    },
+    "62df-a9ee-3931-13d": {
+      "id": "62df-a9ee-3931-13d",
+      "name": "Suppression Volley",
+      "description": "In your Shooting phase, after this unit has shot, select one enemy INFANTRY unit hit by one or more of those attacks. Until the start of your next turn, while unit is on the battlefield, that enemy unit is suppressed. While a unit is suppressed, each time a model in that unit makes an attack, subtract 1 from the Hit roll."
+    },
+    "d2e6-f139-acad-1b30": {
+      "id": "d2e6-f139-acad-1b30",
+      "name": "DS8 Support Turret",
+      "description": "In your Movement phase, if this unit Remains Stationary, until the start of your next turn, its Shas’ui model is equipped with the support turret weapon.\n\nDesigner’s Note: Place a Support Turret token next to this unit to remind you."
+    },
+    "7c13-8707-b827-3d35": {
+      "id": "7c13-8707-b827-3d35",
+      "name": "Guardian Drone",
+      "description": "Each time a model makes a ranged attack that targets the bearer’s unit, subtract 1 from the Wound roll."
+    },
+    "85b7-6da7-e356-82e5": {
+      "id": "85b7-6da7-e356-82e5",
+      "name": "Target Uploaded",
+      "description": "Once per turn, when using the For the Greater Good ability, you can select this unit to be an Observer unit for a second time. When doing so, you can change which enemy unit is this unit’s Spotted unit."
+    },
+    "aaac-7647-9ecf-4fd1": {
+      "id": "aaac-7647-9ecf-4fd1",
+      "name": "Recon Drone",
+      "description": "The bearer is equipped with 1 drone burst cannon and the bearer’s unit has the Infiltrators ability."
+    },
+    "c5b0-2214-2987-d0de": {
+      "id": "c5b0-2214-2987-d0de",
+      "name": "Forward Observers",
+      "description": "Each time this unit is an Observer unit, until the end of the phase, each time a ranged attack is made by a model in their Guided unit that targets their Spotted unit, re-roll a Hit roll of 1 and re-roll a Wound roll of 1."
+    },
+    "b5b2-f430-5dc1-106b": {
+      "id": "b5b2-f430-5dc1-106b",
+      "name": "Battlesuit Support System",
+      "description": "The bearer’s unit is eligible to shoot in a turn in which it Fell Back, but when doing so only models equipped with this wargear can make ranged attacks."
+    },
+    "1333-60c8-37d2-1a4d": {
+      "id": "1333-60c8-37d2-1a4d",
+      "name": "Homing Beacon",
+      "description": "Once per battle, you can use the Rapid Ingress Stratagem for 0CP. The target must be set up within 3\" of the bearer’s unit and not within 9\" of any enemy units.\nDesigner’s Note: Place a Homing Beacon token next to this unit, removing it once this ability is used."
+    },
+    "45a8-1aaa-cff6-938b": {
+      "id": "45a8-1aaa-cff6-938b",
+      "name": "Advanced Armour",
+      "description": "Models in this unit have the Feel No Pain 4+ ability against mortal wounds."
+    },
+    "883e-96af-3014-6550": {
+      "id": "883e-96af-3014-6550",
+      "name": "Sunforge",
+      "description": "Each time a model in this unit makes a ranged attack that targets a MONSTER or VEHICLE unit, you can re-roll the Wound roll and you can re-roll the Damage roll."
+    },
+    "a892-303e-34b8-116a": {
+      "id": "a892-303e-34b8-116a",
+      "name": "Invulnerable Save (4+)",
+      "description": "This unit has a 4+ Invulnerable Save"
+    },
+    "2026-4469-a453-d24e": {
+      "id": "2026-4469-a453-d24e",
+      "name": "Marker Drone",
+      "description": "The bearer’s unit has the MARKERLIGHT keyword and can act as an Observer unit for another unit even if it Advanced this turn."
+    },
+    "274d-797e-a00f-62": {
+      "id": "274d-797e-a00f-62",
+      "name": "Shield Drone",
+      "description": "Add 1 to the bearer’s Wounds characteristic."
+    },
+    "b7b7-8ee8-ef19-eefd": {
+      "id": "b7b7-8ee8-ef19-eefd",
+      "name": "High-intensity Markerlights",
+      "description": "Each time this unit is an Observer unit, until the end of the phase, each time a model in its Guided unit makes an attack that targets their Spotted unit, you can re-roll the Hit roll."
+    }
+  },
+  "units": [
+    {
+      "id": "m6e4cat153qroh0pk5n",
+      "name": "Commander Farsight",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "10\"",
+        "toughness": "5",
+        "save": "2+",
+        "wounds": "8",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 95,
+      "count": 1,
+      "rules": [
+        "1f2b-315c-b0e4-b993",
+        "7cb5-dd6b-dd87-ad3b",
+        "eeb6-c42-48f7-cc21",
+        "b4dd-3e1f-41cb-218f"
+      ],
+      "abilities": [
+        "b518-dfb4-ed41-6393",
+        "49a3-e55-9ec9-32fd",
+        "5b77-29f8-7b77-75e3",
+        "a15a-7948-3ddb-ebd4"
+      ],
+      "linked_weapons": {
+        "➤ Dawn Blade": {
+          "standard": "9673-edd-1e61-2a22",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "977-cdd0-552f-d82f",
+          "name": "➤ Dawn Blade - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "2+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Dawn Blade",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9673-edd-1e61-2a22",
+          "name": "➤ Dawn Blade - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "8",
+            "ws": "2+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Dawn Blade",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "89e3-e519-ede-f116",
+          "name": "High-intensity plasma rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "2+",
+            "s": "8",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m64pcispatbbcvp0r9",
+      "name": "Commander Shadowsun",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "10\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "6",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 100,
+      "count": 1,
+      "rules": [
+        "c05d-f4c3-f091-4938",
+        "a8a0-8fe7-898-e0f3",
+        "bec5-4288-34a6-ccfa",
+        "eeb6-c42-48f7-cc21",
+        "7cdb-fb99-44a9-8849",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "79c3-f1c9-8372-de8b",
+        "b13-dc2f-2104-2ba2",
+        "d1d-2e4f-db3d-b3c4",
+        "8d40-9af2-d279-b0e2",
+        "8bf2-521f-d66-b9c",
+        "27f4-7449-a636-ae8c"
+      ],
+      "weapons": [
+        {
+          "id": "453-2e3-9561-628b",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f64b-5f3d-6cd7-89f5",
+          "name": "Flechette launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "5",
+            "bs": "2+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2374-c078-8d4e-cbbd",
+          "name": "High-energy fusion blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "10",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "aa64-b7cb-2a9d-f097",
+          "name": "Light missile pod",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "2+",
+            "s": "7",
+            "ap": "0",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1d9d-8bec-3860-3c43",
+          "name": "Pulse pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6huo0nn7vqke2f031c",
+      "name": "Darkstrider",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "7\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 60,
+      "count": 1,
+      "rules": [
+        "c05d-f4c3-f091-4938",
+        "ada6-bac1-ffe0-d6f7",
+        "eeb6-c42-48f7-cc21",
+        "b4dd-3e1f-41cb-218f",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "2760-a977-5b19-6364",
+        "784c-ed1d-8f6-7c7b",
+        "7872-ee2c-cffa-7dfb"
+      ],
+      "weapons": [
+        {
+          "id": "cdb3-583c-f777-493b",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a906-3221-818d-8ab0",
+          "name": "Shade",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "2+",
+            "s": "5",
+            "ap": "0",
+            "d": "2",
+            "keywords": "Assault"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6q303zjbxf0qv1p405",
+      "name": "Longstrike [Legends]",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "10\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "3"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "d1d1-611e-5191-1095",
+        "be1e-ac8e-1e2c-3528",
+        "1202-10a8-78e9-4c67",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "db46-1f35-2996-964f",
+        "4f24-6581-c017-3daa",
+        "6c1e-179e-a2dc-85d6",
+        "fefe-3546-8754-2e26"
+      ],
+      "weapons": [
+        {
+          "id": "ec22-219d-9edf-9005",
+          "name": "Armoured hull",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9345-de29-1d44-d7f6",
+          "name": "Railgun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "72\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "20",
+            "ap": "-5",
+            "d": "D6+6",
+            "keywords": "Devastating Wounds, Heavy"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "47d1-604d-fa7f-0ec4",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Twin-linked, Assault"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6hunp8nlcwugpd6hsl",
+      "name": "Cadre Fireblade",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 50,
+      "count": 1,
+      "rules": [
+        "eeb6-c42-48f7-cc21",
+        "b4dd-3e1f-41cb-218f",
+        "c5c8-8b58-b8b6-7786",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "5fe0-afe2-451c-38d2",
+        "7c91-fe45-cd-7abc",
+        "e084-9d6c-36d3-d635"
+      ],
+      "weapons": [
+        {
+          "id": "cdb3-583c-f777-493b",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "230a-d8fa-420b-4258",
+          "name": "Fireblade pulse rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "2",
+            "keywords": "Rapid Fire 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6huoew1zw5p5cetfb",
+      "name": "Strike Team",
+      "type": "Battleline",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 75,
+      "count": 1,
+      "rules": [
+        "eeb6-c42-48f7-cc21",
+        "8bf7-8812-923d-29e4",
+        "c5c8-8b58-b8b6-7786",
+        "4ddd-4e29-acdd-5e6d",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "62df-a9ee-3931-13d",
+        "d2e6-f139-acad-1b30",
+        "7c13-8707-b827-3d35"
+      ],
+      "weapons": [
+        {
+          "id": "f9f3-a15e-537e-8852",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "5+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "cbad-3604-3016-f719",
+          "name": "Pulse pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "7b5d-b5b4-88de-9799",
+          "name": "Pulse rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 1"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "b3d4-211a-48f8-266e",
+          "name": "Support turret",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Indirect Fire, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6f7wu9av0igpah4jw9",
+      "name": "Pathfinder Team",
+      "type": "Infantry",
+      "stats": {
+        "move": "7\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 90,
+      "count": 1,
+      "rules": [
+        "ada6-bac1-ffe0-d6f7",
+        "eeb6-c42-48f7-cc21",
+        "c05d-f4c3-f091-4938",
+        "8bf7-8812-923d-29e4",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c",
+        "8367-374c-f87-c627",
+        "1202-10a8-78e9-4c67"
+      ],
+      "abilities": [
+        "85b7-6da7-e356-82e5",
+        "aaac-7647-9ecf-4fd1"
+      ],
+      "linked_weapons": {
+        "➤ Semi-automatic grenade launcher": {
+          "standard": "81e6-dde4-c590-9945",
+          "overcharge": null
+        },
+        "➤ Ion rifle": {
+          "standard": "a20f-90e8-acb9-acdd",
+          "overcharge": "2b06-5a01-9b6b-5a6a"
+        }
+      },
+      "weapons": [
+        {
+          "id": "f9f3-a15e-537e-8852",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "5+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "9d00-a7fb-afe6-98f9",
+          "name": "Pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cbad-3604-3016-f719",
+          "name": "Pulse pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "31a1-c5dd-a259-1d89",
+          "name": "➤ Semi-automatic grenade launcher - EMP",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+          },
+          "base_name": "➤ Semi-automatic grenade launcher",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "81e6-dde4-c590-9945",
+          "name": "➤ Semi-automatic grenade launcher - fusion",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Semi-automatic grenade launcher",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a2c7-b3a1-dd13-916d",
+          "name": "Drone burst cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "4",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a7f7-7c20-1c7f-8207",
+          "name": "Pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 6,
+          "models_with_weapon": 6
+        },
+        {
+          "id": "a20f-90e8-acb9-acdd",
+          "name": "➤ Ion rifle - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "3",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Heavy"
+          },
+          "base_name": "➤ Ion rifle",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "2b06-5a01-9b6b-5a6a",
+          "name": "➤ Ion rifle - overcharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "3",
+            "bs": "5+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Hazardous, Heavy"
+          },
+          "base_name": "➤ Ion rifle",
+          "overcharge_mode": "overcharge",
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "d043-2eff-12e9-4339",
+          "name": "Rail rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "1",
+            "bs": "5+",
+            "s": "10",
+            "ap": "-4",
+            "d": "3",
+            "keywords": "Devastating Wounds, Heavy"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6oui9t57nwbjfcu4lp",
+      "name": "Stealth Battlesuits",
+      "type": "Infantry",
+      "stats": {
+        "move": "8\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 60,
+      "count": 1,
+      "rules": [
+        "c05d-f4c3-f091-4938",
+        "bec5-4288-34a6-ccfa",
+        "eeb6-c42-48f7-cc21",
+        "7cdb-fb99-44a9-8849",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "c5b0-2214-2987-d0de",
+        "b5b2-f430-5dc1-106b",
+        "1333-60c8-37d2-1a4d"
+      ],
+      "weapons": [
+        {
+          "id": "3d93-d7b-3ae5-7524",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "5+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "4bc9-74b7-1e9c-8619",
+          "name": "Fusion blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7626-73ed-7cf1-8d3b",
+          "name": "Burst cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ]
+    },
+    {
+      "id": "m6hun9hncysf5moa48s",
+      "name": "Broadside Battlesuits",
+      "type": "Vehicle",
+      "stats": {
+        "move": "5\"",
+        "toughness": "6",
+        "save": "2+",
+        "wounds": "8",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 90,
+      "count": 1,
+      "rules": [
+        "eeb6-c42-48f7-cc21",
+        "9bf4-280f-bbe2-6fbb",
+        "1202-10a8-78e9-4c67",
+        "be1e-ac8e-1e2c-3528",
+        "cd26-1611-860a-91e4",
+        "cf93-ad4d-2f08-a79d",
+        "4ddd-4e29-acdd-5e6d"
+      ],
+      "abilities": [
+        "45a8-1aaa-cff6-938b"
+      ],
+      "weapons": [
+        {
+          "id": "7761-1b77-42a7-af36",
+          "name": "Crushing bulk",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "925b-bdfa-4365-68d0",
+          "name": "Missile pod",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "86cd-e0c6-0001-bd7d",
+          "name": "Heavy rail rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "60\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6+1",
+            "keywords": "Heavy, Devastating Wounds"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3837-b5fb-54d1-adf8",
+          "name": "Seeker missile",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "One Shot"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9dee-43e2-22c6-68ee",
+          "name": "Twin smart missile system",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Indirect Fire, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m6p6i0m4yi4ryuw6gsj",
+      "name": "Crisis Sunforge Battlesuits",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 150,
+      "count": 1,
+      "rules": [
+        "7cb5-dd6b-dd87-ad3b",
+        "eeb6-c42-48f7-cc21",
+        "7cdb-fb99-44a9-8849",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "883e-96af-3014-6550",
+        "a892-303e-34b8-116a",
+        "2026-4469-a453-d24e",
+        "274d-797e-a00f-62"
+      ],
+      "weapons": [
+        {
+          "id": "4bc9-74b7-1e9c-8619",
+          "name": "Fusion blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 6,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "3bb9-f1fb-50ba-17b",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "20\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ]
+    },
+    {
+      "id": "m6npq9rzrwdqlpngasi",
+      "name": "Tetras [Legends]",
+      "type": "Vehicle",
+      "stats": {
+        "move": "14\"",
+        "toughness": "7",
+        "save": "4+",
+        "wounds": "7",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "c05d-f4c3-f091-4938",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "b7b7-8ee8-ef19-eefd"
+      ],
+      "weapons": [
+        {
+          "id": "3681-b5fb-e9de-d272",
+          "name": "Close combat weapons",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "5+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "7b5d-b5b4-88de-9799",
+          "name": "Pulse rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 1"
+          },
+          "count": 4,
+          "models_with_weapon": 2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "http-server": "^14.1.1",
+    "typescript": "^5.0.0"
+  },
+  "name": "w40k_analyze",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/unit_efficiency.js",
+    "dev": "tsc && node dist/unit_efficiency.js",
+    "serve": "http-server -c-1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

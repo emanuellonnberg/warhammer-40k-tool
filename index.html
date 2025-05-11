@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>40K Unit Efficiency Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .unit-card {
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .weapon-list {
+            margin-left: 1rem;
+        }
+        .toughness-selector {
+            margin-bottom: 1rem;
+        }
+        .efficiency-value {
+            font-weight: bold;
+        }
+        .high-efficiency {
+            color: #198754;
+        }
+        .medium-efficiency {
+            color: #ffc107;
+        }
+        .low-efficiency {
+            color: #dc3545;
+        }
+        .weapon-mode {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .weapon-mode .form-check {
+            margin: 0;
+        }
+        .overcharge-mode {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .weapon-entry {
+            margin-bottom: 0.5rem;
+        }
+        .active-mode {
+            font-weight: bold;
+        }
+        .inactive-mode {
+            color: #6c757d;
+            opacity: 0.7;
+        }
+        .weapon-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .weapon-mode-toggle {
+            margin: 0.5rem 0;
+        }
+        .weapon-modes {
+            margin-left: 1rem;
+        }
+        .weapon-mode {
+            display: block;
+            margin: 0.25rem 0;
+        }
+        .active-mode {
+            font-weight: bold;
+            color: #000;
+        }
+        .inactive-mode {
+            color: #6c757d;
+            opacity: 0.7;
+        }
+        .damage-value {
+            color: #0d6efd;
+            margin-left: 0.5rem;
+            font-size: 0.9em;
+        }
+        .weapon-type {
+            font-size: 0.8em;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            margin-left: 0.5rem;
+        }
+        .weapon-type.ranged {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+        }
+        .weapon-type.melee {
+            background-color: #fce4ec;
+            color: #880e4f;
+        }
+        .weapon-type.pistol {
+            background-color: #f3e5f5;
+            color: #4a148c;
+        }
+        .text-muted {
+            font-size: 0.9em;
+        }
+        .table-sm td, .table-sm th {
+            padding: 0.5rem;
+        }
+        .table-responsive {
+            margin: 0;
+        }
+        .table > :not(caption) > * > * {
+            background-color: transparent;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(0,0,0,.05);
+        }
+        .points-value {
+            font-weight: bold;
+            color: #6c757d;
+        }
+        .damage-per-point {
+            font-size: 0.9em;
+            color: #0d6efd;
+        }
+        .drop-zone {
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #e9ecef;
+        }
+        .drop-zone.dragover {
+            border-color: #198754;
+            background-color: #d1e7dd;
+        }
+        .drop-zone-content {
+            color: #6c757d;
+        }
+        .drop-zone-content i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .drop-zone-content p {
+            margin: 0.5rem 0;
+        }
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .sortable:hover {
+            background-color: rgba(0,0,0,.05);
+        }
+        .sortable::after {
+            content: ' ↕';
+            opacity: 0.5;
+        }
+        .sortable[data-direction="asc"]::after {
+            content: ' ↑';
+            opacity: 1;
+        }
+        .sortable[data-direction="desc"]::after {
+            content: ' ↓';
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">40K Unit Efficiency Analysis</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="toughness-selector">
+                    <label for="toughness" class="form-label">Target Toughness:</label>
+                    <select id="toughness" class="form-select" style="width: 200px;">
+                        <option value="3">T3</option>
+                        <option value="4">T4</option>
+                        <option value="5">T5</option>
+                        <option value="6">T6</option>
+                        <option value="7">T7</option>
+                        <option value="8">T8</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="weapon-mode">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="overchargeToggle">
+                        <label class="form-check-label" for="overchargeToggle">Show Overcharge Values</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="file-selector">
+                    <label for="armyFile" class="form-label">Select Army File:</label>
+                    <select id="armyFile" class="form-select">
+                        <option value="800popti.json">800 Points Optimized</option>
+                        <option value="all_models_opt.json">All Models Optimized</option>
+                        <option value="sunforges_opt.json">Sunforges Optimized</option>
+                        <option value="800p army.json">800 Points Army</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-zone-content">
+                        <i class="bi bi-cloud-upload"></i>
+                        <p>Drag and drop your army JSON file here</p>
+                        <p class="text-muted">or click to select a file</p>
+                        <input type="file" id="fileInput" accept=".json" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analysis-results"></div>
+    </div>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="dist/unit_efficiency.js"></script>
+</body>
+</html> 
