@@ -10,6 +10,7 @@
             margin-bottom: 1rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            scroll-margin-top: 20px;
         }
         .weapon-list {
             margin-left: 1rem;
@@ -167,6 +168,24 @@
             content: ' ↓';
             opacity: 1;
         }
+        .one-time-weapon {
+            font-size: 0.8em;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            margin-left: 0.5rem;
+        }
+        .unit-link {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .unit-link:hover {
+            color: #0a58ca;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -192,6 +211,10 @@
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="overchargeToggle">
                         <label class="form-check-label" for="overchargeToggle">Show Overcharge Values</label>
+                    </div>
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" id="oneTimeWeaponsToggle">
+                        <label class="form-check-label" for="oneTimeWeaponsToggle">Include One-Time Weapons</label>
                     </div>
                 </div>
             </div>
