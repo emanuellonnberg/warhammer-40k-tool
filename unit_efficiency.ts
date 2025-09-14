@@ -100,16 +100,21 @@ function parseDamage(value: string): number {
     return isNaN(num) ? 0 : num;
 }
 
-// Calculate weapon efficiency against a target
-function calculateWeaponEfficiency(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
+// Calculate weapon damage output (replaces the flawed efficiency calculation)
+function calculateWeaponDamage(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
+    // Skip one-time weapons if not included
+    if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
+        return 0;
+    }
+
     const chars = weapon.characteristics;
-    
+
     // Get weapon stats with correct keys
     let strength = parseNumeric(chars.s || "0");
     let attacks = parseNumeric(chars.a || "0");
     let damage = parseDamage(chars.d || "0");
     let ap = parseNumeric(chars.ap || "0");
-    
+
     // Check for overcharge mode
     if (useOvercharge && weapon.overcharge_mode) {
         const overchargeChars = weapon.overcharge_mode.split(',').reduce((acc, curr) => {
@@ -117,33 +122,29 @@ function calculateWeaponEfficiency(weapon: Weapon, targetToughness: number, useO
             acc[key] = value;
             return acc;
         }, {} as { [key: string]: string });
-        
+
         // Update stats with overcharge values
         if (overchargeChars.s) strength = parseNumeric(overchargeChars.s);
         if (overchargeChars.d) damage = parseDamage(overchargeChars.d);
         if (overchargeChars.ap) ap = parseNumeric(overchargeChars.ap);
     }
-    
-    console.log(`Weapon ${weapon.name} stats:`, JSON.stringify({
-        strength,
-        attacks,
-        damage,
-        ap,
-        count: weapon.count,
-        characteristics: chars,
-        rawDamage: chars.d,
-        isOvercharge: useOvercharge
-    }, null, 2));
-    
-    // Calculate hit chance based on BS
-    const bs = chars.bs || "4+";
+
+    // Calculate hit chance based on BS (or special rules)
+    const keywords = chars.keywords || "";
     let hitChance = 2/3; // Default to 4+
-    if (bs === "2+") hitChance = 5/6;
-    if (bs === "3+") hitChance = 2/3;
-    if (bs === "4+") hitChance = 1/2;
-    if (bs === "5+") hitChance = 1/3;
-    if (bs === "6+") hitChance = 1/6;
-    
+
+    // Torrent weapons automatically hit
+    if (keywords.toLowerCase().includes("torrent")) {
+        hitChance = 1; // 100% hit chance
+    } else {
+        const bs = chars.bs || "4+";
+        if (bs === "2+") hitChance = 5/6;
+        if (bs === "3+") hitChance = 2/3;
+        if (bs === "4+") hitChance = 1/2;
+        if (bs === "5+") hitChance = 1/3;
+        if (bs === "6+") hitChance = 1/6;
+    }
+
     // Calculate wound chance
     let woundChance = 0;
     if (strength >= targetToughness * 2) {
@@ -157,29 +158,9 @@ function calculateWeaponEfficiency(weapon: Weapon, targetToughness: number, useO
     } else {
         woundChance = 1/3; // 5+
     }
-    
-    // Calculate expected damage
-    const expectedDamage = weapon.count * attacks * hitChance * woundChance * damage;
-    
-    // Calculate points per expected damage
-    const basePoints = weapon.count * 5; // Assuming 5 points per weapon as a base
-    const efficiency = expectedDamage / basePoints;
-    
-    console.log(`Weapon ${weapon.name} efficiency calculation:`, JSON.stringify({
-        expectedDamage,
-        basePoints,
-        efficiency,
-        woundChance,
-        hitChance,
-        targetToughness,
-        strength,
-        bs,
-        rawDamage: chars.d,
-        parsedDamage: damage,
-        isOvercharge: useOvercharge
-    }, null, 2));
-    
-    return efficiency;
+
+    // Calculate and return expected damage
+    return weapon.count * attacks * hitChance * woundChance * damage;
 }
 
 // Helper function to check if a weapon is one-time use (like seeker missiles)
@@ -188,44 +169,55 @@ function isOneTimeWeapon(weapon: Weapon): boolean {
     if (weapon.name.includes("Longstrike") || weapon.name.includes("seeker") || weapon.name.includes("Seeker")) {
         console.log(`Checking potential one-time weapon: ${weapon.name}`, weapon);
     }
-    
+
     // Check if explicitly marked as one-time
     if (weapon.is_one_time) return true;
-    
+
     // Check weapon name with broader matching
     const oneTimeKeywords = [
-        'seeker missile', 'seeker missiles', 
+        'seeker missile', 'seeker missiles',
         'missile drone', 'missile drones',
-        'one time', 'one-time', 
+        'one time', 'one-time',
         'single-use', 'single use',
         'hunter-killer', 'hunter killer'
     ];
-    
+
     // Normalize the weapon name for more reliable matching
     const lowerName = weapon.name.toLowerCase().trim();
-    
+
     // Check weapon keywords - more careful handling of undefined
-    const keywords = (weapon.characteristics?.keywords || '').toLowerCase();
-    
+    const keywordsAttribute = (weapon.characteristics?.keywords || '').toLowerCase();
+
     // Enhanced pattern matching
     for (const keyword of oneTimeKeywords) {
         if (lowerName.includes(keyword)) {
+            // Special check for "seeker missile" to exclude "seeker missile rack"
+            if ((keyword === 'seeker missile' || keyword === 'seeker missiles') && lowerName.includes('seeker missile rack')) {
+                console.log(`Identified "${weapon.name}" as a non-one-time rack despite containing "${keyword}".`);
+                continue; // It's a rack, not a one-time missile; check other keywords
+            }
             console.log(`Found one-time weapon by name: ${weapon.name} (matched ${keyword})`);
             return true;
         }
-        if (keywords && keywords.includes(keyword)) {
+        if (keywordsAttribute && keywordsAttribute.includes(keyword)) {
+            // Similar check for keywords attribute
+            if ((keyword === 'seeker missile' || keyword === 'seeker missiles') && keywordsAttribute.includes('seeker missile rack')) {
+                 console.log(`Identified "${weapon.name}" (via keyword attribute) as a non-one-time rack despite containing "${keyword}".`);
+                continue; // It's a rack, not a one-time missile; check other keywords
+            }
             console.log(`Found one-time weapon by keyword: ${weapon.name} (matched ${keyword})`);
             return true;
         }
     }
-    
+
     // Special case for hammerhead gunships and Longstrike
-    if ((lowerName.includes('hammerhead') || lowerName.includes('longstrike')) && 
-        lowerName.includes('missile')) {
-        console.log(`Found one-time missile weapon on special unit: ${weapon.name}`);
+    if ((lowerName.includes('hammerhead') || lowerName.includes('longstrike')) &&
+        lowerName.includes('missile') && 
+        !lowerName.includes('rack')) { // Exclude if 'rack' is present
+        console.log(`Found one-time missile weapon on special unit (excluding racks): ${weapon.name}`);
         return true;
     }
-    
+
     return false;
 }
 
@@ -259,15 +251,22 @@ function calculateExpectedDamage(weapon: Weapon, targetToughness: number, useOve
         if (overchargeChars.ap) ap = parseNumeric(overchargeChars.ap);
     }
     
-    // Calculate hit chance based on BS
-    const bs = chars.bs || "4+";
+    // Calculate hit chance based on BS (or special rules)
+    const keywords = chars.keywords || "";
     let hitChance = 2/3; // Default to 4+
-    if (bs === "2+") hitChance = 5/6;
-    if (bs === "3+") hitChance = 2/3;
-    if (bs === "4+") hitChance = 1/2;
-    if (bs === "5+") hitChance = 1/3;
-    if (bs === "6+") hitChance = 1/6;
-    
+
+    // Torrent weapons automatically hit
+    if (keywords.toLowerCase().includes("torrent")) {
+        hitChance = 1; // 100% hit chance
+    } else {
+        const bs = chars.bs || "4+";
+        if (bs === "2+") hitChance = 5/6;
+        if (bs === "3+") hitChance = 2/3;
+        if (bs === "4+") hitChance = 1/2;
+        if (bs === "5+") hitChance = 1/3;
+        if (bs === "6+") hitChance = 1/6;
+    }
+
     // Calculate wound chance
     let woundChance = 0;
     if (strength >= targetToughness * 2) {
@@ -292,6 +291,69 @@ function getWeaponType(weapon: Weapon): 'ranged' | 'melee' | 'pistol' {
     if (type.includes('pistol')) return 'pistol';
     if (type.includes('melee')) return 'melee';
     return 'ranged';
+}
+
+// Generate tooltip content showing calculation breakdown
+function generateCalculationTooltip(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false): string {
+    const chars = weapon.characteristics;
+
+    let strength = parseNumeric(chars.s || "0");
+    let attacks = parseNumeric(chars.a || "0");
+    let damage = parseDamage(chars.d || "0");
+    let ap = parseNumeric(chars.ap || "0");
+
+    if (useOvercharge && weapon.overcharge_mode) {
+        const overchargeChars = weapon.overcharge_mode.split(',').reduce((acc, curr) => {
+            const [key, value] = curr.trim().split(':').map(s => s.trim());
+            acc[key] = value;
+            return acc;
+        }, {} as { [key: string]: string });
+
+        if (overchargeChars.s) strength = parseNumeric(overchargeChars.s);
+        if (overchargeChars.d) damage = parseDamage(overchargeChars.d);
+        if (overchargeChars.ap) ap = parseNumeric(overchargeChars.ap);
+    }
+
+    const keywords = chars.keywords || "";
+    let hitChance = 1/2; // Default to 4+
+    let hitDisplay = "";
+
+    // Torrent weapons automatically hit
+    if (keywords.toLowerCase().includes("torrent")) {
+        hitChance = 1; // 100% hit chance
+        hitDisplay = "Auto-hit (Torrent)";
+    } else {
+        const bs = chars.bs || "4+";
+        hitDisplay = bs;
+        if (bs === "2+") hitChance = 5/6;
+        if (bs === "3+") hitChance = 2/3;
+        if (bs === "4+") hitChance = 1/2;
+        if (bs === "5+") hitChance = 1/3;
+        if (bs === "6+") hitChance = 1/6;
+    }
+
+    let woundChance = 0;
+    let woundRoll = "";
+    if (strength >= targetToughness * 2) {
+        woundChance = 5/6;
+        woundRoll = "2+";
+    } else if (strength > targetToughness) {
+        woundChance = 2/3;
+        woundRoll = "3+";
+    } else if (strength === targetToughness) {
+        woundChance = 1/2;
+        woundRoll = "4+";
+    } else if (strength * 2 <= targetToughness) {
+        woundChance = 1/6;
+        woundRoll = "6+";
+    } else {
+        woundChance = 1/3;
+        woundRoll = "5+";
+    }
+
+    const expectedDamage = weapon.count * attacks * hitChance * woundChance * damage;
+
+    return `Calculation Breakdown:&#10;${weapon.count} weapon(s) × ${attacks} attacks × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay}) × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll}) × ${damage} damage&#10;= ${expectedDamage.toFixed(2)} expected damage&#10;&#10;Stats: S${strength} vs T${targetToughness}, AP${ap}, Damage ${chars.d || damage}${useOvercharge ? ' (Overcharged)' : ''}${keywords.includes('torrent') || keywords.includes('Torrent') ? '&#10;Special: Torrent (Auto-hit)' : ''}`;
 }
 
 // Calculate total damage for a unit
@@ -397,40 +459,10 @@ function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge:
     return damages;
 }
 
-// Calculate unit efficiency
+// Calculate unit efficiency as total damage per point
 function calculateUnitEfficiency(unit: Unit, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
-    let totalEfficiency = 0;
-    let weaponCount = 0;
-    
-    console.log(`\nAnalyzing unit: ${unit.name}`, JSON.stringify({
-        points: unit.points,
-        count: unit.count,
-        stats: unit.stats,
-        isOvercharge: useOvercharge
-    }, null, 2));
-    
-    // Calculate efficiency for each weapon
-    for (const weapon of unit.weapons) {
-        const weaponEfficiency = calculateWeaponEfficiency(weapon, targetToughness, useOvercharge, includeOneTimeWeapons);
-        totalEfficiency += weaponEfficiency;
-        weaponCount++;
-    }
-    
-    // Normalize by unit points and number of weapons
-    const averageEfficiency = weaponCount > 0 ? totalEfficiency / weaponCount : 0;
-    const normalizedEfficiency = averageEfficiency * (unit.points / 100); // Normalize to 100 points
-    
-    console.log(`Unit ${unit.name} efficiency calculation:`, JSON.stringify({
-        totalEfficiency,
-        weaponCount,
-        averageEfficiency,
-        normalizedEfficiency,
-        points: unit.points,
-        targetToughness,
-        isOvercharge: useOvercharge
-    }, null, 2));
-    
-    return normalizedEfficiency;
+    const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, undefined, includeOneTimeWeapons);
+    return unit.points > 0 ? unitDamage.total / unit.points : 0;
 }
 
 // Get efficiency class for styling
@@ -530,8 +562,7 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                         <tr>
                             <th class="sortable" data-sort="name">Unit</th>
                             <th class="sortable" data-sort="points">Points</th>
-                            <th class="sortable" data-sort="efficiency">Efficiency</th>
-                            <th class="sortable" data-sort="dpp">Total D/Point</th>
+                            <th class="sortable" data-sort="efficiency">Total D/Point</th>
                             <th class="sortable" data-sort="rangeddpp">Ranged D/Point</th>
                             <th class="sortable" data-sort="meleedpp">Melee D/Point</th>
                             <th class="sortable" data-sort="ranged">Ranged</th>
@@ -582,10 +613,15 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                     ${includeOneTimeWeapons ? `data-onetime="${damage.onetime}"` : ''}>
                                     <td><a href="#unit-${unit.id}" class="unit-link">${unit.name}</a></td>
                                     <td>${unit.points}</td>
-                                    <td class="${getEfficiencyClass(efficiency)}">${efficiency.toFixed(3)}</td>
-                                    <td class="${getEfficiencyClass(damagePerPoint)}">${damagePerPoint.toFixed(3)}</td>
-                                    <td class="${getEfficiencyClass(rangedDamagePerPoint)}">${rangedDamagePerPoint.toFixed(3)}</td>
-                                    <td class="${getEfficiencyClass(meleeDamagePerPoint)}">${meleeDamagePerPoint.toFixed(3)}</td>
+                                    <td class="calculation-tooltip ${getEfficiencyClass(efficiency)}" data-tooltip="Total Damage per Point&#10;${damage.total.toFixed(1)} damage ÷ ${unit.points} points = ${efficiency.toFixed(3)}">
+                                        ${efficiency.toFixed(3)}
+                                    </td>
+                                    <td class="calculation-tooltip ${getEfficiencyClass(rangedDamagePerPoint)}" data-tooltip="Ranged Damage per Point&#10;${damage.ranged.toFixed(1)} ranged damage ÷ ${unit.points} points = ${rangedDamagePerPoint.toFixed(3)}">
+                                        ${rangedDamagePerPoint.toFixed(3)}
+                                    </td>
+                                    <td class="calculation-tooltip ${getEfficiencyClass(meleeDamagePerPoint)}" data-tooltip="Melee Damage per Point&#10;${damage.melee.toFixed(1)} melee damage ÷ ${unit.points} points = ${meleeDamagePerPoint.toFixed(3)}">
+                                        ${meleeDamagePerPoint.toFixed(3)}
+                                    </td>
                                     <td>${damage.ranged.toFixed(1)}</td>
                                     <td>${damage.melee.toFixed(1)}</td>
                                     <td>${damage.pistol.toFixed(1)}</td>
@@ -705,29 +741,24 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                     Points: ${unit.points}
                 </p>
                 <p class="card-text">
-                    Overall Efficiency: 
+                    Total Damage per Point:
                     <span class="efficiency-value ${getEfficiencyClass(unitEfficiency)}">
                         ${unitEfficiency.toFixed(3)}
                     </span>
                 </p>
                 <p class="card-text">
-                    Total Damage: 
+                    Total Damage:
                     <span class="damage-value">
                         ${unitDamage.total.toFixed(1)}
                     </span>
                     <br>
                     <small class="text-muted">
-                        Damage per Point: 
-                        <span class="efficiency-value ${getEfficiencyClass(damagePerPoint)}">
-                            ${damagePerPoint.toFixed(3)}
-                        </span>
-                        <br>
-                        Ranged D/Point: 
+                        Ranged D/Point:
                         <span class="efficiency-value ${getEfficiencyClass(rangedDamagePerPoint)}">
                             ${rangedDamagePerPoint.toFixed(3)}
                         </span>
                         <br>
-                        Melee D/Point: 
+                        Melee D/Point:
                         <span class="efficiency-value ${getEfficiencyClass(meleeDamagePerPoint)}">
                             ${meleeDamagePerPoint.toFixed(3)}
                         </span>
@@ -754,10 +785,10 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                         
                         if (standardWeapon && overchargeWeapon) {
                             // Weapon has standard/overcharge modes
-                            const standardEfficiency = calculateWeaponEfficiency(standardWeapon, targetToughness, false, includeOneTimeWeapons);
-                            const overchargeEfficiency = calculateWeaponEfficiency(overchargeWeapon, targetToughness, true, includeOneTimeWeapons);
-                            const standardDamage = calculateExpectedDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons);
-                            const overchargeDamage = calculateExpectedDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons);
+                            const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons);
+                            const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons);
+                            const standardEfficiency = standardDamage;
+                            const overchargeEfficiency = overchargeDamage;
                             const weaponType = getWeaponType(standardWeapon);
                             const isOneTime = isOneTimeWeapon(standardWeapon);
                             
@@ -769,8 +800,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
                                         <br>
                                         <span class="${!useOvercharge ? 'active-mode' : 'inactive-mode'}">
-                                            Standard: 
-                                            <span class="efficiency-value ${getEfficiencyClass(standardEfficiency)}">
+                                            Standard:
+                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(standardEfficiency)}" data-tooltip="${generateCalculationTooltip(standardWeapon, targetToughness, false)}">
                                                 ${standardEfficiency.toFixed(3)}
                                             </span>
                                             <span class="damage-value">
@@ -779,8 +810,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         </span>
                                         <br>
                                         <span class="${useOvercharge ? 'active-mode' : 'inactive-mode'}">
-                                            Overcharge: 
-                                            <span class="efficiency-value ${getEfficiencyClass(overchargeEfficiency)}">
+                                            Overcharge:
+                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(overchargeEfficiency)}" data-tooltip="${generateCalculationTooltip(overchargeWeapon, targetToughness, true)}">
                                                 ${overchargeEfficiency.toFixed(3)}
                                             </span>
                                             <span class="damage-value">
@@ -811,14 +842,14 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         </div>
                                         <div class="weapon-modes">
                                             ${weapons.map((weapon, modeIndex) => {
-                                                const efficiency = calculateWeaponEfficiency(weapon, targetToughness, false, includeOneTimeWeapons);
-                                                const damage = calculateExpectedDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                                                const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                                                const efficiency = damage;
                                                 const modeName = weapon.name.replace(baseName, '').replace(/^[ -]+/, '') || 'Mode ' + (modeIndex + 1);
                                                 return `
                                                     <span class="weapon-mode ${modeIndex === activeMode ? 'active-mode' : 'inactive-mode'}" 
                                                           data-mode-index="${modeIndex}">
-                                                        ${modeName}: 
-                                                        <span class="efficiency-value ${getEfficiencyClass(efficiency)}">
+                                                        ${modeName}:
+                                                        <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false)}">
                                                             ${efficiency.toFixed(3)}
                                                         </span>
                                                         <span class="damage-value">
@@ -834,8 +865,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                         } else {
                             // Regular weapon
                             const weapon = weapons[0];
-                            const efficiency = calculateWeaponEfficiency(weapon, targetToughness, false, includeOneTimeWeapons);
-                            const damage = calculateExpectedDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                            const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                            const efficiency = damage;
                             const weaponType = getWeaponType(weapon);
                             const isOneTime = isOneTimeWeapon(weapon);
                             
@@ -843,8 +874,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                 <p class="mb-1">
                                     ${baseName} (${weapon.count})
                                     <span class="weapon-type ${weaponType}">[${weaponType}]</span>
-                                    ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}: 
-                                    <span class="efficiency-value ${getEfficiencyClass(efficiency)}">
+                                    ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
+                                    <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false)}">
                                         ${efficiency.toFixed(3)}
                                     </span>
                                     <span class="damage-value">
@@ -854,6 +885,59 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                             `;
                         }
                     }).join('')}
+                </div>
+                <div class="weapon-details mt-3">
+                    <h6>Weapon Stats:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Weapon</th>
+                                    <th>Range</th>
+                                    <th>A</th>
+                                    <th>BS</th>
+                                    <th>S</th>
+                                    <th>AP</th>
+                                    <th>D</th>
+                                    <th>Keywords</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Array.from(weaponGroups.entries()).map(([baseName, weapons]) => {
+                                    // Skip weapons that should be excluded based on settings
+                                    if (!includeOneTimeWeapons && weapons.some(w => isOneTimeWeapon(w))) {
+                                        return '';
+                                    }
+
+                                    return weapons.map(weapon => {
+                                        const chars = weapon.characteristics;
+                                        const weaponType = getWeaponType(weapon);
+                                        const isOneTime = isOneTimeWeapon(weapon);
+                                        const modeName = weapon.name.includes(' - ') ?
+                                            weapon.name.split(' - ')[1] : '';
+
+                                        return `
+                                            <tr>
+                                                <td>
+                                                    ${baseName}${modeName ? ` (${modeName})` : ''}
+                                                    ${weapon.count > 1 ? ` (${weapon.count})` : ''}
+                                                    <span class="weapon-type ${weaponType}">[${weaponType}]</span>
+                                                    ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}
+                                                </td>
+                                                <td>${chars.range || '-'}</td>
+                                                <td>${chars.a || '-'}</td>
+                                                <td>${chars.bs || '-'}</td>
+                                                <td>${chars.s || '-'}</td>
+                                                <td>${chars.ap || '0'}</td>
+                                                <td>${chars.d || '-'}</td>
+                                                <td><small>${chars.keywords || ''}</small></td>
+                                            </tr>
+                                        `;
+                                    }).join('');
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         `;
@@ -957,6 +1041,25 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                 }
             }
         });
+    });
+
+    // Initialize tooltips for all elements with data-tooltip attribute
+    initializeTooltips();
+}
+
+// Initialize tooltips from data attributes
+function initializeTooltips() {
+    document.querySelectorAll('.calculation-tooltip[data-tooltip]').forEach(element => {
+        const tooltipText = element.getAttribute('data-tooltip');
+        if (!tooltipText) return;
+
+        // Create tooltip element
+        const tooltipDiv = document.createElement('div');
+        tooltipDiv.className = 'tooltip-content';
+        tooltipDiv.textContent = tooltipText.replace(/&#10;/g, '\n');
+
+        // Append to element
+        element.appendChild(tooltipDiv);
     });
 }
 
