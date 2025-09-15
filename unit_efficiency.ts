@@ -100,8 +100,8 @@ function parseDamage(value: string): number {
     return isNaN(num) ? 0 : num;
 }
 
-// Calculate weapon damage output (replaces the flawed efficiency calculation)
-function calculateWeaponDamage(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
+// Calculate weapon damage output with special rules
+function calculateWeaponDamage(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false, optimalRange: boolean = true): number {
     // Skip one-time weapons if not included
     if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
         return 0;
@@ -159,8 +159,84 @@ function calculateWeaponDamage(weapon: Weapon, targetToughness: number, useOverc
         woundChance = 1/3; // 5+
     }
 
+    // Apply special weapon rules
+    const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange);
+
     // Calculate and return expected damage
-    return weapon.count * attacks * hitChance * woundChance * damage;
+    return weapon.count * specialRules.totalDamage;
+}
+
+// Apply special weapon rules and calculate enhanced damage
+function applySpecialRules(weapon: Weapon, baseAttacks: number, hitChance: number, woundChance: number, baseDamage: number, targetToughness: number, optimalRange: boolean): {
+    totalDamage: number;
+    breakdown: string;
+} {
+    const keywords = weapon.characteristics.keywords || "";
+    let effectiveAttacks = baseAttacks;
+    let effectiveHitChance = hitChance;
+    let effectiveDamage = baseDamage;
+    let mortalWounds = 0;
+    let breakdown = [];
+
+    // Rapid Fire - extra attacks at optimal range
+    const rapidFireMatch = keywords.match(/Rapid Fire (\d+|D\d+(?:\+\d+)?)/i);
+    if (rapidFireMatch && optimalRange) {
+        const bonusAttacks = parseNumeric(rapidFireMatch[1]);
+        effectiveAttacks += bonusAttacks;
+        breakdown.push(`Rapid Fire +${bonusAttacks} attacks (optimal range)`);
+    }
+
+    // Melta - extra damage at optimal range
+    const meltaMatch = keywords.match(/Melta (\d+)/i);
+    if (meltaMatch && optimalRange) {
+        const bonusDamage = parseInt(meltaMatch[1]);
+        effectiveDamage += bonusDamage;
+        breakdown.push(`Melta +${bonusDamage} damage (optimal range)`);
+    }
+
+    // Calculate hits including sustained hits
+    let totalHits = effectiveAttacks * effectiveHitChance;
+    const sustainedHitsMatch = keywords.match(/Sustained Hits (\d+)/i);
+    if (sustainedHitsMatch) {
+        const extraHits = parseInt(sustainedHitsMatch[1]);
+        const criticalHits = effectiveAttacks * (1/6); // 6s to hit
+        const bonusHits = criticalHits * extraHits;
+        totalHits += bonusHits;
+        breakdown.push(`Sustained Hits +${bonusHits.toFixed(2)} hits`);
+    }
+
+    // Lethal Hits - 6s to hit auto-wound
+    let regularWounds = 0;
+    let lethalWounds = 0;
+    if (keywords.toLowerCase().includes("lethal hits")) {
+        const criticalHits = effectiveAttacks * (1/6);
+        const normalHits = totalHits - criticalHits;
+        regularWounds = normalHits * woundChance;
+        lethalWounds = criticalHits; // Auto-wound
+        breakdown.push(`Lethal Hits: ${lethalWounds.toFixed(2)} auto-wounds`);
+    } else {
+        regularWounds = totalHits * woundChance;
+    }
+
+    const totalWounds = regularWounds + lethalWounds;
+
+    // Devastating Wounds - 6s to wound become mortal wounds
+    let normalWounds = totalWounds;
+    if (keywords.toLowerCase().includes("devastating wounds")) {
+        const criticalWounds = totalHits * woundChance * (1/6); // 6s to wound
+        mortalWounds = criticalWounds;
+        normalWounds = totalWounds - criticalWounds;
+        breakdown.push(`Devastating Wounds: ${mortalWounds.toFixed(2)} mortal wounds`);
+    }
+
+    // Calculate total damage
+    const normalDamage = normalWounds * effectiveDamage;
+    const totalDamage = normalDamage + mortalWounds; // Mortal wounds = 1 damage each
+
+    return {
+        totalDamage,
+        breakdown: breakdown.join(", ")
+    };
 }
 
 // Helper function to check if a weapon is one-time use (like seeker missiles)
@@ -221,68 +297,9 @@ function isOneTimeWeapon(weapon: Weapon): boolean {
     return false;
 }
 
-// Calculate expected damage for a weapon
-function calculateExpectedDamage(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
-    // Skip one-time weapons if not included
-    if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
-        return 0;
-    }
-    
-    const chars = weapon.characteristics;
-    
-    // Get weapon stats with correct keys
-    let strength = parseNumeric(chars.s || "0");
-    let attacks = parseNumeric(chars.a || "0");
-    let damage = parseDamage(chars.d || "0");
-    let ap = parseNumeric(chars.ap || "0");
-    
-    // Check for overcharge mode
-    if (useOvercharge && weapon.overcharge_mode) {
-        console.log(`Using overcharge for ${weapon.name}`);
-        const overchargeChars = weapon.overcharge_mode.split(',').reduce((acc, curr) => {
-            const [key, value] = curr.trim().split(':').map(s => s.trim());
-            acc[key] = value;
-            return acc;
-        }, {} as { [key: string]: string });
-        
-        // Update stats with overcharge values
-        if (overchargeChars.s) strength = parseNumeric(overchargeChars.s);
-        if (overchargeChars.d) damage = parseDamage(overchargeChars.d);
-        if (overchargeChars.ap) ap = parseNumeric(overchargeChars.ap);
-    }
-    
-    // Calculate hit chance based on BS (or special rules)
-    const keywords = chars.keywords || "";
-    let hitChance = 2/3; // Default to 4+
-
-    // Torrent weapons automatically hit
-    if (keywords.toLowerCase().includes("torrent")) {
-        hitChance = 1; // 100% hit chance
-    } else {
-        const bs = chars.bs || "4+";
-        if (bs === "2+") hitChance = 5/6;
-        if (bs === "3+") hitChance = 2/3;
-        if (bs === "4+") hitChance = 1/2;
-        if (bs === "5+") hitChance = 1/3;
-        if (bs === "6+") hitChance = 1/6;
-    }
-
-    // Calculate wound chance
-    let woundChance = 0;
-    if (strength >= targetToughness * 2) {
-        woundChance = 5/6; // 2+
-    } else if (strength > targetToughness) {
-        woundChance = 2/3; // 3+
-    } else if (strength === targetToughness) {
-        woundChance = 1/2; // 4+
-    } else if (strength * 2 <= targetToughness) {
-        woundChance = 1/6; // 6+
-    } else {
-        woundChance = 1/3; // 5+
-    }
-    
-    // Calculate expected damage
-    return weapon.count * attacks * hitChance * woundChance * damage;
+// Calculate expected damage for a weapon (legacy function - redirects to calculateWeaponDamage)
+function calculateExpectedDamage(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false, optimalRange: boolean = true): number {
+    return calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
 }
 
 // Helper function to determine weapon type
@@ -294,7 +311,7 @@ function getWeaponType(weapon: Weapon): 'ranged' | 'melee' | 'pistol' {
 }
 
 // Generate tooltip content showing calculation breakdown
-function generateCalculationTooltip(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false): string {
+function generateCalculationTooltip(weapon: Weapon, targetToughness: number, useOvercharge: boolean = false, optimalRange: boolean = true): string {
     const chars = weapon.characteristics;
 
     let strength = parseNumeric(chars.s || "0");
@@ -351,13 +368,27 @@ function generateCalculationTooltip(weapon: Weapon, targetToughness: number, use
         woundRoll = "5+";
     }
 
-    const expectedDamage = weapon.count * attacks * hitChance * woundChance * damage;
+    // Apply special rules
+    const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange);
+    const expectedDamage = weapon.count * specialRules.totalDamage;
 
-    return `Calculation Breakdown:&#10;${weapon.count} weapon(s) × ${attacks} attacks × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay}) × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll}) × ${damage} damage&#10;= ${expectedDamage.toFixed(2)} expected damage&#10;&#10;Stats: S${strength} vs T${targetToughness}, AP${ap}, Damage ${chars.d || damage}${useOvercharge ? ' (Overcharged)' : ''}${keywords.includes('torrent') || keywords.includes('Torrent') ? '&#10;Special: Torrent (Auto-hit)' : ''}`;
+    let tooltipText = `Calculation Breakdown:&#10;${weapon.count} weapon(s) × ${attacks} attacks × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay}) × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll}) × ${damage} damage`;
+
+    if (specialRules.breakdown) {
+        tooltipText += `&#10;Special Rules: ${specialRules.breakdown}`;
+    }
+
+    tooltipText += `&#10;= ${expectedDamage.toFixed(2)} expected damage&#10;&#10;Stats: S${strength} vs T${targetToughness}, AP${ap}, Damage ${chars.d || damage}${useOvercharge ? ' (Overcharged)' : ''}${optimalRange ? ' (Optimal Range)' : ' (Max Range)'}`;
+
+    if (keywords.includes('torrent') || keywords.includes('Torrent')) {
+        tooltipText += '&#10;Special: Torrent (Auto-hit)';
+    }
+
+    return tooltipText;
 }
 
 // Calculate total damage for a unit
-function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge: boolean = false, activeModes?: Map<string, number>, includeOneTimeWeapons: boolean = false): {
+function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge: boolean = false, activeModes?: Map<string, number>, includeOneTimeWeapons: boolean = false, optimalRange: boolean = true): {
     total: number;
     ranged: number;
     melee: number;
@@ -406,7 +437,7 @@ function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge:
             // Skip pistols if there are other ranged weapons
             if (weaponType === 'pistol' && hasRangedWeapons) return;
             
-            const damage = calculateExpectedDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons);
+            const damage = calculateExpectedDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
             
             // Track one-time weapon damage separately
             if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -426,7 +457,7 @@ function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge:
             // Skip pistols if there are other ranged weapons
             if (weaponType === 'pistol' && hasRangedWeapons) return;
             
-            const damage = calculateExpectedDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons);
+            const damage = calculateExpectedDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
             
             // Track one-time weapon damage separately
             if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -444,7 +475,7 @@ function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge:
             // Skip pistols if there are other ranged weapons
             if (weaponType === 'pistol' && hasRangedWeapons) return;
             
-            const damage = calculateExpectedDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons);
+            const damage = calculateExpectedDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
             
             // Track one-time weapon damage separately
             if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {
@@ -460,8 +491,8 @@ function calculateUnitDamage(unit: Unit, targetToughness: number, useOvercharge:
 }
 
 // Calculate unit efficiency as total damage per point
-function calculateUnitEfficiency(unit: Unit, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false): number {
-    const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, undefined, includeOneTimeWeapons);
+function calculateUnitEfficiency(unit: Unit, targetToughness: number, useOvercharge: boolean = false, includeOneTimeWeapons: boolean = false, optimalRange: boolean = true): number {
+    const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, undefined, includeOneTimeWeapons, optimalRange);
     return unit.points > 0 ? unitDamage.total / unit.points : 0;
 }
 
@@ -477,8 +508,8 @@ let currentSortColumn: string = 'efficiency'; // Default sort column
 let currentSortDirection: 'asc' | 'desc' = 'desc'; // Default sort direction
 
 // Display analysis results in the HTML
-function displayAnalysisResults(army: Army, targetToughness: number, useOvercharge: boolean = false, activeWeaponModes?: Map<string, Map<string, number>>, includeOneTimeWeapons: boolean = false) {
-    console.log(`Displaying analysis with overcharge: ${useOvercharge}, includeOneTime: ${includeOneTimeWeapons}`);
+function displayAnalysisResults(army: Army, targetToughness: number, useOvercharge: boolean = false, activeWeaponModes?: Map<string, Map<string, number>>, includeOneTimeWeapons: boolean = false, optimalRange: boolean = true) {
+    console.log(`Displaying analysis with overcharge: ${useOvercharge}, includeOneTime: ${includeOneTimeWeapons}, optimalRange: ${optimalRange}`);
     const resultsDiv = document.getElementById('analysis-results');
     if (!resultsDiv) return;
 
@@ -503,40 +534,40 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                 bValue = b.points;
                 break;
             case 'efficiency':
-                aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons);
-                bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons);
+                aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+                bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
                 break;
             case 'dpp':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).total / a.points;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).total / b.points;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).total / a.points;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).total / b.points;
                 break;
             case 'rangeddpp':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).ranged / a.points;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).ranged / b.points;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).ranged / a.points;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).ranged / b.points;
                 break;
             case 'meleedpp':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).melee / a.points;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).melee / b.points;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).melee / a.points;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).melee / b.points;
                 break;
             case 'ranged':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).ranged;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).ranged;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).ranged;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).ranged;
                 break;
             case 'melee':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).melee;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).melee;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).melee;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).melee;
                 break;
             case 'pistol':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).pistol;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).pistol;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).pistol;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).pistol;
                 break;
             case 'onetime':
-                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons).onetime;
-                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons).onetime;
+                aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).onetime;
+                bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).onetime;
                 break;
             default:
-                aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons);
-                bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons);
+                aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+                bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
         }
         
         if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -594,8 +625,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                 }
                             });
 
-                            const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons);
-                            const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons);
+                            const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+                            const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
                             const damagePerPoint = damage.total / unit.points;
                             const rangedDamagePerPoint = damage.ranged / unit.points;
                             const meleeDamagePerPoint = damage.melee / unit.points;
@@ -710,9 +741,10 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
 
     // Create unit cards
     for (const unit of sortedUnits) {
-        const unitEfficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons);
+        const unitEfficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
         const unitModes = weaponModes.get(unit.id);
-        const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons);
+        const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
+        console.log(`Unit ${unit.name}: efficiency=${unitEfficiency.toFixed(3)}, totalDamage=${unitDamage.total.toFixed(1)}, optimalRange=${optimalRange}`);
         const damagePerPoint = unitDamage.total / unit.points;
         const rangedDamagePerPoint = unitDamage.ranged / unit.points;
         const meleeDamagePerPoint = unitDamage.melee / unit.points;
@@ -785,8 +817,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                         
                         if (standardWeapon && overchargeWeapon) {
                             // Weapon has standard/overcharge modes
-                            const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons);
-                            const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons);
+                            const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
+                            const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange);
                             const standardEfficiency = standardDamage;
                             const overchargeEfficiency = overchargeDamage;
                             const weaponType = getWeaponType(standardWeapon);
@@ -801,7 +833,7 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         <br>
                                         <span class="${!useOvercharge ? 'active-mode' : 'inactive-mode'}">
                                             Standard:
-                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(standardEfficiency)}" data-tooltip="${generateCalculationTooltip(standardWeapon, targetToughness, false)}">
+                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(standardEfficiency)}" data-tooltip="${generateCalculationTooltip(standardWeapon, targetToughness, false, optimalRange)}">
                                                 ${standardEfficiency.toFixed(3)}
                                             </span>
                                             <span class="damage-value">
@@ -811,7 +843,7 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         <br>
                                         <span class="${useOvercharge ? 'active-mode' : 'inactive-mode'}">
                                             Overcharge:
-                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(overchargeEfficiency)}" data-tooltip="${generateCalculationTooltip(overchargeWeapon, targetToughness, true)}">
+                                            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(overchargeEfficiency)}" data-tooltip="${generateCalculationTooltip(overchargeWeapon, targetToughness, true, optimalRange)}">
                                                 ${overchargeEfficiency.toFixed(3)}
                                             </span>
                                             <span class="damage-value">
@@ -842,14 +874,14 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                         </div>
                                         <div class="weapon-modes">
                                             ${weapons.map((weapon, modeIndex) => {
-                                                const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                                                const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
                                                 const efficiency = damage;
                                                 const modeName = weapon.name.replace(baseName, '').replace(/^[ -]+/, '') || 'Mode ' + (modeIndex + 1);
                                                 return `
                                                     <span class="weapon-mode ${modeIndex === activeMode ? 'active-mode' : 'inactive-mode'}" 
                                                           data-mode-index="${modeIndex}">
                                                         ${modeName}:
-                                                        <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false)}">
+                                                        <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange)}">
                                                             ${efficiency.toFixed(3)}
                                                         </span>
                                                         <span class="damage-value">
@@ -865,7 +897,7 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                         } else {
                             // Regular weapon
                             const weapon = weapons[0];
-                            const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons);
+                            const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
                             const efficiency = damage;
                             const weaponType = getWeaponType(weapon);
                             const isOneTime = isOneTimeWeapon(weapon);
@@ -875,7 +907,7 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
                                     ${baseName} (${weapon.count})
                                     <span class="weapon-type ${weaponType}">[${weaponType}]</span>
                                     ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
-                                    <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false)}">
+                                    <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(efficiency)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange)}">
                                         ${efficiency.toFixed(3)}
                                     </span>
                                     <span class="damage-value">
@@ -981,8 +1013,8 @@ function displayAnalysisResults(army: Army, targetToughness: number, useOverchar
             });
             
             // Recalculate damage with updated modes
-            const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons);
-            const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons);
+            const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+            const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
             const damagePerPoint = damage.total / unit.points;
             const rangedDamagePerPoint = damage.ranged / unit.points;
             const meleeDamagePerPoint = damage.melee / unit.points;
@@ -1070,11 +1102,12 @@ async function main() {
         const toughnessSelect = document.getElementById('toughness') as HTMLSelectElement;
         const overchargeToggle = document.getElementById('overchargeToggle') as HTMLInputElement;
         const oneTimeWeaponsToggle = document.getElementById('oneTimeWeaponsToggle') as HTMLInputElement;
+        const optimalRangeToggle = document.getElementById('optimalRangeToggle') as HTMLInputElement;
         const armyFileSelect = document.getElementById('armyFile') as HTMLSelectElement;
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
         
-        if (!toughnessSelect || !overchargeToggle || !oneTimeWeaponsToggle || !armyFileSelect || !dropZone || !fileInput) {
+        if (!toughnessSelect || !overchargeToggle || !oneTimeWeaponsToggle || !optimalRangeToggle || !armyFileSelect || !dropZone || !fileInput) {
             throw new Error('Could not find required UI elements');
         }
 
@@ -1130,11 +1163,12 @@ async function main() {
                 // Reset active weapon modes when updating display
                 activeWeaponModes = new Map();
                 displayAnalysisResults(
-                    currentArmy, 
-                    parseInt(toughnessSelect.value), 
-                    overchargeToggle.checked, 
+                    currentArmy,
+                    parseInt(toughnessSelect.value),
+                    overchargeToggle.checked,
                     activeWeaponModes,
-                    oneTimeWeaponsToggle.checked
+                    oneTimeWeaponsToggle.checked,
+                    optimalRangeToggle.checked
                 );
             }
         };
@@ -1207,6 +1241,10 @@ async function main() {
         });
         oneTimeWeaponsToggle.addEventListener('change', () => {
             console.log(`One-time weapons toggle changed to: ${oneTimeWeaponsToggle.checked}`);
+            updateDisplay();
+        });
+        optimalRangeToggle.addEventListener('change', () => {
+            console.log(`Optimal range toggle changed to: ${optimalRangeToggle.checked}`);
             updateDisplay();
         });
 
