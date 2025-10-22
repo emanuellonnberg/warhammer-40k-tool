@@ -1,0 +1,1895 @@
+{
+  "armyName": "Unknown Army",
+  "faction": "Noble Lance",
+  "pointsTotal": 0,
+  "rules": {
+    "cbd-943-bc7b-20ec": {
+      "id": "cbd-943-bc7b-20ec",
+      "name": "Code Chivalric",
+      "description": "If your Army Faction is IMPERIAL KNIGHTS, at the end of the Read Mission Objectives step, you must select one of the Oaths below to be active for your army. Models from your army with this ability gain the associated Oath ability, and you gain the associated Deed to complete.\nIf, at the start of any of your Command phases, your selected Oath's Deed is completed, your army becomes Honoured for the rest of the battle and your gain 3CP (you can only gain CP in this way once per battle, and CP gained in this way are an exemption to the Core Rules that limit the maximum number of CP you can gain per battle round to 1).\n\nLay Low The Tyrant\n- Oath Ability: Each time this model is selected to shoot or fight, you can re-roll one Hit roll and you can re-roll one Wound roll.\n- Deed: This deed is completed if the enemy WARLORD is destroyed.\n\nReclaim the Realm\n- Oath Ability: Add 1\" to this model's Move characteristic and add 1 to Advance and Charge rolls made for this model.\n- Deed: This deed is completed if you control one or more objective markers in your opponent's deployment zone.",
+      "hidden": false
+    },
+    "b68a-5ded-65ac-98c": {
+      "id": "b68a-5ded-65ac-98c",
+      "name": "Deadly Demise D6",
+      "description": "Some models have 'Deadly Demise x' listed in their abilities. When such a model is destroyed, roll one D6 before removing it from play (if such a model is a TRANSPORT, roll before any embarked models disembark). On a 6, each unit within 6\" of that model suffers a number of mortal wounds denoted by 'x' (if this is a random number, roll separately for each unit within 6\").",
+      "hidden": false
+    },
+    "1897-c22c-9597-12b1": {
+      "id": "1897-c22c-9597-12b1",
+      "name": "Sustained Hits",
+      "description": "Weapons with **[SUSTAINED HITS X]** in their profile are known as Sustained Hits weapons. Each time an attack is made with such a weapon, if a Critical Hit is rolled, that attack scores a number of additional hits on the target as denoted by ‘x’",
+      "hidden": false
+    },
+    "5e13-1624-d280-418d": {
+      "id": "5e13-1624-d280-418d",
+      "name": "Super-Heavy Walker",
+      "description": "Each time a model with this ability makes a Normal, Advance or Fall Back move, it can move through models (excluding TITANIC models) and sections of terrain features that are 4\" or less in height. \nWhen doing so:\n- It can move within Engagement Range of enemy models, but cannot end that move within Engagement Range of them.\n- It can also move through sections of terrain features that are more than 4\" in height, but if it does, after it has moved, roll one D6: on a 1, that model is Battle-shocked.",
+      "hidden": false
+    },
+    "6c1f-1cf7-ff25-c99e": {
+      "id": "6c1f-1cf7-ff25-c99e",
+      "name": "Blast",
+      "description": "Weapons with **[BLAST]** in their profile are known as Blast weapons, and they make a random number of attacks. Each time you determine how many attacks are made with a Blast weapon, add 1 to the result for every five models that were in the target unit when you selected it as the target (rounding down). Blast weapons can never be used to make attacks against a unit that is within Engagement Range of one or more units from the attacking model’s army (including its own unit).",
+      "hidden": false
+    },
+    "a8a0-8fe7-898-e0f3": {
+      "id": "a8a0-8fe7-898-e0f3",
+      "name": "Lone Operative",
+      "description": "Unless part of an Attached unit, this unit can only be selected as the target of a ranged attack if the attacking model is within 12\".",
+      "hidden": false
+    },
+    "f5a5-d4cf-3b72-ed02": {
+      "id": "f5a5-d4cf-3b72-ed02",
+      "name": "Bondsman Abilities",
+      "description": "Some QUESTORIS models have a Bondsman ability, tagged with the word ‘Bondsman’. In your Command phase, one or more models from your army with a Bondsman ability can use that ability. For each one that does, select one friendly ARMIGER model within 12\" of that model (you cannot select an ARMIGER model that is already being affected by a Bondsman ability). Until the start of your next Command phase, the ARMIGER model you selected is affected by that Bondsman ability.",
+      "hidden": false
+    },
+    "be1e-ac8e-1e2c-3528": {
+      "id": "be1e-ac8e-1e2c-3528",
+      "name": "Devastating Wounds",
+      "description": "Weapons with **[DEVASTATING WOUNDS]** in their profile are known as Devastating Wounds weapons. Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of any kind can be made against that attack (including invulnerable saving throws). Such attacks are only allocated to models after all other attacks made by the attacking unit have been allocated and resolved. After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.",
+      "hidden": false
+    },
+    "8367-374c-f87-c627": {
+      "id": "8367-374c-f87-c627",
+      "name": "Hazardous",
+      "description": "Weapons with **[HAZARDOUS]** in their profile are known as Hazardous weapons. Each time a unit is selected to shoot or fight, after that unit has resolved all of its attacks, for each Hazardous weapon that targets were selected for when resolving those attacks, that unit must take one Hazardous test. To do so, roll one D6: on a 1, that test is failed. For each failed test you must resolve the following sequence (resolve each failed test one at a time): \n\n■ If possible, select one model in that unit that has lost one or more wounds and is equipped with one or more Hazardous weapons. \n■ Otherwise, if possible, select one model in that unit (excluding **^^Character^^** models) equipped with one or more Hazardous weapons. \n■ Otherwise, select one **^^Character^^** model in that unit equipped with one or more Hazardous weapons. \n\nIf a model was selected, that unit suffers 3 mortal wounds and when allocating those mortal wounds, they must be allocated to the selected model. \n\nIf a unit from a player’s army is selected as the target of the Fire Overwatch Stratagem in their opponent’s Charge phase, any mortal wounds inflicted by Hazardous tests are allocated after the charging unit has ended its Charge move.",
+      "hidden": false
+    },
+    "fc8a-8c24-bae9-cc1c": {
+      "id": "fc8a-8c24-bae9-cc1c",
+      "name": "Assault",
+      "description": "Weapons with **[ASSAULT]** in their profile are known as Assault weapons. If a unit that Advanced this turn contains any models equipped with Assault weapons, it is still eligible to shoot in this turn’s Shooting phase. When such a unit is selected to shoot, you can only resolve attacks using Assault weapons its models are equipped with.",
+      "hidden": false
+    },
+    "2ebc-abdf-8129-6c57": {
+      "id": "2ebc-abdf-8129-6c57",
+      "name": "Lance",
+      "description": "Weapons with **[LANCE]** in their profile are known as Lance weapons. Each time an attack is made with such a weapon, if the bearer made a Charge move this turn, add 1 to that attack’s Wound roll.",
+      "hidden": false
+    },
+    "5edf-d619-23e0-9b56": {
+      "id": "5edf-d619-23e0-9b56",
+      "name": "Torrent",
+      "description": "Weapons with **[TORRENT]** in their profile are known as Torrent weapons. Each time an attack is made with such a weapon, that attack automatically hits the target.",
+      "hidden": false
+    },
+    "4640-43e7-30b-215a": {
+      "id": "4640-43e7-30b-215a",
+      "name": "Ignores Cover",
+      "description": "Weapons with **[IGNORES COVER]** in their profile are known as Ignores Cover weapons. Each time an attack is made with such a weapon, the target cannot have the Benefit of Cover against that attack.",
+      "hidden": false
+    },
+    "4ddd-4e29-acdd-5e6d": {
+      "id": "4ddd-4e29-acdd-5e6d",
+      "name": "Indirect Fire",
+      "description": "Weapons with **[INDIRECT FIRE]** in their profile are known as Indirect Fire weapons, and attacks can be made with them even if the target is not visible to the attacking model. These attacks can destroy enemy models in a target unit even though none may have been visible to the attacking unit when you selected that target.\n\n\nIf no models in a target unit are visible to the attacking unit when you select that target, then each time a model in the attacking unit makes an attack against that target using an Indirect Fire weapon, subtract 1 from that attack’s Hit roll, an unmodified Hit roll of 1-3 always fails, and the target has the Benefit of Cover against that attack. Weapons with the **[TORRENT]** ability cannot be fired using the **[INDIRECT FIRE]** ability.",
+      "hidden": false
+    },
+    "c5c8-8b58-b8b6-7786": {
+      "id": "c5c8-8b58-b8b6-7786",
+      "name": "Rapid Fire",
+      "description": "Weapons with **[RAPID FIRE X]** in their profile are known as Rapid Fire weapons. Each time such a weapon targets a unit within half that weapon’s range, the Attacks characteristic of that weapon is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "4111-82e3-9444-e942": {
+      "id": "4111-82e3-9444-e942",
+      "name": "Anti-",
+      "description": "Weapons with **[ANTI-KEYWORD X+]** in their profile are known as Anti weapons. Each time an attack is made with such a weapon against a target with the keyword after the word ‘Anti-’, an unmodified Wound roll of ‘x+’ scores a Critical Wound.",
+      "hidden": false
+    },
+    "7cdb-fb99-44a9-8849": {
+      "id": "7cdb-fb99-44a9-8849",
+      "name": "Melta",
+      "description": "Weapons with **[MELTA X]** in their profile are known as Melta weapons. Each time an attack made with such a weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "58c1-ec7a-74f5-26b9": {
+      "id": "58c1-ec7a-74f5-26b9",
+      "name": "Assigned Agents",
+      "description": "If your army Faction is not AGENTS OF THE IMPERIUM, but every model in your army has the IMPERIUM keyword, you can include AGENTS OF THE IMPERIUM units in your army even if they do not have the Faction keyword you selected in the Select Army Faction step. In this case, the maximum number of AGENTS OF THE IMPERIUM units you can include in your army depends on the battle size, as shown below.\n\nIncursion: 1 RETINUE, 1 CHARACTER, 1 REQUISITIONED\nStrike Force: 2 RETINUE, 2 CHARACTER, 1 REQUISITIONED\nOnslaught: 3 RETINUE, 3 CHARACTER, 2 REQUISITIONED\n\n\nNote that you can include AGENTS OF THE IMPERIUM DEDICATED TRANSPORT units in such an army as normal, but each unit must start the battle with one or more units embarked within it, or it cannot be deployed for that battle and will count as having been destroyed during the first battle round.",
+      "hidden": false
+    },
+    "7cb5-dd6b-dd87-ad3b": {
+      "id": "7cb5-dd6b-dd87-ad3b",
+      "name": "Deep Strike",
+      "description": "During the Declare Battle Formations step, if every model in a unit has this ability, you can set it up in Reserves instead of setting it up on the battlefield. If you do, in the Reinforcements step of one of your Movement phases you can set up this unit anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.\n\nIf a unit with the Deep Strike ability arrives from Strategic Reserves, the controlling player can choose for that unit to be set up either using the rules for Strategic Reserves or using the Deep Strike ability.",
+      "hidden": false
+    },
+    "24-c886-e8ba-5a89": {
+      "id": "24-c886-e8ba-5a89",
+      "name": "Fights First",
+      "description": "Units with this ability that are eligible to fight do so in the Fights First step, provided every model in the unit has this ability.",
+      "hidden": false
+    },
+    "c05d-f4c3-f091-4938": {
+      "id": "c05d-f4c3-f091-4938",
+      "name": "Infiltrators",
+      "description": "During deployment, if every model in a unit has this ability, then when you set it up, it can be set up anywhere on the battlefield that is more than 9\" horizontally away from the enemy deployment zone and all enemy models.",
+      "hidden": false
+    },
+    "9143-31ae-e0a6-6007": {
+      "id": "9143-31ae-e0a6-6007",
+      "name": "Precision",
+      "description": "Weapons with **[PRECISION]** in their profile are known as Precision weapons. Each time an attack made with such a weapon successfully wounds an Attached unit, if a Character model in that unit is visible to the attacking model, the attacking model’s player can choose to have that attack allocated to that Character model instead of following the normal attack sequence.",
+      "hidden": false
+    },
+    "d1d1-611e-5191-1095": {
+      "id": "d1d1-611e-5191-1095",
+      "name": "Lethal Hits",
+      "description": "Weapons with **[LETHAL HITS]** in their profile are known as Lethal Hits weapons. Each time an attack is made with such a weapon, a Critical Hit automatically wounds the target.",
+      "hidden": false
+    },
+    "cd26-1611-860a-91e4": {
+      "id": "cd26-1611-860a-91e4",
+      "name": "One Shot",
+      "description": "The bearer can only shoot with this weapon once per battle.",
+      "hidden": false
+    },
+    "8bf7-8812-923d-29e4": {
+      "id": "8bf7-8812-923d-29e4",
+      "name": "Pistol",
+      "description": "Weapons with **[PISTOL]** in their profile are known as Pistols. If a unit contains any models equipped with Pistols, that unit is eligible to shoot in its controlling player’s Shooting phase even while it is within Engagement Range of one or more enemy units. When such a unit is selected to shoot, it can only resolve attacks using its Pistols and can only target one of the enemy units it is within Engagement Range of. In such circumstances, a Pistol can target an enemy unit even if other friendly units are within Engagement Range of the same enemy unit. \n\nIf a model is equipped with one or more Pistols, unless it is a **^^Monster^^** or **^^Vehicle^^** model, it can either shoot with its Pistols or with all of its other ranged weapons. Declare whether such a model will shoot with its Pistols or its other ranged weapons before selecting targets.",
+      "hidden": false
+    },
+    "1202-10a8-78e9-4c67": {
+      "id": "1202-10a8-78e9-4c67",
+      "name": "Heavy",
+      "description": "Weapons with **[HEAVY]** in their profile are known as Heavy weapons. Each time an attack is made with such a weapon, if the attacking model’s unit Remained Stationary this turn, add 1 to that attack’s Hit roll.",
+      "hidden": false
+    }
+  },
+  "abilities": {
+    "7f8-ef35-95d5-6fc7": {
+      "id": "7f8-ef35-95d5-6fc7",
+      "name": "Chainbreaker",
+      "description": "Each time this model makes an attack, an unmodified successful Hit roll of 5+ scores a Critical Hit."
+    },
+    "b927-9dc2-5b23-19dd": {
+      "id": "b927-9dc2-5b23-19dd",
+      "name": "Legendary Freeblade",
+      "description": "Once per turn, one unit from your army with this ability can use it when its unit is targeted with a Stratagem. If it does, reduce the CP cost of that use of that Stratagem by 1CP."
+    },
+    "8552-862d-6a49-4879": {
+      "id": "8552-862d-6a49-4879",
+      "name": "Invulnerable Save (5+*)",
+      "description": "This model has a 5+ invulnerable save against ranged attacks."
+    },
+    "a274-b647-186a-54ee": {
+      "id": "a274-b647-186a-54ee",
+      "name": "Damaged: 1-9 Wounds Remaining",
+      "description": "While this model has 1-9 wounds remaining, subtract 5 from this models Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "15a9-48ef-5f10-106": {
+      "id": "15a9-48ef-5f10-106",
+      "name": "Using Sir Hekhtur",
+      "description": "When your Canis Rex model is destroyed, Sir Hekhtur is treated as a model disembarking from a destroyed TRANSPORT – set him up within 3\" of your Canis Rex model before it is removed. Sir Hekhtur then uses the profile, wargear, abilities and keywords shown on this side of the card, but cannot be selected as the target of any of your Stratagems other than Core Stratagems. Your Canis Rex unit is not considered to be destroyed until Sir Hekhtur is also destroyed."
+    },
+    "1d21-3b48-6cd2-d5f5": {
+      "id": "1d21-3b48-6cd2-d5f5",
+      "name": "Macro-extinction Protocols",
+      "description": "Each time this model makes an attack that targets a MONSTER or VEHICLE unit, add 1 to the Hit roll. If that target is TITANIC or TOWERING, add 1 to the Wound roll as well."
+    },
+    "ebf4-d0b5-fbb-7c37": {
+      "id": "ebf4-d0b5-fbb-7c37",
+      "name": "Invulnerable Save (5+)",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "1934-9c67-78e2-4fd9": {
+      "id": "1934-9c67-78e2-4fd9",
+      "name": "Damaged: 1-10 Wounds Remaining",
+      "description": "While this model has 1-10 wounds remaining, subtract 5 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "5216-4a0b-633c-64a": {
+      "id": "5216-4a0b-633c-64a",
+      "name": "Atrapos’ Duty (Bondsman)",
+      "description": "While a model is affected by this ability, each time that model makes an attack that targets a TITANIC or TOWERING model, you can re-roll the Hit roll and you can re-roll the Wound roll."
+    },
+    "52a2-a465-3ebb-80b9": {
+      "id": "52a2-a465-3ebb-80b9",
+      "name": "Shock Charge",
+      "description": "You can target this model with the Tank Shock Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase."
+    },
+    "dfe3-cb31-d3a4-b603": {
+      "id": "dfe3-cb31-d3a4-b603",
+      "name": "Invulnerable Save (4+)",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "3d59-83f8-e0ee-c0a3": {
+      "id": "3d59-83f8-e0ee-c0a3",
+      "name": "Lancer’s Duty (Bondsman)",
+      "description": "While a model is affected by this ability, it is eligible to declare a charge in a turn in which it Advanced."
+    },
+    "a3a8-3e6-b7c5-66e6": {
+      "id": "a3a8-3e6-b7c5-66e6",
+      "name": "Mysterious Guardian",
+      "description": "IMPERIAL KNIGHTS model only. The bearer has the Deep Strike ability. Once per battle, at the end of your opponent’s turn, if the bearer is not within Engagement Range of any enemy units, it can fade away. If it does, remove it from the battlefield then, in the Reinforcements step of your subsequent Movement phase, set it up anywhere on the battlefield that is more than 9\" horizontally away from all enemy models. If the battle ends and the bearer is not on the battlefield, it is destroyed."
+    },
+    "f3ec-bea-7d9f-df98": {
+      "id": "f3ec-bea-7d9f-df98",
+      "name": "Punishing Salvoes",
+      "description": "In your Movement phase, if this model Remains Stationary, until the start of your next Movement phase, this model’s ranged weapons have the [SUSTAINED HITS 1] ability."
+    },
+    "11c1-4782-61b6-4b98": {
+      "id": "11c1-4782-61b6-4b98",
+      "name": "Crusader's Duty (Bondsman)",
+      "description": "While a model is affected by this ability, each time that model makes a ranged attack, add 1 to the Hit roll."
+    },
+    "1d28-343b-c471-4427": {
+      "id": "1d28-343b-c471-4427",
+      "name": "Skyfire Protocols",
+      "description": "While this model is either wholly within your deployment zone or within range of an objective marker you control, its Armiger autocannons have the [ANTI-FLY 2+] ability."
+    },
+    "b9a3-9db8-fd2f-7e43": {
+      "id": "b9a3-9db8-fd2f-7e43",
+      "name": "Damaged: 1-5 Wounds Remaining",
+      "description": "While this model has 1-5 wounds remaining, subtract 3 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "7c4e-84cb-7fa5-362b": {
+      "id": "7c4e-84cb-7fa5-362b",
+      "name": "Protection Protocols",
+      "description": "You can target this unit with the Heroic Intervention Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase."
+    },
+    "4bac-5c2a-5e23-d586": {
+      "id": "4bac-5c2a-5e23-d586",
+      "name": "Impetuous Glory",
+      "description": "Each time this model makes a Charge move, until the end of the turn, melee weapons equipped by this model have the [SUSTAINED HITS 1] ability."
+    },
+    "d455-fbfd-ca57-c259": {
+      "id": "d455-fbfd-ca57-c259",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "812f-ed2e-6abf-35be": {
+      "id": "812f-ed2e-6abf-35be",
+      "name": "Acrobatic Escape",
+      "description": "At the end of the Fight phase, if this model is within Engagement Range of one or more enemy units, it can make a Fall Back move of up to D6\". In addition, at the end of your opponent's turn, if this model is not within 3\" of one or more enemy units, you can remove it from the battlefield and then, in the Reinforcements step of your next Movement phase, set it up anywhere on the battlefield that is more than 9\" horizontally away from all enemy models. If the battle ends and this model is not on the battlefield, it is destroyed."
+    },
+    "3882-3521-d644-a482": {
+      "id": "3882-3521-d644-a482",
+      "name": "Shadow Assignment",
+      "description": "This model cannot be selected as your WARLORD. If your army faction is AGENTS OF THE IMPERIUM, then during the Declare Battle Formations step, you can replace this model with a different OFFICIO ASSASSINORUM model, provided that the points value of the new model does not exceed the points value of the model it replaced. Your army cannot include duplicates of the same model (i.e. after replacing this model with this rule, your army cannot have more than 1 VINDICARE ASSASSIN, it cannot have more than 1 CULEXUS ASSASSIN, it cannot have more than 1 EVERSOR ASSASSIN and it cannot have more than 1 CALLIDUS ASSASSIN)."
+    },
+    "8332-466b-a51f-63ab": {
+      "id": "8332-466b-a51f-63ab",
+      "name": "Lord of Deceit (Aura)",
+      "description": "Each time your opponent targets a unit from their army with a Stratagem, if that unit is within 12\" of this model, increase the cost of that use of that Stratagem by 1CP."
+    },
+    "7f12-782b-ccb8-c711": {
+      "id": "7f12-782b-ccb8-c711",
+      "name": "Transport",
+      "description": "This model has a transport capacity of 6 ORDO HERETICUS INFANTRY models.\n\nAt the start of the Declare Battle Formations step, you can select one SISTERS OF BATTLE SQUAD from your army. If you do, that unit is split into two units, each containing as equal a number of models as possible (when splitting a unit in this way, make a note of which models form each of the two new units). One of these units must start the battle embarked within this TRANSPORT; the other can start the battle embarked within another TRANSPORT, or it can be deployed as a separate unit."
+    },
+    "63f5-e162-abaf-9a62": {
+      "id": "63f5-e162-abaf-9a62",
+      "name": "Purge and Cleanse",
+      "description": "Each time this model has shot, select one enemy unit hit by one or more of those attacks. Until the end of the phase, that enemy unit cannot have the Benefit of Cover."
+    },
+    "b9b5-f542-9dfc-e768": {
+      "id": "b9b5-f542-9dfc-e768",
+      "name": "Invulnerable Save",
+      "description": "This model has a 6+ invulnerable save."
+    },
+    "6d66-4563-4a27-0a79": {
+      "id": "6d66-4563-4a27-0a79",
+      "name": "Defenders of the Faith",
+      "description": "If you control an objective marker at the end of your Command phase and this unit is within range of that objective marker, that objective marker remains under your control, even if you have no models in range of it, until your opponent controls it at the start or end of any turn."
+    },
+    "1499-da67-d675-dba5": {
+      "id": "1499-da67-d675-dba5",
+      "name": "Incensor Cherub",
+      "description": "Once per battle, you can target this unit with the Command Re-roll Stratagem for 0CP and can do so if you have already targeted a different unit with that Stratagem this phase."
+    },
+    "7db8-5b7f-87f5-2796": {
+      "id": "7db8-5b7f-87f5-2796",
+      "name": "Invulnerable Save",
+      "description": "Models in this unit have a 6+ invulnerable save."
+    },
+    "5000-04c7-36a4-2a95": {
+      "id": "5000-04c7-36a4-2a95",
+      "name": "Simulacrum Imperialis",
+      "description": "Improve the Leadership characteristic of models in the bearer's unit by 1."
+    }
+  },
+  "units": [
+    {
+      "id": "me4nnpde9xjxav3lsk8",
+      "name": "Canis Rex",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "10\"",
+        "toughness": "11",
+        "save": "3+",
+        "wounds": "26",
+        "leadership": "5+",
+        "objectiveControl": "10"
+      },
+      "points": 415,
+      "count": 1,
+      "abilities": [
+        "7f8-ef35-95d5-6fc7",
+        "b927-9dc2-5b23-19dd",
+        "8552-862d-6a49-4879",
+        "a274-b647-186a-54ee",
+        "15a9-48ef-5f10-106"
+      ],
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1897-c22c-9597-12b1",
+        "5e13-1624-d280-418d",
+        "6c1f-1cf7-ff25-c99e",
+        "cbd-943-bc7b-20ec",
+        "a8a0-8fe7-898-e0f3"
+      ],
+      "linked_weapons": {
+        "➤ Chainbreaker las-impulsor": {
+          "standard": "433f-6684-ff4f-23b7",
+          "overcharge": null
+        },
+        "➤ Freedom's Hand": {
+          "standard": "51c7-ad78-6365-91ee",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "822a-223f-fbd-21e0",
+          "name": "➤ Chainbreaker las-impulsor - high intensity",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "D6",
+            "bs": "2+",
+            "s": "14",
+            "ap": "-3",
+            "d": "4",
+            "keywords": "Blast, Sustained Hits 1"
+          },
+          "base_name": "➤ Chainbreaker las-impulsor",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "433f-6684-ff4f-23b7",
+          "name": "➤ Chainbreaker las-impulsor - low intensity",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2D6",
+            "bs": "2+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Blast, Sustained Hits 1"
+          },
+          "base_name": "➤ Chainbreaker las-impulsor",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "95dd-25ae-f5e0-f3f8",
+          "name": "Chainbreaker multi-laser",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "4",
+            "bs": "2+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Sustained Hits 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "74ec-e144-10c4-7ece",
+          "name": "➤ Freedom's Hand - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "5",
+            "ws": "2+",
+            "s": "20",
+            "ap": "-3",
+            "d": "9",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Freedom's Hand",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "51c7-ad78-6365-91ee",
+          "name": "➤ Freedom's Hand - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "10",
+            "ws": "2+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Freedom's Hand",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "6038-ef92-cb43-2288",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "2+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7bf3-8655-62ac-6f0d",
+          "name": "Hekhtur's pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4nzl0njhxj820t2a",
+      "name": "Cerastus Knight Atrapos",
+      "type": "Character",
+      "stats": {
+        "move": "12\"",
+        "toughness": "11",
+        "save": "3+",
+        "wounds": "28",
+        "leadership": "6+",
+        "objectiveControl": "10"
+      },
+      "points": 405,
+      "count": 1,
+      "rules": [
+        "cbd-943-bc7b-20ec",
+        "b68a-5ded-65ac-98c",
+        "5e13-1624-d280-418d",
+        "f5a5-d4cf-3b72-ed02",
+        "1897-c22c-9597-12b1",
+        "6c1f-1cf7-ff25-c99e",
+        "be1e-ac8e-1e2c-3528",
+        "8367-374c-f87-c627"
+      ],
+      "abilities": [
+        "1d21-3b48-6cd2-d5f5",
+        "ebf4-d0b5-fbb-7c37",
+        "1934-9c67-78e2-4fd9",
+        "5216-4a0b-633c-64a"
+      ],
+      "linked_weapons": {
+        "➤ Atrapos lascutter": {
+          "standard": "c9f0-76bb-4602-e4f7",
+          "overcharge": null
+        },
+        "➤ Graviton singularity cannon": {
+          "standard": "2f4-5b32-a9b5-7abc",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "8f72-a428-9ee4-acb2",
+          "name": "➤ Atrapos lascutter - high intensity (melee)",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "3+",
+            "s": "14",
+            "ap": "-3",
+            "d": "4",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Atrapos lascutter",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7dcf-78c3-82e1-b6fa",
+          "name": "➤ Atrapos lascutter - low intensity (melee)",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "12",
+            "ws": "3+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Atrapos lascutter",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "8729-3dcc-8ed7-752a",
+          "name": "➤ Atrapos lascutter - high intensity (ranged)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "14",
+            "ap": "-3",
+            "d": "4",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Atrapos lascutter",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c9f0-76bb-4602-e4f7",
+          "name": "➤ Atrapos lascutter - low intensity (ranged)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2D6",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Atrapos lascutter",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "4312-4668-8ce2-3045",
+          "name": "➤ Graviton singularity cannon - singularity",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "D3",
+            "bs": "3+",
+            "s": "16",
+            "ap": "-4",
+            "d": "D6+1",
+            "keywords": "Blast, Devastating Wounds, Hazardous"
+          },
+          "base_name": "➤ Graviton singularity cannon",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2f4-5b32-a9b5-7abc",
+          "name": "➤ Graviton singularity cannon - contained",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "D3",
+            "bs": "3+",
+            "s": "16",
+            "ap": "-4",
+            "d": "D6+1",
+            "keywords": "Blast"
+          },
+          "base_name": "➤ Graviton singularity cannon",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4o9exqw0zd20e28s",
+      "name": "Cerastus Knight Lancer",
+      "type": "Character",
+      "stats": {
+        "move": "14\"",
+        "toughness": "11",
+        "save": "3+",
+        "wounds": "28",
+        "leadership": "6+",
+        "objectiveControl": "10"
+      },
+      "points": 395,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "5e13-1624-d280-418d",
+        "f5a5-d4cf-3b72-ed02",
+        "1897-c22c-9597-12b1",
+        "fc8a-8c24-bae9-cc1c",
+        "2ebc-abdf-8129-6c57"
+      ],
+      "abilities": [
+        "52a2-a465-3ebb-80b9",
+        "dfe3-cb31-d3a4-b603",
+        "1934-9c67-78e2-4fd9",
+        "3d59-83f8-e0ee-c0a3",
+        "a3a8-3e6-b7c5-66e6"
+      ],
+      "linked_weapons": {
+        "➤ Cerastus shock lance": {
+          "standard": "11a0-34b2-1f4b-854",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "96f2-c13b-cf32-6785",
+          "name": "➤ Cerastus shock lance - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "5",
+            "ws": "2+",
+            "s": "20",
+            "ap": "-3",
+            "d": "8",
+            "keywords": "Lance"
+          },
+          "base_name": "➤ Cerastus shock lance",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c77-ff4f-7801-5bc9",
+          "name": "Cerastus shock lance",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "6",
+            "bs": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "2",
+            "keywords": "Assault, Sustained Hits 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "11a0-34b2-1f4b-854",
+          "name": "➤ Cerastus shock lance - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "10",
+            "ws": "2+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Cerastus shock lance",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4o0qucfxmprcbq25c",
+      "name": "Knight Crusader",
+      "type": "Character",
+      "stats": {
+        "move": "10\"",
+        "toughness": "11",
+        "save": "3+",
+        "wounds": "26",
+        "leadership": "6+",
+        "objectiveControl": "10"
+      },
+      "points": 395,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "5e13-1624-d280-418d",
+        "cbd-943-bc7b-20ec",
+        "1897-c22c-9597-12b1",
+        "f5a5-d4cf-3b72-ed02",
+        "5edf-d619-23e0-9b56",
+        "4640-43e7-30b-215a",
+        "6c1f-1cf7-ff25-c99e",
+        "4ddd-4e29-acdd-5e6d",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "8552-862d-6a49-4879",
+        "a274-b647-186a-54ee",
+        "f3ec-bea-7d9f-df98",
+        "11c1-4782-61b6-4b98"
+      ],
+      "weapons": [
+        {
+          "id": "c28d-679c-9e28-af08",
+          "name": "Avenger gatling cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "18",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7b42-981d-db0-4e83",
+          "name": "Heavy flamer",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "6fcb-f784-14c1-7f92",
+          "name": "Titanic feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "712a-105f-a24e-badb",
+          "name": "Ironstorm missile pod",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6+1",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast, Indirect Fire"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3b13-7770-1d2b-9e66",
+          "name": "Questoris heavy stubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Rapid Fire 3"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "e63e-93fd-e131-fe85",
+          "name": "Rapid-fire battle cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "72\"",
+            "a": "D6+3",
+            "bs": "3+",
+            "s": "10",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "Blast, Rapid Fire D6+3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4p3n9q4zfxbktsylm",
+      "name": "Armiger Helverin",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "1d28-343b-c471-4427",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "weapons": [
+        {
+          "id": "3d6c-b927-b515-c0d8",
+          "name": "Armiger autocannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "4",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b6b7-cce0-ad60-bdf4",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3b13-7770-1d2b-9e66",
+          "name": "Questoris heavy stubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Rapid Fire 3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "689837836605c89216be7cb9",
+      "name": "Armiger Helverin",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "1d28-343b-c471-4427",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "weapons": [
+        {
+          "id": "3d6c-b927-b515-c0d8",
+          "name": "Armiger autocannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "4",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b6b7-cce0-ad60-bdf4",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3b13-7770-1d2b-9e66",
+          "name": "Questoris heavy stubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Rapid Fire 3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "68986ddf4561154dd312c211",
+      "name": "Armiger Helverin",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "1d28-343b-c471-4427",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "weapons": [
+        {
+          "id": "3d6c-b927-b515-c0d8",
+          "name": "Armiger autocannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "4",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b6b7-cce0-ad60-bdf4",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3b13-7770-1d2b-9e66",
+          "name": "Questoris heavy stubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Rapid Fire 3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mfjg71qdutgl9aawibm",
+      "name": "Armiger Moirax",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 150,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "1897-c22c-9597-12b1",
+        "4111-82e3-9444-e942",
+        "4640-43e7-30b-215a",
+        "5edf-d619-23e0-9b56"
+      ],
+      "abilities": [
+        "7c4e-84cb-7fa5-362b",
+        "8552-862d-6a49-4879",
+        "b9a3-9db8-fd2f-7e43"
+      ],
+      "weapons": [
+        {
+          "id": "b6b7-cce0-ad60-bdf4",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b9d1-1e57-836-a531",
+          "name": "Lightning lock",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "6",
+            "bs": "3+",
+            "s": "8",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Sustained Hits 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "165d-95f5-f19e-8016",
+          "name": "Rad cleanser",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "2",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Infantry 2+, Ignores Cover, Torrent"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "ec3a-304-38d3-eb09",
+          "name": "Siege claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "12",
+            "ap": "-3",
+            "d": "D6+2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4nnv1llehotw4yzn",
+      "name": "Armiger Warglaive",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "7cdb-fb99-44a9-8849"
+      ],
+      "abilities": [
+        "4bac-5c2a-5e23-d586",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "linked_weapons": {
+        "➤ Reaper chain-cleaver": {
+          "standard": "5e11-8d35-b7a7-ba38",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "3a79-406d-aaa7-ed6c",
+          "name": "➤ Reaper chain-cleaver - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "10",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5e11-8d35-b7a7-ba38",
+          "name": "➤ Reaper chain-cleaver - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "8",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "38d-4520-1309-4074",
+          "name": "Thermal spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "4b6f-2df5-d7b6-34dd",
+          "name": "Meltagun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4nnv6vadlsnqlprzc",
+      "name": "Armiger Warglaive",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "7cdb-fb99-44a9-8849"
+      ],
+      "abilities": [
+        "4bac-5c2a-5e23-d586",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "linked_weapons": {
+        "➤ Reaper chain-cleaver": {
+          "standard": "5e11-8d35-b7a7-ba38",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "3a79-406d-aaa7-ed6c",
+          "name": "➤ Reaper chain-cleaver - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "10",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5e11-8d35-b7a7-ba38",
+          "name": "➤ Reaper chain-cleaver - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "8",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "38d-4520-1309-4074",
+          "name": "Thermal spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "4b6f-2df5-d7b6-34dd",
+          "name": "Meltagun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "68986de24561154dd312c212",
+      "name": "Armiger Warglaive",
+      "type": "Battleline",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "cbd-943-bc7b-20ec",
+        "7cdb-fb99-44a9-8849",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "4bac-5c2a-5e23-d586",
+        "b9a3-9db8-fd2f-7e43",
+        "8552-862d-6a49-4879"
+      ],
+      "linked_weapons": {
+        "➤ Reaper chain-cleaver": {
+          "standard": "5e11-8d35-b7a7-ba38",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "3a79-406d-aaa7-ed6c",
+          "name": "➤ Reaper chain-cleaver - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "10",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5e11-8d35-b7a7-ba38",
+          "name": "➤ Reaper chain-cleaver - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "8",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Reaper chain-cleaver",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "38d-4520-1309-4074",
+          "name": "Thermal spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3b13-7770-1d2b-9e66",
+          "name": "Questoris heavy stubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Rapid Fire 3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4nr73h1v3nsrfmutd",
+      "name": "Callidus Assassin",
+      "type": "Allied Units",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "6+",
+        "wounds": "4",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 100,
+      "count": 1,
+      "rules": [
+        "58c1-ec7a-74f5-26b9",
+        "7cb5-dd6b-dd87-ad3b",
+        "a8a0-8fe7-898-e0f3",
+        "24-c886-e8ba-5a89",
+        "c05d-f4c3-f091-4938",
+        "4111-82e3-9444-e942",
+        "9143-31ae-e0a6-6007",
+        "5edf-d619-23e0-9b56",
+        "d1d1-611e-5191-1095"
+      ],
+      "abilities": [
+        "d455-fbfd-ca57-c259",
+        "812f-ed2e-6abf-35be",
+        "3882-3521-d644-a482",
+        "8332-466b-a51f-63ab"
+      ],
+      "weapons": [
+        {
+          "id": "3e29-79b2-e811-eca8",
+          "name": "Neural shredder",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "5",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Anti-INFANTRY 2+, Precision, Torrent"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "dd6b-cdca-1a78-7545",
+          "name": "Phase sword and poison blades",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "5",
+            "ws": "2+",
+            "s": "5",
+            "ap": "-4",
+            "d": "2",
+            "keywords": "Lethal Hits, Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4no49h2owk966v519",
+      "name": "Sisters of Battle Immolator",
+      "type": "Allied Units",
+      "stats": {
+        "move": "12\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "11",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 115,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1897-c22c-9597-12b1",
+        "cd26-1611-860a-91e4",
+        "5edf-d619-23e0-9b56",
+        "4640-43e7-30b-215a"
+      ],
+      "abilities": [
+        "7f12-782b-ccb8-c711",
+        "63f5-e162-abaf-9a62",
+        "b9b5-f542-9dfc-e768"
+      ],
+      "weapons": [
+        {
+          "id": "6bc1-f863-9e59-fbb0",
+          "name": "Armoured tracks",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "12c3-bd26-c854-d331",
+          "name": "Heavy bolter",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "ddf1-0735-e524-ef51",
+          "name": "Hunter-killer missile",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6",
+            "keywords": "One Shot"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "56b7-5c98-bfb5-f3c5",
+          "name": "Immolation flamers",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2D6",
+            "bs": "N/A",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4no4tdyvw9cs9pbej",
+      "name": "Sisters of Battle Immolator",
+      "type": "Allied Units",
+      "stats": {
+        "move": "12\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "11",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 115,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1897-c22c-9597-12b1",
+        "cd26-1611-860a-91e4",
+        "5edf-d619-23e0-9b56",
+        "4640-43e7-30b-215a"
+      ],
+      "abilities": [
+        "7f12-782b-ccb8-c711",
+        "63f5-e162-abaf-9a62",
+        "b9b5-f542-9dfc-e768"
+      ],
+      "weapons": [
+        {
+          "id": "6bc1-f863-9e59-fbb0",
+          "name": "Armoured tracks",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "12c3-bd26-c854-d331",
+          "name": "Heavy bolter",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "ddf1-0735-e524-ef51",
+          "name": "Hunter-killer missile",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6",
+            "keywords": "One Shot"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "56b7-5c98-bfb5-f3c5",
+          "name": "Immolation flamers",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2D6",
+            "bs": "N/A",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "me4no5mkzvub6my0npq",
+      "name": "Sisters of Battle Squad",
+      "type": "Allied Units",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "3+",
+        "wounds": "1",
+        "leadership": "5+",
+        "objectiveControl": "2"
+      },
+      "points": 115,
+      "count": 1,
+      "abilities": [
+        "6d66-4563-4a27-0a79",
+        "1499-da67-d675-dba5",
+        "7db8-5b7f-87f5-2796",
+        "5000-04c7-36a4-2a95"
+      ],
+      "rules": [
+        "8bf7-8812-923d-29e4",
+        "8367-374c-f87-c627",
+        "c5c8-8b58-b8b6-7786",
+        "1202-10a8-78e9-4c67",
+        "7cdb-fb99-44a9-8849"
+      ],
+      "linked_weapons": {
+        "➤ Plasma pistol": {
+          "standard": "211f-c645-a85e-30d1",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "2157-1926-df10-90f8",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "9522-b10f-5943-435d",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "4+",
+            "s": "3",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "ddc8-eb55-1d2b-c53f",
+          "name": "Chainsword",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "71fd-b6d9-a025-88a6",
+          "name": "➤ Plasma pistol - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "211f-c645-a85e-30d1",
+          "name": "➤ Plasma pistol - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "d194-b2f3-ad36-b3d9",
+          "name": "Boltgun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 1"
+          },
+          "count": 7,
+          "models_with_weapon": 7
+        },
+        {
+          "id": "9811-9876-9345-cfe0",
+          "name": "Multi-melta",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Heavy, Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5645-1303-b9d6-6abb",
+          "name": "Meltagun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    }
+  ]
+}
