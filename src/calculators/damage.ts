@@ -50,7 +50,7 @@ export function calculateWeaponDamage(
     if (overchargeChars.ap) ap = parseNumeric(overchargeChars.ap);
   }
 
-  // Calculate hit chance based on BS (or special rules)
+  // Calculate hit chance based on BS/WS (or special rules)
   const keywords = chars.keywords || "";
   let hitChance = 2 / 3; // Default to 4+
 
@@ -58,12 +58,13 @@ export function calculateWeaponDamage(
   if (keywords.toLowerCase().includes("torrent")) {
     hitChance = 1; // 100% hit chance
   } else {
-    const bs = chars.bs || "4+";
-    if (bs === "2+") hitChance = 5 / 6;
-    if (bs === "3+") hitChance = 2 / 3;
-    if (bs === "4+") hitChance = 1 / 2;
-    if (bs === "5+") hitChance = 1 / 3;
-    if (bs === "6+") hitChance = 1 / 6;
+    // Check for BS (ranged) or WS (melee)
+    const skill = chars.bs || chars.ws || "4+";
+    if (skill === "2+") hitChance = 5 / 6;
+    if (skill === "3+") hitChance = 2 / 3;
+    if (skill === "4+") hitChance = 1 / 2;
+    if (skill === "5+") hitChance = 1 / 3;
+    if (skill === "6+") hitChance = 1 / 6;
   }
 
   // Calculate wound chance
