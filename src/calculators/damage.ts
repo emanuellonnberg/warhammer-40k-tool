@@ -14,6 +14,10 @@ import { applySpecialRules } from '../rules/special-weapons';
  * @param useOvercharge - Whether to use overcharge mode
  * @param includeOneTimeWeapons - Whether to include one-time weapons
  * @param optimalRange - Whether at optimal range for Rapid Fire/Melta
+ * @param targetKeywords - Array of target unit keywords (for Anti- rules)
+ * @param targetUnitSize - Number of models in target unit (for Blast weapons)
+ * @param isCharging - Whether the attacker is charging (for Lance weapons)
+ * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
  * @returns Expected damage value
  */
 export function calculateWeaponDamage(
@@ -22,7 +26,10 @@ export function calculateWeaponDamage(
   useOvercharge: boolean = false,
   includeOneTimeWeapons: boolean = false,
   optimalRange: boolean = true,
-  targetKeywords: string[] = []
+  targetKeywords: string[] = [],
+  targetUnitSize: number = 1,
+  isCharging: boolean = false,
+  targetSave: string | null = null
 ): number {
   // Skip one-time weapons if not included
   if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
@@ -83,7 +90,20 @@ export function calculateWeaponDamage(
   }
 
   // Apply special weapon rules
-  const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange, targetKeywords);
+  const specialRules = applySpecialRules(
+    weapon,
+    attacks,
+    hitChance,
+    woundChance,
+    damage,
+    targetToughness,
+    optimalRange,
+    targetKeywords,
+    targetUnitSize,
+    isCharging,
+    targetSave,
+    Math.abs(ap) // Convert AP to positive number (AP -3 becomes 3)
+  );
 
   // Calculate and return expected damage
   return weapon.count * specialRules.totalDamage;
@@ -97,6 +117,10 @@ export function calculateWeaponDamage(
  * @param activeModes - Map of active weapon modes
  * @param includeOneTimeWeapons - Whether to include one-time weapons
  * @param optimalRange - Whether at optimal range
+ * @param targetKeywords - Array of target unit keywords (for Anti- rules)
+ * @param targetUnitSize - Number of models in target unit (for Blast weapons)
+ * @param isCharging - Whether the attacker is charging (for Lance weapons)
+ * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
  * @returns Damage breakdown by weapon type
  */
 export function calculateUnitDamage(
@@ -106,7 +130,10 @@ export function calculateUnitDamage(
   activeModes?: Map<string, number>,
   includeOneTimeWeapons: boolean = false,
   optimalRange: boolean = true,
-  targetKeywords: string[] = []
+  targetKeywords: string[] = [],
+  targetUnitSize: number = 1,
+  isCharging: boolean = false,
+  targetSave: string | null = null
 ): DamageBreakdown {
   const damages: DamageBreakdown = {
     total: 0,
@@ -149,7 +176,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -169,7 +196,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -187,7 +214,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
+      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {
