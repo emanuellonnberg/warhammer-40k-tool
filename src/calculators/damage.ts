@@ -8,6 +8,48 @@ import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
 import { applySpecialRules } from '../rules/special-weapons';
 
 /**
+ * Check if two weapons have identical characteristics
+ */
+function weaponsAreIdentical(w1: Weapon, w2: Weapon): boolean {
+  const chars1 = w1.characteristics;
+  const chars2 = w2.characteristics;
+
+  // Compare all characteristics
+  const keys = new Set([...Object.keys(chars1), ...Object.keys(chars2)]);
+  for (const key of keys) {
+    if (chars1[key] !== chars2[key]) {
+      return false;
+    }
+  }
+
+  // Also check if they have the same type
+  return w1.type === w2.type;
+}
+
+/**
+ * Combine identical weapons by summing their counts
+ */
+function combineIdenticalWeapons(weapons: Weapon[]): Weapon[] {
+  if (weapons.length <= 1) return weapons;
+
+  // Check if all weapons are identical
+  const allIdentical = weapons.every(w => weaponsAreIdentical(w, weapons[0]));
+
+  if (allIdentical) {
+    // Combine into a single weapon with summed count and models_with_weapon
+    const combined: Weapon = {
+      ...weapons[0],
+      count: weapons.reduce((sum, w) => sum + w.count, 0),
+      models_with_weapon: weapons.reduce((sum, w) => sum + w.models_with_weapon, 0)
+    };
+    return [combined];
+  }
+
+  return weapons;
+}
+
+
+/**
  * Calculate weapon damage output with special rules
  * @param weapon - Weapon to analyze
  * @param targetToughness - Target's toughness value
@@ -151,6 +193,11 @@ export function calculateUnitDamage(
       weaponGroups.set(baseName, []);
     }
     weaponGroups.get(baseName)!.push(weapon);
+  });
+
+  // Combine identical weapons within each group
+  weaponGroups.forEach((weapons, baseName) => {
+    weaponGroups.set(baseName, combineIdenticalWeapons(weapons));
   });
 
   // Check if unit has ranged weapons
