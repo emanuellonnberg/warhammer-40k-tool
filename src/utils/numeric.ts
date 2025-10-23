@@ -10,6 +10,22 @@
 export function parseNumeric(value: string): number {
   if (!value) return 0;
 
+  // Handle XD6 format (e.g., "2D6", "3D6") - multiply by average of D6 (3.5)
+  const multiD6Match = value.match(/^(\d+)D6(?:\+(\d+))?$/);
+  if (multiD6Match) {
+    const multiplier = parseInt(multiD6Match[1]);
+    const bonus = multiD6Match[2] ? parseInt(multiD6Match[2]) : 0;
+    return multiplier * 3.5 + bonus;
+  }
+
+  // Handle XD3 format (e.g., "2D3") - multiply by average of D3 (2)
+  const multiD3Match = value.match(/^(\d+)D3(?:\+(\d+))?$/);
+  if (multiD3Match) {
+    const multiplier = parseInt(multiD3Match[1]);
+    const bonus = multiD3Match[2] ? parseInt(multiD3Match[2]) : 0;
+    return multiplier * 2 + bonus;
+  }
+
   // Handle D6+X format
   if (value.startsWith('D6')) {
     const plusPart = value.split('+')[1];

@@ -15,6 +15,7 @@ import { parseNumeric } from '../utils/numeric';
  * @param baseDamage - Base damage value
  * @param targetToughness - Target's toughness value
  * @param optimalRange - Whether weapon is at optimal range
+ * @param targetKeywords - Array of target unit keywords (for Anti- rules)
  * @returns Total damage and breakdown explanation
  */
 export function applySpecialRules(
@@ -24,12 +25,15 @@ export function applySpecialRules(
   woundChance: number,
   baseDamage: number,
   targetToughness: number,
-  optimalRange: boolean
+  optimalRange: boolean,
+  targetKeywords: string[] = []
 ): SpecialRulesResult {
   const keywords = weapon.characteristics.keywords || "";
   let effectiveAttacks = baseAttacks;
   let effectiveHitChance = hitChance;
+  let effectiveWoundChance = woundChance;
   let effectiveDamage = baseDamage;
+  let criticalWoundThreshold = 6; // Default: only 6s are critical wounds
   let mortalWounds = 0;
   const breakdown: string[] = [];
 
@@ -49,6 +53,28 @@ export function applySpecialRules(
     breakdown.push(`Melta +${bonusDamage} damage (optimal range)`);
   }
 
+  // Twin-Linked - re-roll wound rolls
+  if (keywords.toLowerCase().includes("twin-linked")) {
+    // Re-rolling wounds: new chance = original + (1-original) * original
+    const originalWoundChance = effectiveWoundChance;
+    effectiveWoundChance = originalWoundChance + (1 - originalWoundChance) * originalWoundChance;
+    breakdown.push(`Twin-Linked (wound chance ${originalWoundChance.toFixed(3)} -> ${effectiveWoundChance.toFixed(3)})`);
+  }
+
+  // Anti- Keywords - improve critical wound threshold against specific keywords
+  // Match patterns like "Anti-INFANTRY 4+", "Anti-CHAOS 2+", etc.
+  const antiMatch = keywords.match(/Anti-([\w-]+)\s+(\d+)\+/i);
+  if (antiMatch) {
+    const targetKeyword = antiMatch[1].toUpperCase();
+    const threshold = parseInt(antiMatch[2]);
+
+    // Check if target has the matching keyword
+    if (targetKeywords.some(k => k.toUpperCase() === targetKeyword)) {
+      criticalWoundThreshold = threshold;
+      breakdown.push(`Anti-${targetKeyword} ${threshold}+ (crits on ${threshold}+ vs ${targetKeyword})`);
+    }
+  }
+
   // Calculate hits including sustained hits
   let totalHits = effectiveAttacks * effectiveHitChance;
   const sustainedHitsMatch = keywords.match(/Sustained Hits (\d+)/i);
@@ -66,22 +92,24 @@ export function applySpecialRules(
   if (keywords.toLowerCase().includes("lethal hits")) {
     const criticalHits = effectiveAttacks * (1 / 6);
     const normalHits = totalHits - criticalHits;
-    regularWounds = normalHits * woundChance;
+    regularWounds = normalHits * effectiveWoundChance;
     lethalWounds = criticalHits; // Auto-wound
     breakdown.push(`Lethal Hits: ${lethalWounds.toFixed(2)} auto-wounds`);
   } else {
-    regularWounds = totalHits * woundChance;
+    regularWounds = totalHits * effectiveWoundChance;
   }
 
   const totalWounds = regularWounds + lethalWounds;
 
-  // Devastating Wounds - 6s to wound become mortal wounds
+  // Devastating Wounds - critical wounds become mortal wounds
   let normalWounds = totalWounds;
   if (keywords.toLowerCase().includes("devastating wounds")) {
-    const criticalWounds = totalHits * woundChance * (1 / 6); // 6s to wound
+    // Calculate critical wound chance based on threshold (default 6, but Anti- can lower it)
+    const criticalWoundChance = (7 - criticalWoundThreshold) / 6;
+    const criticalWounds = totalHits * effectiveWoundChance * criticalWoundChance;
     mortalWounds = criticalWounds;
     normalWounds = totalWounds - criticalWounds;
-    breakdown.push(`Devastating Wounds: ${mortalWounds.toFixed(2)} mortal wounds`);
+    breakdown.push(`Devastating Wounds: ${mortalWounds.toFixed(2)} mortal wounds (crits on ${criticalWoundThreshold}+)`);
   }
 
   // Calculate total damage

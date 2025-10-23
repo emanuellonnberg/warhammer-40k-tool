@@ -21,7 +21,8 @@ export function calculateWeaponDamage(
   targetToughness: number,
   useOvercharge: boolean = false,
   includeOneTimeWeapons: boolean = false,
-  optimalRange: boolean = true
+  optimalRange: boolean = true,
+  targetKeywords: string[] = []
 ): number {
   // Skip one-time weapons if not included
   if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
@@ -82,7 +83,7 @@ export function calculateWeaponDamage(
   }
 
   // Apply special weapon rules
-  const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange);
+  const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange, targetKeywords);
 
   // Calculate and return expected damage
   return weapon.count * specialRules.totalDamage;
@@ -104,7 +105,8 @@ export function calculateUnitDamage(
   useOvercharge: boolean = false,
   activeModes?: Map<string, number>,
   includeOneTimeWeapons: boolean = false,
-  optimalRange: boolean = true
+  optimalRange: boolean = true,
+  targetKeywords: string[] = []
 ): DamageBreakdown {
   const damages: DamageBreakdown = {
     total: 0,
@@ -147,7 +149,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -167,7 +169,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -185,7 +187,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {
