@@ -68,7 +68,7 @@ export function setupWeaponModeToggles(
       updateSummaryRow(unit, efficiency, damage, damagePerPoint, rangedDamagePerPoint, meleeDamagePerPoint, includeOneTimeWeapons);
 
       // Update the unit card
-      updateUnitCard(unitId, efficiency, damage, damagePerPoint, rangedDamagePerPoint, meleeDamagePerPoint);
+      updateUnitCard(unitId, efficiency, damage, damagePerPoint, rangedDamagePerPoint, meleeDamagePerPoint, includeOneTimeWeapons);
     });
   });
 }
@@ -101,12 +101,16 @@ function updateSummaryRow(
     `;
 
     // Update data attributes for sorting
+    unitRow.setAttribute('data-efficiency', efficiency.toString());
     unitRow.setAttribute('data-dpp', damagePerPoint.toString());
     unitRow.setAttribute('data-rangeddpp', rangedDamagePerPoint.toString());
     unitRow.setAttribute('data-meleedpp', meleeDamagePerPoint.toString());
     unitRow.setAttribute('data-ranged', damage.ranged.toString());
     unitRow.setAttribute('data-melee', damage.melee.toString());
     unitRow.setAttribute('data-pistol', damage.pistol.toString());
+    if (includeOneTimeWeapons) {
+      unitRow.setAttribute('data-onetime', damage.onetime.toString());
+    }
   }
 }
 
@@ -116,34 +120,51 @@ function updateSummaryRow(
 function updateUnitCard(
   unitId: string,
   efficiency: number,
-  damage: { total: number; ranged: number; melee: number; pistol: number },
+  damage: { total: number; ranged: number; melee: number; pistol: number; onetime: number },
   damagePerPoint: number,
   rangedDamagePerPoint: number,
-  meleeDamagePerPoint: number
+  meleeDamagePerPoint: number,
+  includeOneTimeWeapons: boolean = false
 ): void {
   const unitCard = document.querySelector(`.unit-card[data-unit-id="${unitId}"]`);
-  if (unitCard) {
-    const totalDamageSpan = unitCard.querySelector('.card-text .damage-value');
-    const efficiencySpan = unitCard.querySelector('.card-text .efficiency-value');
-    const dppSpans = unitCard.querySelectorAll('.text-muted .efficiency-value');
+  if (!unitCard) return;
 
-    if (totalDamageSpan) totalDamageSpan.textContent = damage.total.toFixed(1);
-    if (efficiencySpan) efficiencySpan.textContent = efficiency.toFixed(3);
+  // Update Total Damage per Point (efficiency)
+  const totalDppSpan = unitCard.querySelector('[data-stat="total-dpp"]');
+  if (totalDppSpan) {
+    totalDppSpan.textContent = efficiency.toFixed(3);
+    // Update efficiency class
+    totalDppSpan.className = `efficiency-value ${getEfficiencyClass(efficiency)}`;
+  }
 
-    if (dppSpans.length >= 3) {
-      dppSpans[0].textContent = damagePerPoint.toFixed(3);
-      dppSpans[1].textContent = rangedDamagePerPoint.toFixed(3);
-      dppSpans[2].textContent = meleeDamagePerPoint.toFixed(3);
-    }
+  // Update Total Damage
+  const totalDamageSpan = unitCard.querySelector('[data-stat="total-damage"]');
+  if (totalDamageSpan) {
+    totalDamageSpan.textContent = damage.total.toFixed(1);
+  }
 
-    // Update damage breakdown
-    const damageBreakdown = unitCard.querySelector('.text-muted:last-of-type');
-    if (damageBreakdown) {
-      damageBreakdown.innerHTML = `
-        Ranged: ${damage.ranged.toFixed(1)} |
-        Melee: ${damage.melee.toFixed(1)} |
-        Pistol: ${damage.pistol.toFixed(1)}
-      `;
-    }
+  // Update Ranged D/Point
+  const rangedDppSpan = unitCard.querySelector('[data-stat="ranged-dpp"]');
+  if (rangedDppSpan) {
+    rangedDppSpan.textContent = rangedDamagePerPoint.toFixed(3);
+    rangedDppSpan.className = `efficiency-value ${getEfficiencyClass(rangedDamagePerPoint)}`;
+  }
+
+  // Update Melee D/Point
+  const meleeDppSpan = unitCard.querySelector('[data-stat="melee-dpp"]');
+  if (meleeDppSpan) {
+    meleeDppSpan.textContent = meleeDamagePerPoint.toFixed(3);
+    meleeDppSpan.className = `efficiency-value ${getEfficiencyClass(meleeDamagePerPoint)}`;
+  }
+
+  // Update damage breakdown
+  const damageBreakdown = unitCard.querySelector('[data-stat="damage-breakdown"]');
+  if (damageBreakdown) {
+    damageBreakdown.innerHTML = `
+      Ranged: ${damage.ranged.toFixed(1)} |
+      Melee: ${damage.melee.toFixed(1)} |
+      Pistol: ${damage.pistol.toFixed(1)}
+      ${includeOneTimeWeapons && damage.onetime > 0 ? `| One-Time: ${damage.onetime.toFixed(1)}` : ''}
+    `;
   }
 }

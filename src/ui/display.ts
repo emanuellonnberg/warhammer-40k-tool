@@ -386,29 +386,29 @@ function createUnitCard(
       </p>
       <p class="card-text">
         Total Damage per Point:
-        <span class="efficiency-value ${getEfficiencyClass(unitEfficiency)}">
+        <span class="efficiency-value ${getEfficiencyClass(unitEfficiency)}" data-stat="total-dpp">
           ${unitEfficiency.toFixed(3)}
         </span>
       </p>
       <p class="card-text">
         Total Damage:
-        <span class="damage-value">
+        <span class="damage-value" data-stat="total-damage">
           ${unitDamage.total.toFixed(1)}
         </span>
         <br>
         <small class="text-muted">
           Ranged D/Point:
-          <span class="efficiency-value ${getEfficiencyClass(rangedDamagePerPoint)}">
+          <span class="efficiency-value ${getEfficiencyClass(rangedDamagePerPoint)}" data-stat="ranged-dpp">
             ${rangedDamagePerPoint.toFixed(3)}
           </span>
           <br>
           Melee D/Point:
-          <span class="efficiency-value ${getEfficiencyClass(meleeDamagePerPoint)}">
+          <span class="efficiency-value ${getEfficiencyClass(meleeDamagePerPoint)}" data-stat="melee-dpp">
             ${meleeDamagePerPoint.toFixed(3)}
           </span>
         </small>
         <br>
-        <small class="text-muted">
+        <small class="text-muted" data-stat="damage-breakdown">
           Ranged: ${unitDamage.ranged.toFixed(1)} |
           Melee: ${unitDamage.melee.toFixed(1)} |
           Pistol: ${unitDamage.pistol.toFixed(1)}
