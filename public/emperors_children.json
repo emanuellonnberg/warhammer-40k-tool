@@ -1,0 +1,2721 @@
+{
+  "armyName": "Unknown Army",
+  "faction": "Coterie of the Conceited",
+  "pointsTotal": 0,
+  "rules": {
+    "1674-23e6-eacf-9624": {
+      "id": "1674-23e6-eacf-9624",
+      "name": "Thrill Seekers",
+      "description": "If your Army Faction is **^^Emperor's Children^^**, this unit is eligible to shoot and declare a charge in a turn in which it Advanced or Fell Back, but when doing so:\n- It cannot target a unit it was within Engagement Range of at the start of the turn\n- It cannot target a unit that was the target of another unit's charge or attack this phase.",
+      "hidden": false
+    },
+    "7cb5-dd6b-dd87-ad3b": {
+      "id": "7cb5-dd6b-dd87-ad3b",
+      "name": "Deep Strike",
+      "description": "During the Declare Battle Formations step, if every model in a unit has this ability, you can set it up in Reserves instead of setting it up on the battlefield. If you do, in the Reinforcements step of one of your Movement phases you can set up this unit anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.\n\nIf a unit with the Deep Strike ability arrives from Strategic Reserves, the controlling player can choose for that unit to be set up either using the rules for Strategic Reserves or using the Deep Strike ability.",
+      "hidden": false
+    },
+    "b68a-5ded-65ac-98c": {
+      "id": "b68a-5ded-65ac-98c",
+      "name": "Deadly Demise D6",
+      "description": "Some models have 'Deadly Demise x' listed in their abilities. When such a model is destroyed, roll one D6 before removing it from play (if such a model is a TRANSPORT, roll before any embarked models disembark). On a 6, each unit within 6\" of that model suffers a number of mortal wounds denoted by 'x' (if this is a random number, roll separately for each unit within 6\").",
+      "hidden": false
+    },
+    "1897-c22c-9597-12b1": {
+      "id": "1897-c22c-9597-12b1",
+      "name": "Sustained Hits",
+      "description": "Weapons with **[SUSTAINED HITS X]** in their profile are known as Sustained Hits weapons. Each time an attack is made with such a weapon, if a Critical Hit is rolled, that attack scores a number of additional hits on the target as denoted by ‘x’",
+      "hidden": false
+    },
+    "115b-79dc-f723-d761": {
+      "id": "115b-79dc-f723-d761",
+      "name": "Extra Attacks",
+      "description": "Weapons with **[EXTRA ATTACKS]** in their profile are known as Extra Attacks weapons. Each time the bearer of one or more Extra Attacks weapons fights, it makes attacks with each of the Extra Attacks melee weapons it is equipped with and it makes attacks with one of the melee weapons it is equipped with that does not have the [EXTRA ATTACKS] ability (if any). The number of attacks made with an Extra Attacks weapon cannot be modified by other rules, unless that weapon’s name is explicitly specified in that rule.",
+      "hidden": false
+    },
+    "b4dd-3e1f-41cb-218f": {
+      "id": "b4dd-3e1f-41cb-218f",
+      "name": "Leader",
+      "description": "While a Bodyguard unit contains a Leader, it is known as an Attached unit and, with the exception of rules that are triggered when units are destroyed (pg 12), it is treated as a single unit for all rules purposes. Each time an attack targets an Attached unit, until the attacking unit has resolved all of its attacks, you must use the Toughness characteristic of the Bodyguard models in that unit, even if a Leader in that unit has a different Toughness characteristic. Each time an attack successfully wounds an Attached unit, that attack cannot be allocated to a Character model in that unit, even if that Character model has lost one or more wounds or has already had attacks allocated to it this phase. As soon as the last Bodyguard model in an Attached unit has been destroyed, any attacks made against that unit that have yet to be allocated can then be allocated to Character models in that unit.\n\nEach time the last model in a Bodyguard unit is destroyed, each CHARACTER unit that is part of that Attached unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time the last model in a CHARACTER unit that is attached to a Bodyguard unit is destroyed and there is not another CHARACTER unit attached, that Attached unit’s Bodyguard unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time a unit that is part of an Attached unit is destroyed, it does not have the keywords of any other units that make up that Attached unit (unless it has those keywords on its own datasheet) for the purposes of any rules that would be triggered when that unit is destroyed.",
+      "hidden": false
+    },
+    "9bf4-280f-bbe2-6fbb": {
+      "id": "9bf4-280f-bbe2-6fbb",
+      "name": "Feel No Pain 5+",
+      "description": "Some models have 'Feel No Pain x+' listed in their abilities. Each time a model with this ability suffers damage and so would lose a wound (including wounds lost due to mortal wounds), roll one D6: if the result is greater than or equal to the number denoted by 'x: that wound is ignored and is not lost. If a model has more than one Feel No Pain ability, you can only use one of those abilities each time that model suffers damage and so would lose a wound.",
+      "hidden": false
+    },
+    "a8a0-8fe7-898-e0f3": {
+      "id": "a8a0-8fe7-898-e0f3",
+      "name": "Lone Operative",
+      "description": "Unless part of an Attached unit, this unit can only be selected as the target of a ranged attack if the attacking model is within 12\".",
+      "hidden": false
+    },
+    "9143-31ae-e0a6-6007": {
+      "id": "9143-31ae-e0a6-6007",
+      "name": "Precision",
+      "description": "Weapons with **[PRECISION]** in their profile are known as Precision weapons. Each time an attack made with such a weapon successfully wounds an Attached unit, if a Character model in that unit is visible to the attacking model, the attacking model’s player can choose to have that attack allocated to that Character model instead of following the normal attack sequence.",
+      "hidden": false
+    },
+    "8bf7-8812-923d-29e4": {
+      "id": "8bf7-8812-923d-29e4",
+      "name": "Pistol",
+      "description": "Weapons with **[PISTOL]** in their profile are known as Pistols. If a unit contains any models equipped with Pistols, that unit is eligible to shoot in its controlling player’s Shooting phase even while it is within Engagement Range of one or more enemy units. When such a unit is selected to shoot, it can only resolve attacks using its Pistols and can only target one of the enemy units it is within Engagement Range of. In such circumstances, a Pistol can target an enemy unit even if other friendly units are within Engagement Range of the same enemy unit. \n\nIf a model is equipped with one or more Pistols, unless it is a **^^Monster^^** or **^^Vehicle^^** model, it can either shoot with its Pistols or with all of its other ranged weapons. Declare whether such a model will shoot with its Pistols or its other ranged weapons before selecting targets.",
+      "hidden": false
+    },
+    "2ebc-abdf-8129-6c57": {
+      "id": "2ebc-abdf-8129-6c57",
+      "name": "Lance",
+      "description": "Weapons with **[LANCE]** in their profile are known as Lance weapons. Each time an attack is made with such a weapon, if the bearer made a Charge move this turn, add 1 to that attack’s Wound roll.",
+      "hidden": false
+    },
+    "4640-43e7-30b-215a": {
+      "id": "4640-43e7-30b-215a",
+      "name": "Ignores Cover",
+      "description": "Weapons with **[IGNORES COVER]** in their profile are known as Ignores Cover weapons. Each time an attack is made with such a weapon, the target cannot have the Benefit of Cover against that attack.",
+      "hidden": false
+    },
+    "8367-374c-f87-c627": {
+      "id": "8367-374c-f87-c627",
+      "name": "Hazardous",
+      "description": "Weapons with **[HAZARDOUS]** in their profile are known as Hazardous weapons. Each time a unit is selected to shoot or fight, after that unit has resolved all of its attacks, for each Hazardous weapon that targets were selected for when resolving those attacks, that unit must take one Hazardous test. To do so, roll one D6: on a 1, that test is failed. For each failed test you must resolve the following sequence (resolve each failed test one at a time): \n\n■ If possible, select one model in that unit that has lost one or more wounds and is equipped with one or more Hazardous weapons. \n■ Otherwise, if possible, select one model in that unit (excluding **^^Character^^** models) equipped with one or more Hazardous weapons. \n■ Otherwise, select one **^^Character^^** model in that unit equipped with one or more Hazardous weapons. \n\nIf a model was selected, that unit suffers 3 mortal wounds and when allocating those mortal wounds, they must be allocated to the selected model. \n\nIf a unit from a player’s army is selected as the target of the Fire Overwatch Stratagem in their opponent’s Charge phase, any mortal wounds inflicted by Hazardous tests are allocated after the charging unit has ended its Charge move.",
+      "hidden": false
+    },
+    "ada6-bac1-ffe0-d6f7": {
+      "id": "ada6-bac1-ffe0-d6f7",
+      "name": "Scouts 6\"",
+      "description": "Some units have ‘Scouts x\"’ listed in their abilities. If every model in a unit has this ability, then at the start of the first battle round, before the first turn begins, it can make a Normal move of up to x\", with the exception that, while making that move, the distance moved by each model in that unit can be greater than that model's Move characteristic, as long as it is not greater than x\". \n\nDEDICATED TRANSPORT models can make use of any Scouts x\" ability listed in their abilities, or a Scouts x\" ability that a unit that starts the battle embarked within that DEDICATED TRANSPORT  model has (provided only models with this ability are embarked within that Dedicated Transport model), regardless of how that embarked unit gained this ability (e.g. listed in their abilities, conferred by an Enhancement or by an attached Character, etc.). \n\nA unit that moves using this ability must end that move more than 9\" horizontally away from all enemy models. If both players have units that can do this, the player who is taking the first turn moves their units first.",
+      "hidden": false
+    },
+    "c05d-f4c3-f091-4938": {
+      "id": "c05d-f4c3-f091-4938",
+      "name": "Infiltrators",
+      "description": "During deployment, if every model in a unit has this ability, then when you set it up, it can be set up anywhere on the battlefield that is more than 9\" horizontally away from the enemy deployment zone and all enemy models.",
+      "hidden": false
+    },
+    "7cdb-fb99-44a9-8849": {
+      "id": "7cdb-fb99-44a9-8849",
+      "name": "Melta",
+      "description": "Weapons with **[MELTA X]** in their profile are known as Melta weapons. Each time an attack made with such a weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "c5c8-8b58-b8b6-7786": {
+      "id": "c5c8-8b58-b8b6-7786",
+      "name": "Rapid Fire",
+      "description": "Weapons with **[RAPID FIRE X]** in their profile are known as Rapid Fire weapons. Each time such a weapon targets a unit within half that weapon’s range, the Attacks characteristic of that weapon is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "13b2-6518-dab3-7ea1": {
+      "id": "13b2-6518-dab3-7ea1",
+      "name": "Firing Deck 2",
+      "description": "Some **^^Transport^^** models have ‘Firing Deck x’ listed in their abilities. Each time such a model is selected to shoot in the Shooting phase, you can select up to ‘x’ models embarked within it whose units have not already shot this phase. Then, for each of those embarked models, you can select one ranged weapon that embarked model is equipped with (excluding weapons with the **[ONE SHOT]** ability). Until that **^^Transport^^** model has resolved all of its attacks, it counts as being equipped with all of the weapons you selected in this way, in addition to its other weapons. Until the end of the phase, those selected models’ units are not eligible to shoot.",
+      "hidden": false
+    },
+    "6c1f-1cf7-ff25-c99e": {
+      "id": "6c1f-1cf7-ff25-c99e",
+      "name": "Blast",
+      "description": "Weapons with **[BLAST]** in their profile are known as Blast weapons, and they make a random number of attacks. Each time you determine how many attacks are made with a Blast weapon, add 1 to the result for every five models that were in the target unit when you selected it as the target (rounding down). Blast weapons can never be used to make attacks against a unit that is within Engagement Range of one or more units from the attacking model’s army (including its own unit).",
+      "hidden": false
+    },
+    "4111-82e3-9444-e942": {
+      "id": "4111-82e3-9444-e942",
+      "name": "Anti-",
+      "description": "Weapons with **[ANTI-KEYWORD X+]** in their profile are known as Anti weapons. Each time an attack is made with such a weapon against a target with the keyword after the word ‘Anti-’, an unmodified Wound roll of ‘x+’ scores a Critical Wound.",
+      "hidden": false
+    },
+    "be1e-ac8e-1e2c-3528": {
+      "id": "be1e-ac8e-1e2c-3528",
+      "name": "Devastating Wounds",
+      "description": "Weapons with **[DEVASTATING WOUNDS]** in their profile are known as Devastating Wounds weapons. Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of any kind can be made against that attack (including invulnerable saving throws). Such attacks are only allocated to models after all other attacks made by the attacking unit have been allocated and resolved. After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.",
+      "hidden": false
+    },
+    "4ddd-4e29-acdd-5e6d": {
+      "id": "4ddd-4e29-acdd-5e6d",
+      "name": "Indirect Fire",
+      "description": "Weapons with **[INDIRECT FIRE]** in their profile are known as Indirect Fire weapons, and attacks can be made with them even if the target is not visible to the attacking model. These attacks can destroy enemy models in a target unit even though none may have been visible to the attacking unit when you selected that target.\n\n\nIf no models in a target unit are visible to the attacking unit when you select that target, then each time a model in the attacking unit makes an attack against that target using an Indirect Fire weapon, subtract 1 from that attack’s Hit roll, an unmodified Hit roll of 1-3 always fails, and the target has the Benefit of Cover against that attack. Weapons with the **[TORRENT]** ability cannot be fired using the **[INDIRECT FIRE]** ability.",
+      "hidden": false
+    }
+  },
+  "abilities": {
+    "93e3-f094-ef34-11e6": {
+      "id": "93e3-f094-ef34-11e6",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "444e-1e09-a6c8-f8ec": {
+      "id": "444e-1e09-a6c8-f8ec",
+      "name": "Daemonic Poisons",
+      "description": "In your Shooting phase and the Fight phase, after this model has finished making its attacks, select one enemy unit hit by one or more of those attacks. Until the end of the battle, that enemy unit is poisoned. At the start of each player's Command phase, roll one D6 for each poisoned enemy unit on the battlefield: on a 4+, that enemy unit suffers D3 mortal wounds."
+    },
+    "ca20-91b8-b9e8-c14d": {
+      "id": "ca20-91b8-b9e8-c14d",
+      "name": "Daemon Prince of Slaanesh",
+      "description": "At the start of your opponent's Command phase, select one of the abilities in the Daemon Prince of Slaanesh section. Until the start of your opponent's next Command phase, this model has that ability."
+    },
+    "af1c-9f7a-30bf-7eb0": {
+      "id": "af1c-9f7a-30bf-7eb0",
+      "name": "Damaged: 1-6 Wounds Remaining",
+      "description": "While this model has 1-6 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "498c-ad14-6e2b-bbfb": {
+      "id": "498c-ad14-6e2b-bbfb",
+      "name": "Supreme Commander",
+      "description": "If this model is in your army, it must be your **^^Warlord^^**."
+    },
+    "9842-31b9-4cb1-d821": {
+      "id": "9842-31b9-4cb1-d821",
+      "name": "Serpentine",
+      "description": "Each time this model makes a Normal, Advance or Fall Back move, it can move over sections of terrain features that are 4\" or less in height."
+    },
+    "3a41-f55f-c44f-9782": {
+      "id": "3a41-f55f-c44f-9782",
+      "name": "Beguiling Form",
+      "description": "Each time a model makes an attack that targets this unit, subtract 1 from the Hit roll."
+    },
+    "62c3-70df-90c4-5136": {
+      "id": "62c3-70df-90c4-5136",
+      "name": "Daemonic Speed",
+      "description": "This model has the Fights First ability."
+    },
+    "24ce-3caf-5629-156e": {
+      "id": "24ce-3caf-5629-156e",
+      "name": "Enthralling Hypnosis (Aura)",
+      "description": "While an enemy unit is within 6\" of this model, each time that unit is selected to Fall Back, it must take a Leadership test. If that test is failed, that unit must Remain Stationary this phase instead."
+    },
+    "68a4-911a-c03c-2cf4": {
+      "id": "68a4-911a-c03c-2cf4",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n- **^^Flawless Blades^^**"
+    },
+    "5909-fd1b-aabd-8cf6": {
+      "id": "5909-fd1b-aabd-8cf6",
+      "name": "Duellist’s Hubris",
+      "description": "At the start of the Fight phase, if this model is not leading a unit, until the end of the phase, it has the Fights First ability."
+    },
+    "a7c1-b492-fe9-85eb": {
+      "id": "a7c1-b492-fe9-85eb",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "01a5-5e86-b905-a68c": {
+      "id": "01a5-5e86-b905-a68c",
+      "name": "A Challenge Worthy of Skill",
+      "description": "Each time this model makes an attack that targets a **^^Character, Monster^^** or **^^Walker^^** unit, you can re-roll the Hit roll and re-roll the Wound roll."
+    },
+    "4e7c-c6d1-7cdf-36f8": {
+      "id": "4e7c-c6d1-7cdf-36f8",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "e6ea-7b81-ac62-18b5": {
+      "id": "e6ea-7b81-ac62-18b5",
+      "name": "Lord of Excess",
+      "description": "While this model is within 3\" of one or more friendly **^^Slaanesh Infantry^^**, this model has the Lone Operative ability."
+    },
+    "222f-a01c-620b-a089": {
+      "id": "222f-a01c-620b-a089",
+      "name": "Excessive Vigour (Aura)",
+      "description": "While a friendly **^^Slaanesh^^** unit is within 6\" of this model, if that unit made a Charge move this turn, improve the Armour Penetration characteristic of melee weapons equipped by that unit by 1."
+    },
+    "9a99-ab28-dcc6-bc4c": {
+      "id": "9a99-ab28-dcc6-bc4c",
+      "name": "Ecstatic Death",
+      "description": "If this model is destroyed by a melee attack, if it has not fought this phase, roll one D6: on a 2+, do not remove it from play. This model can fight after the attacking unit has finished making its attacks, and is then removed from play."
+    },
+    "f4c8-5276-aa27-6b2e": {
+      "id": "f4c8-5276-aa27-6b2e",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "33de-9a37-baa6-5a99": {
+      "id": "33de-9a37-baa6-5a99",
+      "name": "Daemonic Destruction",
+      "description": "Each time this model ends a Charge move, select one enemy unit within Engagement Range of this model and roll one D6 for each of this model's remaining wounds: for each 4+, that enemy unit suffers 1 mortal wound (to a maximum of 6 mortal wounds)."
+    },
+    "913e-136d-35d5-5c63": {
+      "id": "913e-136d-35d5-5c63",
+      "name": "Stimulated by Pain",
+      "description": "Each time an attack is allocated to this model, subtract 1 from the Damage characteristic of that attack."
+    },
+    "cdfd-857f-d981-a3b2": {
+      "id": "cdfd-857f-d981-a3b2",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "197e-a2ea-b468-48d9": {
+      "id": "197e-a2ea-b468-48d9",
+      "name": "Perfectionists",
+      "description": "While this model is leading a unit, weapons equipped by models in that unit have the **^^[LETHAL HITS]^^** ability."
+    },
+    "828a-cdf4-e64a-cf75": {
+      "id": "828a-cdf4-e64a-cf75",
+      "name": "Euphoric Strikes",
+      "description": "Once per battle, at the start of the Fight phase, this model can use this ability. If it does so, until the end of the phase, add 3 to the Attacks characteristic of melee weapons equipped by this model and improve the Armour Penetration characteristic of those weapons by 1."
+    },
+    "3cf5-ff3c-e78d-51c8": {
+      "id": "3cf5-ff3c-e78d-51c8",
+      "name": "Lord of the Host",
+      "description": "If this model is attached to an **^^Emperor's Children Battleline^^** unit during the Declare Battle Formations step, this model has the Infiltrators and Scouts 6\" ability."
+    },
+    "8799-26c2-ca52-3969": {
+      "id": "8799-26c2-ca52-3969",
+      "name": "Leader",
+      "description": "This model can be attached to the following units: **^^Infractors; Tormentors^^**"
+    },
+    "d91a-febf-366b-329d": {
+      "id": "d91a-febf-366b-329d",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "7e47-d44e-0c0d-86d4": {
+      "id": "7e47-d44e-0c0d-86d4",
+      "name": "Leader",
+      "description": "This model can be attached to the following units: **^^Emperor's Children Terminator Squad; Noise Marines^^**"
+    },
+    "8fdb-0d21-37f4-ecca": {
+      "id": "8fdb-0d21-37f4-ecca",
+      "name": "Obsessive Annunciation",
+      "description": "While this model is leading a unit, ranged weapons equipped by that unit have the [SUSTAINED HITS 1] ability."
+    },
+    "f8bf-39ff-4779-40f2": {
+      "id": "f8bf-39ff-4779-40f2",
+      "name": "Doom Siren",
+      "description": "In your Shooting phase, after this model's unit has shot, select one enemy **^^Infantry^^** unit hit by one or more of those attacks and roll three D6: for each 4+, that enemy unit suffers 1 mortal wound. If an enemy suffers one or more mortal wounds as a result of this ability, it must take a Battle-shock test."
+    },
+    "c48a-62e2-8628-b37d": {
+      "id": "c48a-62e2-8628-b37d",
+      "name": "Excessive Assault",
+      "description": "Each time a model in this unit targets an enemy unit with a melee attack, re-roll a Wound roll of 1. If that enemy unit is within range of an objective marker, you can re-roll the Wound roll instead."
+    },
+    "f61d-01f1-ace6-1243": {
+      "id": "f61d-01f1-ace6-1243",
+      "name": "Icon of Excess",
+      "description": "At the end of your Shooting phase or the Fight phase, if the bearer's unit destroyed one or more enemy units this phase, the bearer's unit takes a Leadership test. If that test is passed, you gain 1CP."
+    },
+    "b7d5-8896-8643-e2a9": {
+      "id": "b7d5-8896-8643-e2a9",
+      "name": "Objective Defiled",
+      "description": "At the end of your Command phase, if this unit is within range of an objective marker you control, that objective marker remains under your control until your opponent's Level of Control over that objective marker is greater than yours at the end of a phase."
+    },
+    "a254-9b52-cf64-eac2": {
+      "id": "a254-9b52-cf64-eac2",
+      "name": "Terrifying Crescendo",
+      "description": "In your Shooting phase, after this unit has shot, select one enemy unit hit by one or more of those attacks. Until the start of your next Shooting phase, each time a Battle-shock or Leadership test is taken for that enemy unit, subtract 1 from that test."
+    },
+    "629b-52e7-f21d-1c5f": {
+      "id": "629b-52e7-f21d-1c5f",
+      "name": "Assault Vehicle",
+      "description": "Units can disembark from this **^^Vehicle**^^ after it has Advanced. Units that do so count as having made a Normal move that phase, and cannot declare a charge in the same turn, but can otherwise act normally."
+    },
+    "34ad-4a93-4309-03bd": {
+      "id": "34ad-4a93-4309-03bd",
+      "name": "Brigand",
+      "description": "Ranged weapons equipped by this model have the [Ignores Cover] ability while targeting enemy units in range of one or more objective markers."
+    },
+    "3b7b-2e72-7d21-e0d2": {
+      "id": "3b7b-2e72-7d21-e0d2",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save against ranged attacks."
+    },
+    "97fd-09c5-60a8-63c4": {
+      "id": "97fd-09c5-60a8-63c4",
+      "name": "Damaged: 1-5 wounds remaining",
+      "description": "While this model has 1-5 wounds remaining, subtract 3 from this model's Objective Control characteristic and each time this model makes an attack, subtract 1 from the Hit roll."
+    }
+  },
+  "units": [
+    {
+      "id": "mcvbg60anv5h44mwm9n",
+      "name": "Fulgrim",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "16\"",
+        "toughness": "11",
+        "save": "2+",
+        "wounds": "16",
+        "leadership": "5+",
+        "objectiveControl": "6"
+      },
+      "points": 340,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "7cb5-dd6b-dd87-ad3b",
+        "b68a-5ded-65ac-98c",
+        "1897-c22c-9597-12b1",
+        "115b-79dc-f723-d761"
+      ],
+      "abilities": [
+        "93e3-f094-ef34-11e6",
+        "444e-1e09-a6c8-f8ec",
+        "ca20-91b8-b9e8-c14d",
+        "af1c-9f7a-30bf-7eb0",
+        "498c-ad14-6e2b-bbfb",
+        "9842-31b9-4cb1-d821",
+        "3a41-f55f-c44f-9782",
+        "62c3-70df-90c4-5136",
+        "24ce-3caf-5629-156e"
+      ],
+      "linked_weapons": {
+        "➤ Daemonic blades": {
+          "standard": "cffd-10d9-9b22-e5f0",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "1831-479e-9455-6978",
+          "name": "➤ Daemonic blades - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Daemonic blades",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cffd-10d9-9b22-e5f0",
+          "name": "➤ Daemonic blades - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "12",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "base_name": "➤ Daemonic blades",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "4153-f23f-a5d3-f974",
+          "name": "Malefic lash",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "6",
+            "bs": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Sustained Hits 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "6e4e-baf5-f1da-96dc",
+          "name": "Serpentine tail",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbg5iq753ppqfvf0h",
+      "name": "Lucius the Eternal",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "8\"",
+        "toughness": "5",
+        "save": "2+",
+        "wounds": "6",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 150,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "9bf4-280f-bbe2-6fbb",
+        "a8a0-8fe7-898-e0f3",
+        "9143-31ae-e0a6-6007",
+        "1897-c22c-9597-12b1"
+      ],
+      "abilities": [
+        "68a4-911a-c03c-2cf4",
+        "5909-fd1b-aabd-8cf6",
+        "a7c1-b492-fe9-85eb",
+        "01a5-5e86-b905-a68c"
+      ],
+      "weapons": [
+        {
+          "id": "24d6-16d2-8b67-e957",
+          "name": "Blade of the Laer",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "35f1-b84c-b0bf-0b06",
+          "name": "Lash of Torment",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "10",
+            "ws": "2+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Sustained Hits 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgc6zzgrwptf26t",
+      "name": "Daemon Prince of Slaanesh",
+      "type": "Character",
+      "stats": {
+        "move": "10\"",
+        "toughness": "10",
+        "save": "2+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "3"
+      },
+      "points": 195,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624"
+      ],
+      "abilities": [
+        "4e7c-c6d1-7cdf-36f8",
+        "e6ea-7b81-ac62-18b5",
+        "222f-a01c-620b-a089",
+        "9a99-ab28-dcc6-bc4c"
+      ],
+      "linked_weapons": {
+        "➤ Hellforged weapons": {
+          "standard": "1fe5-c5c8-cd3f-2426",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "aea0-4808-c2b2-ee91",
+          "name": "➤ Hellforged weapons - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1fe5-c5c8-cd3f-2426",
+          "name": "➤ Hellforged weapons - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "14",
+            "ws": "2+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5fc1-af26-8fad-2a04",
+          "name": "Infernal cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgd3dkdvvo38xl1",
+      "name": "Daemon Prince of Slaanesh with Wings",
+      "type": "Character",
+      "stats": {
+        "move": "14\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "3"
+      },
+      "points": 200,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "7cb5-dd6b-dd87-ad3b"
+      ],
+      "abilities": [
+        "f4c8-5276-aa27-6b2e",
+        "33de-9a37-baa6-5a99",
+        "913e-136d-35d5-5c63"
+      ],
+      "linked_weapons": {
+        "➤ Hellforged weapons": {
+          "standard": "1fe5-c5c8-cd3f-2426",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "aea0-4808-c2b2-ee91",
+          "name": "➤ Hellforged weapons - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1fe5-c5c8-cd3f-2426",
+          "name": "➤ Hellforged weapons - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "14",
+            "ws": "2+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5fc1-af26-8fad-2a04",
+          "name": "Infernal cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgdmv5f5le8ve3f",
+      "name": "Daemon Prince of Slaanesh with Wings",
+      "type": "Character",
+      "stats": {
+        "move": "14\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "3"
+      },
+      "points": 200,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "7cb5-dd6b-dd87-ad3b"
+      ],
+      "abilities": [
+        "f4c8-5276-aa27-6b2e",
+        "33de-9a37-baa6-5a99",
+        "913e-136d-35d5-5c63"
+      ],
+      "linked_weapons": {
+        "➤ Hellforged weapons": {
+          "standard": "1fe5-c5c8-cd3f-2426",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "aea0-4808-c2b2-ee91",
+          "name": "➤ Hellforged weapons - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1fe5-c5c8-cd3f-2426",
+          "name": "➤ Hellforged weapons - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "14",
+            "ws": "2+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5fc1-af26-8fad-2a04",
+          "name": "Infernal cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "687999fd3d5b3e393847d1f2",
+      "name": "Daemon Prince of Slaanesh with Wings",
+      "type": "Character",
+      "stats": {
+        "move": "14\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "3"
+      },
+      "points": 200,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "7cb5-dd6b-dd87-ad3b"
+      ],
+      "abilities": [
+        "f4c8-5276-aa27-6b2e",
+        "33de-9a37-baa6-5a99",
+        "913e-136d-35d5-5c63"
+      ],
+      "linked_weapons": {
+        "➤ Hellforged weapons": {
+          "standard": "1fe5-c5c8-cd3f-2426",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "aea0-4808-c2b2-ee91",
+          "name": "➤ Hellforged weapons - strike",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1fe5-c5c8-cd3f-2426",
+          "name": "➤ Hellforged weapons - sweep",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "14",
+            "ws": "2+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Hellforged weapons",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5fc1-af26-8fad-2a04",
+          "name": "Infernal cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgevs5ey34st6aog",
+      "name": "Lord Exultant",
+      "type": "Character",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "8bf7-8812-923d-29e4",
+        "2ebc-abdf-8129-6c57",
+        "115b-79dc-f723-d761"
+      ],
+      "abilities": [
+        "cdfd-857f-d981-a3b2",
+        "197e-a2ea-b468-48d9",
+        "828a-cdf4-e64a-cf75",
+        "3cf5-ff3c-e78d-51c8",
+        "8799-26c2-ca52-3969"
+      ],
+      "weapons": [
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "39ec-7a10-b626-5d23",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9808-e062-69d8-9310",
+          "name": "Phoenix power spear",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "5",
+            "ws": "2+",
+            "s": "7",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Lance"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "25b8-745a-317f-8bb2",
+          "name": "Rapture lash",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "2+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgf0b1n6n5cc93he",
+      "name": "Lord Exultant",
+      "type": "Character",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "8bf7-8812-923d-29e4",
+        "2ebc-abdf-8129-6c57",
+        "115b-79dc-f723-d761"
+      ],
+      "abilities": [
+        "cdfd-857f-d981-a3b2",
+        "197e-a2ea-b468-48d9",
+        "828a-cdf4-e64a-cf75",
+        "3cf5-ff3c-e78d-51c8",
+        "8799-26c2-ca52-3969"
+      ],
+      "weapons": [
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "39ec-7a10-b626-5d23",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9808-e062-69d8-9310",
+          "name": "Phoenix power spear",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "5",
+            "ws": "2+",
+            "s": "7",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Lance"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "25b8-745a-317f-8bb2",
+          "name": "Rapture lash",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "2+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgf4zc4qo3cdmivn",
+      "name": "Lord Exultant",
+      "type": "Character",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "8bf7-8812-923d-29e4",
+        "4640-43e7-30b-215a",
+        "8367-374c-f87-c627"
+      ],
+      "abilities": [
+        "cdfd-857f-d981-a3b2",
+        "197e-a2ea-b468-48d9",
+        "828a-cdf4-e64a-cf75",
+        "3cf5-ff3c-e78d-51c8",
+        "8799-26c2-ca52-3969"
+      ],
+      "linked_weapons": {
+        "➤ Plasma pistol": {
+          "standard": "f4b9-1aa7-21d4-4736",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "39ec-7a10-b626-5d23",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "ca52-3d8a-8fc5-e184",
+          "name": "Screamer pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "65d3-9d25-d59b-cfa9",
+          "name": "➤ Plasma pistol - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f4b9-1aa7-21d4-4736",
+          "name": "➤ Plasma pistol - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "2+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbggjy7pqyjtaw9n5",
+      "name": "Lord Kakophonist",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "2+",
+        "wounds": "6",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 70,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "d91a-febf-366b-329d",
+        "7e47-d44e-0c0d-86d4",
+        "8fdb-0d21-37f4-ecca",
+        "f8bf-39ff-4779-40f2"
+      ],
+      "weapons": [
+        {
+          "id": "ca52-3d8a-8fc5-e184",
+          "name": "Screamer pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover, Pistol"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "e1fb-6567-a8d2-7ae0",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbggpjqzegulu9mg",
+      "name": "Lord Kakophonist",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "2+",
+        "wounds": "6",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 70,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "d91a-febf-366b-329d",
+        "7e47-d44e-0c0d-86d4",
+        "8fdb-0d21-37f4-ecca",
+        "f8bf-39ff-4779-40f2"
+      ],
+      "weapons": [
+        {
+          "id": "ca52-3d8a-8fc5-e184",
+          "name": "Screamer pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover, Pistol"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "e1fb-6567-a8d2-7ae0",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "6887254a2076fe7514ba42bb",
+      "name": "Lord Kakophonist",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "2+",
+        "wounds": "6",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 70,
+      "count": 1,
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "d91a-febf-366b-329d",
+        "7e47-d44e-0c0d-86d4",
+        "8fdb-0d21-37f4-ecca",
+        "f8bf-39ff-4779-40f2"
+      ],
+      "weapons": [
+        {
+          "id": "ca52-3d8a-8fc5-e184",
+          "name": "Screamer pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover, Pistol"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "e1fb-6567-a8d2-7ae0",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "2+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgs7iojdaauwwpz",
+      "name": "Infractors",
+      "type": "Battleline",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 85,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "ada6-bac1-ffe0-d6f7",
+        "9143-31ae-e0a6-6007",
+        "8367-374c-f87-c627",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "c48a-62e2-8628-b37d",
+        "f61d-01f1-ace6-1243"
+      ],
+      "linked_weapons": {
+        "➤ Plasma pistol": {
+          "standard": "f4b9-1aa7-21d4-4736",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "379c-cb9a-af6d-23be",
+          "name": "Power sword",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "5",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "65d3-9d25-d59b-cfa9",
+          "name": "➤ Plasma pistol - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f4b9-1aa7-21d4-4736",
+          "name": "➤ Plasma pistol - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "0b4a-235b-6bf1-7a9b",
+          "name": "Duelling sabre",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        }
+      ]
+    },
+    {
+      "id": "mcvbgscjj5kwu78yhb",
+      "name": "Infractors",
+      "type": "Battleline",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 85,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "ada6-bac1-ffe0-d6f7",
+        "9143-31ae-e0a6-6007",
+        "8367-374c-f87-c627",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "c48a-62e2-8628-b37d",
+        "f61d-01f1-ace6-1243"
+      ],
+      "linked_weapons": {
+        "➤ Plasma pistol": {
+          "standard": "f4b9-1aa7-21d4-4736",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "379c-cb9a-af6d-23be",
+          "name": "Power sword",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "5",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "65d3-9d25-d59b-cfa9",
+          "name": "➤ Plasma pistol - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f4b9-1aa7-21d4-4736",
+          "name": "➤ Plasma pistol - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Pistol"
+          },
+          "base_name": "➤ Plasma pistol",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "0b4a-235b-6bf1-7a9b",
+          "name": "Duelling sabre",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        }
+      ]
+    },
+    {
+      "id": "mcvbgrfck001qjyhx",
+      "name": "Tormentors",
+      "type": "Battleline",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 85,
+      "count": 1,
+      "rules": [
+        "c05d-f4c3-f091-4938",
+        "1674-23e6-eacf-9624",
+        "8bf7-8812-923d-29e4",
+        "9143-31ae-e0a6-6007",
+        "7cdb-fb99-44a9-8849",
+        "8367-374c-f87-c627",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "b7d5-8896-8643-e2a9"
+      ],
+      "linked_weapons": {
+        "➤ Plasma gun": {
+          "standard": "6c77-e7a8-2e51-a4db",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol, Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "379c-cb9a-af6d-23be",
+          "name": "Power sword",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "5",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1bd0-b182-11c7-2f28",
+          "name": "Boltgun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "bef4-4bde-0144-26d2",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "caa6-33de-d9d8-ac50",
+          "name": "Meltagun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2, Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "466e-6db6-bcb9-2710",
+          "name": "➤ Plasma gun - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Precision, Rapid Fire 1"
+          },
+          "base_name": "➤ Plasma gun",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "6c77-e7a8-2e51-a4db",
+          "name": "➤ Plasma gun - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Precision, Rapid Fire 1"
+          },
+          "base_name": "➤ Plasma gun",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "68799ae33d5b3e393847d1f4",
+      "name": "Tormentors",
+      "type": "Battleline",
+      "stats": {
+        "move": "7\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 85,
+      "count": 1,
+      "rules": [
+        "c05d-f4c3-f091-4938",
+        "1674-23e6-eacf-9624",
+        "8bf7-8812-923d-29e4",
+        "9143-31ae-e0a6-6007",
+        "7cdb-fb99-44a9-8849",
+        "8367-374c-f87-c627",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "b7d5-8896-8643-e2a9"
+      ],
+      "linked_weapons": {
+        "➤ Plasma gun": {
+          "standard": "6c77-e7a8-2e51-a4db",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "5ec6-92a4-407a-f5a9",
+          "name": "Bolt pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol, Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "379c-cb9a-af6d-23be",
+          "name": "Power sword",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "5",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "1bd0-b182-11c7-2f28",
+          "name": "Boltgun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Precision"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "bef4-4bde-0144-26d2",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "caa6-33de-d9d8-ac50",
+          "name": "Meltagun",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2, Precision"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "466e-6db6-bcb9-2710",
+          "name": "➤ Plasma gun - standard",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Precision, Rapid Fire 1"
+          },
+          "base_name": "➤ Plasma gun",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "6c77-e7a8-2e51-a4db",
+          "name": "➤ Plasma gun - supercharge",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-3",
+            "d": "2",
+            "keywords": "Hazardous, Precision, Rapid Fire 1"
+          },
+          "base_name": "➤ Plasma gun",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbgwwtd1em4lvipsl",
+      "name": "Noise Marines",
+      "type": "Infantry",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 145,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a"
+      ],
+      "abilities": [
+        "a254-9b52-cf64-eac2"
+      ],
+      "linked_weapons": {
+        "➤ Blastmaster": {
+          "standard": "6103-fb78-7335-41b3",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "bef4-4bde-0144-26d2",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 6,
+          "models_with_weapon": 6
+        },
+        {
+          "id": "1b15-be7e-56dd-8e3f",
+          "name": "Sonic blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "bb96-94bd-385b-ce3c",
+          "name": "➤ Blastmaster - varied frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "6",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "6103-fb78-7335-41b3",
+          "name": "➤ Blastmaster - single frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ]
+    },
+    {
+      "id": "mcvbgx2e572v3c0915a",
+      "name": "Noise Marines",
+      "type": "Infantry",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 145,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a"
+      ],
+      "abilities": [
+        "a254-9b52-cf64-eac2"
+      ],
+      "linked_weapons": {
+        "➤ Blastmaster": {
+          "standard": "6103-fb78-7335-41b3",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "bef4-4bde-0144-26d2",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 6,
+          "models_with_weapon": 6
+        },
+        {
+          "id": "1b15-be7e-56dd-8e3f",
+          "name": "Sonic blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "bb96-94bd-385b-ce3c",
+          "name": "➤ Blastmaster - varied frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "6",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "6103-fb78-7335-41b3",
+          "name": "➤ Blastmaster - single frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ]
+    },
+    {
+      "id": "mcvbgx7v9sao0a96yld",
+      "name": "Noise Marines",
+      "type": "Infantry",
+      "stats": {
+        "move": "6\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "2",
+        "leadership": "6+",
+        "objectiveControl": "1"
+      },
+      "points": 145,
+      "count": 1,
+      "rules": [
+        "1674-23e6-eacf-9624",
+        "4640-43e7-30b-215a"
+      ],
+      "abilities": [
+        "a254-9b52-cf64-eac2"
+      ],
+      "linked_weapons": {
+        "➤ Blastmaster": {
+          "standard": "6103-fb78-7335-41b3",
+          "overcharge": null
+        }
+      },
+      "weapons": [
+        {
+          "id": "bef4-4bde-0144-26d2",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 6,
+          "models_with_weapon": 6
+        },
+        {
+          "id": "1b15-be7e-56dd-8e3f",
+          "name": "Sonic blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Ignores Cover"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "bb96-94bd-385b-ce3c",
+          "name": "➤ Blastmaster - varied frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "6",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-2",
+            "d": "1",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "6103-fb78-7335-41b3",
+          "name": "➤ Blastmaster - single frequency",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "10",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Ignores Cover"
+          },
+          "base_name": "➤ Blastmaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ]
+    },
+    {
+      "id": "mcvbh6d0ow8ts8vshg",
+      "name": "Chaos Rhino",
+      "type": "Dedicated Transport",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "13b2-6518-dab3-7ea1",
+        "c5c8-8b58-b8b6-7786",
+        "6c1f-1cf7-ff25-c99e",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528"
+      ],
+      "abilities": [
+        "629b-52e7-f21d-1c5f"
+      ],
+      "weapons": [
+        {
+          "id": "96b0-3354-e153-1f04",
+          "name": "Armoured tracks",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3600-24e5-672c-60e6",
+          "name": "Combi-bolter",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2d43-1a06-65e0-2fc4",
+          "name": "Havoc launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c2e7-7533-b572-eadb",
+          "name": "Combi-weapon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-INFANTRY 4+, Devastating Wounds, Rapid Fire 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "688b63f9300e417cd66334d2",
+      "name": "Chaos Rhino",
+      "type": "Dedicated Transport",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "13b2-6518-dab3-7ea1",
+        "c5c8-8b58-b8b6-7786",
+        "6c1f-1cf7-ff25-c99e",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528"
+      ],
+      "abilities": [
+        "629b-52e7-f21d-1c5f"
+      ],
+      "weapons": [
+        {
+          "id": "96b0-3354-e153-1f04",
+          "name": "Armoured tracks",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3600-24e5-672c-60e6",
+          "name": "Combi-bolter",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2d43-1a06-65e0-2fc4",
+          "name": "Havoc launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c2e7-7533-b572-eadb",
+          "name": "Combi-weapon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-INFANTRY 4+, Devastating Wounds, Rapid Fire 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "688b63f9300e417cd66334d3",
+      "name": "Chaos Rhino",
+      "type": "Dedicated Transport",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "2"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "1674-23e6-eacf-9624",
+        "13b2-6518-dab3-7ea1",
+        "c5c8-8b58-b8b6-7786",
+        "6c1f-1cf7-ff25-c99e",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528"
+      ],
+      "abilities": [
+        "629b-52e7-f21d-1c5f"
+      ],
+      "weapons": [
+        {
+          "id": "96b0-3354-e153-1f04",
+          "name": "Armoured tracks",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3600-24e5-672c-60e6",
+          "name": "Combi-bolter",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Rapid Fire 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2d43-1a06-65e0-2fc4",
+          "name": "Havoc launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c2e7-7533-b572-eadb",
+          "name": "Combi-weapon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-INFANTRY 4+, Devastating Wounds, Rapid Fire 1"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbiyu64lolz1l5d1t",
+      "name": "War Dog Brigand",
+      "type": "Allied Units",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7cdb-fb99-44a9-8849",
+        "6c1f-1cf7-ff25-c99e",
+        "4ddd-4e29-acdd-5e6d"
+      ],
+      "abilities": [
+        "34ad-4a93-4309-03bd",
+        "3b7b-2e72-7d21-e0d2",
+        "97fd-09c5-60a8-63c4"
+      ],
+      "weapons": [
+        {
+          "id": "432a-109c-aeaa-84d2",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2ba6-4ed1-9dbe-cece",
+          "name": "Avenger chaincannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "12",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cae9-9335-5429-9523",
+          "name": "Daemonbreath spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a50f-8e7c-ff7f-9854",
+          "name": "Havoc multi-launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast, Indirect Fire"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mcvbiznjt1nf7kpyo1f",
+      "name": "War Dog Brigand",
+      "type": "Allied Units",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7cdb-fb99-44a9-8849",
+        "6c1f-1cf7-ff25-c99e",
+        "4ddd-4e29-acdd-5e6d"
+      ],
+      "abilities": [
+        "34ad-4a93-4309-03bd",
+        "3b7b-2e72-7d21-e0d2",
+        "97fd-09c5-60a8-63c4"
+      ],
+      "weapons": [
+        {
+          "id": "432a-109c-aeaa-84d2",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2ba6-4ed1-9dbe-cece",
+          "name": "Avenger chaincannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "12",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cae9-9335-5429-9523",
+          "name": "Daemonbreath spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a50f-8e7c-ff7f-9854",
+          "name": "Havoc multi-launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast, Indirect Fire"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "6894d72c4b827a500d808a94",
+      "name": "War Dog Brigand",
+      "type": "Allied Units",
+      "stats": {
+        "move": "12\"",
+        "toughness": "9",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "6"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7cdb-fb99-44a9-8849",
+        "6c1f-1cf7-ff25-c99e",
+        "4ddd-4e29-acdd-5e6d"
+      ],
+      "abilities": [
+        "34ad-4a93-4309-03bd",
+        "3b7b-2e72-7d21-e0d2",
+        "97fd-09c5-60a8-63c4"
+      ],
+      "weapons": [
+        {
+          "id": "432a-109c-aeaa-84d2",
+          "name": "Armoured feet",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2ba6-4ed1-9dbe-cece",
+          "name": "Avenger chaincannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "12",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cae9-9335-5429-9523",
+          "name": "Daemonbreath spear",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 4"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a50f-8e7c-ff7f-9854",
+          "name": "Havoc multi-launcher",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "48\"",
+            "a": "D6",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Blast, Indirect Fire"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    }
+  ]
+}
