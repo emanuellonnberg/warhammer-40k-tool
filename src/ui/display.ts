@@ -184,8 +184,12 @@ function createSummaryTable(
           </thead>
           <tbody>
             ${sortedUnits.map(unit => {
-              const unitModes = new Map<string, number>();
-              weaponModes.set(unit.id, unitModes);
+              // Get existing unit modes or create new if not exists (preserves toggle states)
+              let unitModes = weaponModes.get(unit.id);
+              if (!unitModes) {
+                unitModes = new Map<string, number>();
+                weaponModes.set(unit.id, unitModes);
+              }
 
               // Group weapons by base name
               const weaponGroups = new Map<string, Weapon[]>();
@@ -202,10 +206,10 @@ function createSummaryTable(
                 weaponGroups.set(baseName, combineIdenticalWeapons(weapons));
               });
 
-              // Set initial active modes
+              // Set initial active modes (only if not already set)
               weaponGroups.forEach((weapons, baseName) => {
-                if (weapons.length > 1) {
-                  unitModes.set(baseName, 0);
+                if (weapons.length > 1 && !unitModes!.has(baseName)) {
+                  unitModes!.set(baseName, 0);
                 }
               });
 
