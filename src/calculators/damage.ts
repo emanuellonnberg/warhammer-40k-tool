@@ -63,6 +63,7 @@ function combineIdenticalWeapons(weapons: Weapon[]): Weapon[] {
  * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
  * @param unitRerolls - Unit-wide re-roll abilities
  * @param scenarioRerolls - Scenario-based re-rolls (from buffs, stratagems, etc.)
+ * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
  * @returns Expected damage value
  */
 export function calculateWeaponDamage(
@@ -76,7 +77,8 @@ export function calculateWeaponDamage(
   isCharging: boolean = false,
   targetSave: string | null = null,
   unitRerolls?: RerollConfig,
-  scenarioRerolls?: RerollConfig
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): number {
   // Skip one-time weapons if not included
   if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
@@ -151,7 +153,8 @@ export function calculateWeaponDamage(
     targetUnitSize,
     isCharging,
     targetSave,
-    Math.abs(ap) // Convert AP to positive number (AP -3 becomes 3)
+    Math.abs(ap), // Convert AP to positive number (AP -3 becomes 3)
+    targetFNP
   );
 
   // Calculate and return expected damage
@@ -171,6 +174,7 @@ export function calculateWeaponDamage(
  * @param isCharging - Whether the attacker is charging (for Lance weapons)
  * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
  * @param scenarioRerolls - Scenario-based re-rolls (from buffs, stratagems, etc.)
+ * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
  * @returns Damage breakdown by weapon type
  */
 export function calculateUnitDamage(
@@ -184,7 +188,8 @@ export function calculateUnitDamage(
   targetUnitSize: number = 1,
   isCharging: boolean = false,
   targetSave: string | null = null,
-  scenarioRerolls?: RerollConfig
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): DamageBreakdown {
   const damages: DamageBreakdown = {
     total: 0,
@@ -232,7 +237,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -252,7 +257,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -270,7 +275,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls);
+      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {

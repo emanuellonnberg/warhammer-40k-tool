@@ -2,9 +2,10 @@
  * Tooltip generation and initialization
  */
 
-import type { Weapon } from '../types';
+import type { Weapon, RerollConfig } from '../types';
 import { parseNumeric, parseDamage } from '../utils/numeric';
 import { applySpecialRules } from '../rules/special-weapons';
+import { calculateHitChanceWithReroll, calculateWoundChanceWithReroll } from '../calculators/rerolls';
 
 /**
  * Generate tooltip content showing calculation breakdown
@@ -12,13 +13,19 @@ import { applySpecialRules } from '../rules/special-weapons';
  * @param targetToughness - Target's toughness value
  * @param useOvercharge - Whether to use overcharge mode
  * @param optimalRange - Whether at optimal range
+ * @param unitRerolls - Unit-wide re-rolls
+ * @param scenarioRerolls - Scenario-based re-rolls
+ * @param targetFNP - Target Feel No Pain value
  * @returns HTML-encoded tooltip text
  */
 export function generateCalculationTooltip(
   weapon: Weapon,
   targetToughness: number,
   useOvercharge: boolean = false,
-  optimalRange: boolean = true
+  optimalRange: boolean = true,
+  unitRerolls?: RerollConfig,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): string {
   const chars = weapon.characteristics;
 
@@ -41,46 +48,82 @@ export function generateCalculationTooltip(
 
   const keywords = chars.keywords || "";
   let hitChance = 1 / 2; // Default to 4+
+  let baseHitChance = 1 / 2;
   let hitDisplay = "";
+  let hitSkill = 4;
 
   // Torrent weapons automatically hit
   if (keywords.toLowerCase().includes("torrent")) {
     hitChance = 1; // 100% hit chance
+    baseHitChance = 1;
     hitDisplay = "Auto-hit (Torrent)";
   } else {
-    const bs = chars.bs || "4+";
-    hitDisplay = bs;
-    if (bs === "2+") hitChance = 5 / 6;
-    if (bs === "3+") hitChance = 2 / 3;
-    if (bs === "4+") hitChance = 1 / 2;
-    if (bs === "5+") hitChance = 1 / 3;
-    if (bs === "6+") hitChance = 1 / 6;
+    const skillStr = chars.bs || chars.ws || "4+";
+    const skillMatch = skillStr.match(/(\d+)\+/);
+    hitSkill = skillMatch ? parseInt(skillMatch[1]) : 4;
+    hitDisplay = `${hitSkill}+`;
+    baseHitChance = (7 - hitSkill) / 6;
+
+    // Apply re-rolls to hit chance
+    hitChance = calculateHitChanceWithReroll(
+      hitSkill,
+      weapon.rerolls?.hits,
+      unitRerolls?.hits,
+      scenarioRerolls?.hits
+    );
   }
 
-  let woundChance = 0;
+  // Calculate base wound chance
+  let baseWoundChance = 0;
   let woundRoll = "";
   if (strength >= targetToughness * 2) {
-    woundChance = 5 / 6;
+    baseWoundChance = 5 / 6;
     woundRoll = "2+";
   } else if (strength > targetToughness) {
-    woundChance = 2 / 3;
+    baseWoundChance = 2 / 3;
     woundRoll = "3+";
   } else if (strength === targetToughness) {
-    woundChance = 1 / 2;
+    baseWoundChance = 1 / 2;
     woundRoll = "4+";
   } else if (strength * 2 <= targetToughness) {
-    woundChance = 1 / 6;
+    baseWoundChance = 1 / 6;
     woundRoll = "6+";
   } else {
-    woundChance = 1 / 3;
+    baseWoundChance = 1 / 3;
     woundRoll = "5+";
   }
 
-  // Apply special rules
-  const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange);
+  // Apply re-rolls to wound chance (but not if Twin-Linked, as it's handled in applySpecialRules)
+  const hasTwinLinked = keywords.toLowerCase().includes("twin-linked");
+  const woundChance = calculateWoundChanceWithReroll(
+    strength,
+    targetToughness,
+    hasTwinLinked ? undefined : weapon.rerolls?.wounds,
+    hasTwinLinked ? undefined : unitRerolls?.wounds,
+    hasTwinLinked ? undefined : scenarioRerolls?.wounds
+  );
+
+  // Apply special rules (including FNP)
+  const specialRules = applySpecialRules(weapon, attacks, hitChance, woundChance, damage, targetToughness, optimalRange, [], 1, false, null, Math.abs(ap), targetFNP);
   const expectedDamage = weapon.count * specialRules.totalDamage;
 
-  let tooltipText = `Calculation Breakdown:&#10;${weapon.count} weapon(s) × ${attacks} attacks × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay}) × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll}) × ${damage} damage`;
+  let tooltipText = `Calculation Breakdown:&#10;${weapon.count} weapon(s) × ${attacks} attacks`;
+
+  // Show hit chance with re-roll info
+  if (hitChance !== baseHitChance && !keywords.toLowerCase().includes("torrent")) {
+    tooltipText += ` × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay}, ${(baseHitChance * 100).toFixed(1)}% → ${(hitChance * 100).toFixed(1)}% with re-rolls)`;
+  } else {
+    tooltipText += ` × ${(hitChance * 100).toFixed(1)}% hit (${hitDisplay})`;
+  }
+
+  // Show wound chance with re-roll info
+  if (woundChance !== baseWoundChance) {
+    tooltipText += ` × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll}, ${(baseWoundChance * 100).toFixed(1)}% → ${(woundChance * 100).toFixed(1)}% with re-rolls)`;
+  } else {
+    tooltipText += ` × ${(woundChance * 100).toFixed(1)}% wound (${woundRoll})`;
+  }
+
+  tooltipText += ` × ${damage} damage`;
 
   if (specialRules.breakdown) {
     tooltipText += `&#10;Special Rules: ${specialRules.breakdown}`;
