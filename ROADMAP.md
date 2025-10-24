@@ -26,7 +26,7 @@ Transform this tool from a damage calculator into a comprehensive tactical analy
 These are essential 10th Edition mechanics that significantly affect combat calculations and are frequently used in the game.
 
 #### 1.1 Re-roll Mechanics
-**Status:** 🔴 Not Started
+**Status:** 🟢 Completed
 **Effort:** Medium
 **Impact:** High
 
@@ -756,6 +756,13 @@ This roadmap is a living document. If you'd like to contribute:
 - Identified 24+ improvement areas
 - Organized into 6 priority categories
 - Defined 5-phase implementation plan
+- 🟢 Completed Feature 1.1: Re-roll Mechanics
+  - Implemented RerollType enum and RerollConfig interface
+  - Created rerolls.ts calculator module with probability functions
+  - Updated damage calculator to use new re-roll system
+  - Maintained backward compatibility with Twin-Linked
+  - Added 60 comprehensive tests (all passing)
+  - Test coverage: 121/121 tests passing
 
 ---
 
