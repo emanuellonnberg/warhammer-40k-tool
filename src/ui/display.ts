@@ -54,6 +54,49 @@ function isWeaponRule(ruleName: string): boolean {
 }
 
 /**
+ * Check if a rule should be hidden from the abilities list
+ */
+function shouldHideRule(ruleName: string): boolean {
+  // Check if it's a weapon rule
+  if (isWeaponRule(ruleName)) return true;
+
+  // Check if it's invulnerable save
+  if (ruleName.toLowerCase().includes('invulnerable save')) return true;
+
+  return false;
+}
+
+/**
+ * Extract invulnerable save value from unit's abilities/rules
+ * Returns something like "4+" or null if no invuln
+ */
+function extractInvulnerableSave(unit: Unit, army: Army): string | null {
+  const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
+
+  for (const ruleId of allRuleIds) {
+    const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+    if (!rule) continue;
+
+    // Check if this is an invulnerable save rule
+    if (rule.name.toLowerCase().includes('invulnerable save')) {
+      // Try to extract the value from the name, e.g., "Invulnerable Save (4+)" or "Invulnerable Save (4+*)"
+      const match = rule.name.match(/\((\d+)\+/);
+      if (match) {
+        return match[1] + '+';
+      }
+
+      // Also try to extract from description
+      const descMatch = rule.description.match(/(\d+)\+ invulnerable save/i);
+      if (descMatch) {
+        return descMatch[1] + '+';
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Find a rule that matches a weapon keyword
  */
 function findRuleByKeyword(keyword: string, army: Army): any {
@@ -485,7 +528,13 @@ function createUnitCard(
     return buildWeaponStatsHTML(baseName, weapons, includeOneTimeWeapons, army);
   }).join('');
 
-  // Build abilities and rules HTML (EXCLUDE weapon rules)
+  // Extract invulnerable save
+  const invulnSave = extractInvulnerableSave(unit, army);
+  const saveDisplay = invulnSave
+    ? `${unit.stats.save}/${invulnSave}+`
+    : unit.stats.save;
+
+  // Build abilities and rules HTML (EXCLUDE weapon rules AND invulnerable save)
   let abilitiesHTML = '';
   if ((unit.rules && unit.rules.length > 0) || (unit.abilities && unit.abilities.length > 0)) {
     const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
@@ -495,8 +544,8 @@ function createUnitCard(
         const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
         if (!rule || rule.hidden) return '';
 
-        // Filter out weapon-specific rules
-        if (isWeaponRule(rule.name)) return '';
+        // Filter out weapon-specific rules AND invulnerable save
+        if (shouldHideRule(rule.name)) return '';
 
         return `
           <div class="ability-item mb-2">
@@ -572,7 +621,7 @@ function createUnitCard(
             <tr>
               <td>${unit.stats.move}</td>
               <td>${unit.stats.toughness}</td>
-              <td>${unit.stats.save}</td>
+              <td>${saveDisplay}</td>
               <td>${unit.stats.wounds}</td>
               <td>${unit.stats.leadership}</td>
               <td>${unit.stats.objectiveControl}</td>
