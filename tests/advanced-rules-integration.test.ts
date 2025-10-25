@@ -181,10 +181,9 @@ describe('Advanced Rules Integration Tests', () => {
       const damage = calculateUnitDamage(hazardousUnit, 4, false, undefined, false, true);
 
       // 1 attack, 2/3 hit, 5/6 wound (S8 vs T4), 2 damage = 1.11 damage
-      // Hazardous: 1/6 chance * 3 MW = 0.5 self-damage
-      // Net damage: 1.11 - 0.5 = 0.61
-      expect(damage.total).toBeCloseTo(0.61, 0.2);
-      expect(damage.total).toBeLessThan(1.2); // Less than without hazardous penalty
+      // Hazardous: 0.5 MW risk to attacker (not subtracted from offensive damage)
+      // Offensive damage: 1.11 (hazard risk is separate, informational only)
+      expect(damage.total).toBeCloseTo(1.11, 0.1);
     });
 
     it('should work with multiple attacks on Hazardous weapons', () => {
@@ -216,10 +215,9 @@ describe('Advanced Rules Integration Tests', () => {
       const damage = calculateUnitDamage(hazardousUnit, 4, false, undefined, false, true);
 
       // 6 attacks, 2/3 hit, 2/3 wound (S7 vs T4), 1 damage = 2.67
-      // Hazardous: 6 * 1/6 * 3 = 3 self-damage
-      // Net damage: 2.67 - 3 = -0.33 (weapon hurts you more than enemy!)
-      expect(damage.total).toBeLessThan(1);
-      expect(damage.total).toBeCloseTo(-0.33, 0.5);
+      // Hazardous: 0.5 MW risk to attacker (one test per weapon, not per attack)
+      // Offensive damage: 2.67 (hazard risk is informational only)
+      expect(damage.total).toBeCloseTo(2.67, 0.1);
     });
   });
 

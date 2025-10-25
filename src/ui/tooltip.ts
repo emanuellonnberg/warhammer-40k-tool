@@ -48,13 +48,14 @@ export function generateCalculationTooltip(
     hitChance = 1; // 100% hit chance
     hitDisplay = "Auto-hit (Torrent)";
   } else {
-    const bs = chars.bs || "4+";
-    hitDisplay = bs;
-    if (bs === "2+") hitChance = 5 / 6;
-    if (bs === "3+") hitChance = 2 / 3;
-    if (bs === "4+") hitChance = 1 / 2;
-    if (bs === "5+") hitChance = 1 / 3;
-    if (bs === "6+") hitChance = 1 / 6;
+    // Check for BS (ranged) or WS (melee)
+    const skill = chars.bs || chars.ws || "4+";
+    hitDisplay = skill;
+    if (skill === "2+") hitChance = 5 / 6;
+    if (skill === "3+") hitChance = 2 / 3;
+    if (skill === "4+") hitChance = 1 / 2;
+    if (skill === "5+") hitChance = 1 / 3;
+    if (skill === "6+") hitChance = 1 / 6;
   }
 
   let woundChance = 0;
