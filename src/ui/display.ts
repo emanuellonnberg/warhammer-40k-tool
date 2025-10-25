@@ -90,8 +90,8 @@ export function displayAnalysisResults(
         bValue = b.points;
         break;
       case 'efficiency':
-        aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
-        bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+        aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(a.id));
+        bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(b.id));
         break;
       case 'dpp':
         aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).total / a.points;
@@ -122,8 +122,8 @@ export function displayAnalysisResults(
         bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).onetime;
         break;
       default:
-        aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
-        bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+        aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(a.id));
+        bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(b.id));
     }
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
@@ -213,7 +213,7 @@ function createSummaryTable(
                 }
               });
 
-              const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+              const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
               const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
               const damagePerPoint = damage.total / unit.points;
               const rangedDamagePerPoint = damage.ranged / unit.points;
@@ -345,8 +345,8 @@ function createUnitCard(
   optimalRange: boolean,
   army: Army
 ): HTMLElement {
-  const unitEfficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
   const unitModes = weaponModes.get(unit.id);
+  const unitEfficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
   const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
   const damagePerPoint = unitDamage.total / unit.points;
   const rangedDamagePerPoint = unitDamage.ranged / unit.points;
