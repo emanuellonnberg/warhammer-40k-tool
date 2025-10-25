@@ -599,7 +599,7 @@ function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTim
         </td>
         <td>${chars.range || '-'}</td>
         <td>${chars.a || '-'}</td>
-        <td>${chars.bs || '-'}</td>
+        <td>${chars.bs || chars.ws || '-'}</td>
         <td>${chars.s || '-'}</td>
         <td>${chars.ap || '0'}</td>
         <td>${chars.d || '-'}</td>
