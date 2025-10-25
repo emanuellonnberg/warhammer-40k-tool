@@ -312,7 +312,8 @@ function createDashboard(
   targetFNP?: number
 ): HTMLElement {
   // Calculate army-level statistics
-  const totalPoints = army.pointsTotal;
+  // Calculate total points from units if pointsTotal is not set or is 0
+  const totalPoints = army.pointsTotal || army.units.reduce((sum, unit) => sum + unit.points, 0);
   const unitCount = army.units.length;
 
   // Calculate DPP and total damage for each unit
@@ -350,7 +351,7 @@ function createDashboard(
 
   // Calculate average DPP
   const totalDamage = unitStats.reduce((sum, stat) => sum + stat.damage, 0);
-  const averageDPP = totalDamage / totalPoints;
+  const averageDPP = totalPoints > 0 ? totalDamage / totalPoints : 0;
 
   // Get top 3 performers
   const topPerformers = [...unitStats]
@@ -362,9 +363,9 @@ function createDashboard(
   const mediumEfficiency = unitStats.filter(s => s.efficiency >= 0.100 && s.efficiency < 0.200).length;
   const lowEfficiency = unitStats.filter(s => s.efficiency < 0.100).length;
 
-  const highPercent = ((highEfficiency / unitCount) * 100).toFixed(0);
-  const mediumPercent = ((mediumEfficiency / unitCount) * 100).toFixed(0);
-  const lowPercent = ((lowEfficiency / unitCount) * 100).toFixed(0);
+  const highPercent = unitCount > 0 ? ((highEfficiency / unitCount) * 100).toFixed(0) : '0';
+  const mediumPercent = unitCount > 0 ? ((mediumEfficiency / unitCount) * 100).toFixed(0) : '0';
+  const lowPercent = unitCount > 0 ? ((lowEfficiency / unitCount) * 100).toFixed(0) : '0';
 
   const dashboard = document.createElement('div');
   dashboard.className = 'card mb-4 dashboard-card';
@@ -390,11 +391,11 @@ function createDashboard(
               </div>
               <div class="dashboard-stat">
                 <span class="stat-label">Unit Count:</span>
-                <span class="stat-value">${unitCount} units</span>
+                <span class="stat-value">${unitCount} unit${unitCount !== 1 ? 's' : ''}</span>
               </div>
               <div class="dashboard-stat">
                 <span class="stat-label">Average DPP:</span>
-                <span class="stat-value ${getEfficiencyClass(averageDPP)}">${averageDPP.toFixed(3)}</span>
+                <span class="stat-value ${getEfficiencyClass(averageDPP)}">${isFinite(averageDPP) ? averageDPP.toFixed(3) : '0.000'}</span>
               </div>
               <div class="dashboard-stat">
                 <span class="stat-label">Total Damage vs T${targetToughness}:</span>
@@ -426,21 +427,21 @@ function createDashboard(
                 <div class="efficiency-bar-container">
                   <div class="efficiency-bar high-efficiency-bar" style="width: ${highPercent}%"></div>
                 </div>
-                <span class="efficiency-count">${highEfficiency} units (${highPercent}%)</span>
+                <span class="efficiency-count">${highEfficiency} unit${highEfficiency !== 1 ? 's' : ''} (${highPercent}%)</span>
               </div>
               <div class="efficiency-bar-item">
                 <span class="efficiency-label medium-efficiency">Medium (0.100-0.199):</span>
                 <div class="efficiency-bar-container">
                   <div class="efficiency-bar medium-efficiency-bar" style="width: ${mediumPercent}%"></div>
                 </div>
-                <span class="efficiency-count">${mediumEfficiency} units (${mediumPercent}%)</span>
+                <span class="efficiency-count">${mediumEfficiency} unit${mediumEfficiency !== 1 ? 's' : ''} (${mediumPercent}%)</span>
               </div>
               <div class="efficiency-bar-item">
                 <span class="efficiency-label low-efficiency">Low (<0.100):</span>
                 <div class="efficiency-bar-container">
                   <div class="efficiency-bar low-efficiency-bar" style="width: ${lowPercent}%"></div>
                 </div>
-                <span class="efficiency-count">${lowEfficiency} units (${lowPercent}%)</span>
+                <span class="efficiency-count">${lowEfficiency} unit${lowEfficiency !== 1 ? 's' : ''} (${lowPercent}%)</span>
               </div>
             </div>
           </div>
