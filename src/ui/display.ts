@@ -533,6 +533,7 @@ function createUnitCard(
   const saveDisplay = invulnSave
     ? `${unit.stats.save}/${invulnSave}+`
     : unit.stats.save;
+  const svHeader = invulnSave ? 'Sv/Inv.Sv' : 'Sv';
 
   // Build abilities and rules HTML (EXCLUDE weapon rules AND invulnerable save)
   let abilitiesHTML = '';
@@ -611,7 +612,7 @@ function createUnitCard(
             <tr>
               <th>M</th>
               <th>T</th>
-              <th>Sv</th>
+              <th>${svHeader}</th>
               <th>W</th>
               <th>Ld</th>
               <th>OC</th>
