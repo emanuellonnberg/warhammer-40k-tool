@@ -7,10 +7,67 @@ import { RerollType } from './types';
 import { displayAnalysisResults, setupWeaponModeToggles } from './ui';
 
 /**
+ * Setup accordion state persistence
+ */
+function setupAccordionPersistence() {
+  const accordionElement = document.getElementById('controlAccordion');
+  if (!accordionElement) return;
+
+  // Restore accordion state from localStorage
+  const savedState = localStorage.getItem('accordionState');
+  if (savedState) {
+    try {
+      const state = JSON.parse(savedState);
+      Object.keys(state).forEach(id => {
+        const collapseElement = document.getElementById(id);
+        if (collapseElement) {
+          if (state[id]) {
+            collapseElement.classList.add('show');
+            const button = document.querySelector(`[data-bs-target="#${id}"]`);
+            if (button) {
+              button.classList.remove('collapsed');
+              button.setAttribute('aria-expanded', 'true');
+            }
+          } else {
+            collapseElement.classList.remove('show');
+            const button = document.querySelector(`[data-bs-target="#${id}"]`);
+            if (button) {
+              button.classList.add('collapsed');
+              button.setAttribute('aria-expanded', 'false');
+            }
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Failed to restore accordion state:', e);
+    }
+  }
+
+  // Save accordion state when changed
+  accordionElement.addEventListener('shown.bs.collapse', saveAccordionState);
+  accordionElement.addEventListener('hidden.bs.collapse', saveAccordionState);
+}
+
+/**
+ * Save accordion state to localStorage
+ */
+function saveAccordionState() {
+  const state: { [key: string]: boolean } = {
+    combatScenarioCollapse: document.getElementById('combatScenarioCollapse')?.classList.contains('show') || false,
+    weaponOptionsCollapse: document.getElementById('weaponOptionsCollapse')?.classList.contains('show') || false,
+    armySelectionCollapse: document.getElementById('armySelectionCollapse')?.classList.contains('show') || false
+  };
+  localStorage.setItem('accordionState', JSON.stringify(state));
+}
+
+/**
  * Main application function
  */
 async function main() {
   try {
+    // Setup accordion persistence
+    setupAccordionPersistence();
+
     // Get UI elements
     const toughnessSelect = document.getElementById('toughness') as HTMLSelectElement;
     const overchargeToggle = document.getElementById('overchargeToggle') as HTMLInputElement;

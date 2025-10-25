@@ -6,10 +6,63 @@
     <title>40K Unit Efficiency Analysis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Enhanced Color Palette - CSS Variables */
+        :root {
+            /* Primary Colors */
+            --primary-blue: #1e88e5;
+            --primary-dark: #0d47a1;
+            --primary-light: #e3f2fd;
+
+            /* Efficiency Colors */
+            --high-efficiency: #43a047;
+            --medium-efficiency: #fb8c00;
+            --low-efficiency: #e53935;
+
+            /* Neutral Colors */
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --text-disabled: #bdbdbd;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --divider: #e0e0e0;
+
+            /* Weapon Type Colors */
+            --ranged-color: #1976d2;
+            --ranged-bg: #e3f2fd;
+            --melee-color: #c2185b;
+            --melee-bg: #fce4ec;
+            --pistol-color: #7b1fa2;
+            --pistol-bg: #f3e5f5;
+
+            /* Chart Colors */
+            --chart-1: #1e88e5;
+            --chart-2: #43a047;
+            --chart-3: #fb8c00;
+            --chart-4: #e53935;
+            --chart-5: #7b1fa2;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-normal: 200ms ease;
+            --transition-slow: 300ms ease;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+        }
+
         .unit-card {
             margin-bottom: 1rem;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
             scroll-margin-top: 20px;
         }
         .weapon-list {
@@ -22,13 +75,13 @@
             font-weight: bold;
         }
         .high-efficiency {
-            color: #198754;
+            color: var(--high-efficiency);
         }
         .medium-efficiency {
-            color: #ffc107;
+            color: var(--medium-efficiency);
         }
         .low-efficiency {
-            color: #dc3545;
+            color: var(--low-efficiency);
         }
         .weapon-mode {
             display: flex;
@@ -76,7 +129,7 @@
             opacity: 0.7;
         }
         .damage-value {
-            color: #0d6efd;
+            color: var(--primary-blue);
             margin-left: 0.5rem;
             font-size: 0.9em;
         }
@@ -87,16 +140,16 @@
             margin-left: 0.5rem;
         }
         .weapon-type.ranged {
-            background-color: #e3f2fd;
-            color: #0d47a1;
+            background-color: var(--ranged-bg);
+            color: var(--ranged-color);
         }
         .weapon-type.melee {
-            background-color: #fce4ec;
-            color: #880e4f;
+            background-color: var(--melee-bg);
+            color: var(--melee-color);
         }
         .weapon-type.pistol {
-            background-color: #f3e5f5;
-            color: #4a148c;
+            background-color: var(--pistol-bg);
+            color: var(--pistol-color);
         }
         .text-muted {
             font-size: 0.9em;
@@ -115,11 +168,11 @@
         }
         .points-value {
             font-weight: bold;
-            color: #6c757d;
+            color: var(--text-secondary);
         }
         .damage-per-point {
             font-size: 0.9em;
-            color: #0d6efd;
+            color: var(--primary-blue);
         }
         .drop-zone {
             border: 2px dashed #6c757d;
@@ -177,13 +230,13 @@
             margin-left: 0.5rem;
         }
         .unit-link {
-            color: #0d6efd;
+            color: var(--primary-blue);
             text-decoration: none;
             font-weight: 500;
-            transition: all 0.2s ease;
+            transition: var(--transition-normal);
         }
         .unit-link:hover {
-            color: #0a58ca;
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
@@ -191,7 +244,7 @@
         .calculation-tooltip {
             position: relative;
             cursor: help;
-            border-bottom: 1px dotted #6c757d;
+            border-bottom: 1px dotted var(--text-secondary);
         }
 
         .calculation-tooltip .tooltip-content {
@@ -200,16 +253,16 @@
             bottom: 125%;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #212529;
-            color: white;
+            background-color: var(--text-primary);
+            color: var(--surface);
             text-align: left;
             border-radius: 6px;
-            padding: 8px 12px;
+            padding: var(--spacing-sm) var(--spacing-md);
             font-size: 0.8rem;
             font-weight: normal;
             white-space: pre-line;
             z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-md);
             min-width: 200px;
             max-width: 300px;
             pointer-events: none;
@@ -223,7 +276,7 @@
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: #212529 transparent transparent transparent;
+            border-color: var(--text-primary) transparent transparent transparent;
         }
 
         .calculation-tooltip:hover .tooltip-content {
@@ -263,18 +316,18 @@
         }
 
         .ability-item {
-            border-left: 3px solid #0d6efd;
+            border-left: 3px solid var(--primary-blue);
             padding-left: 0.5rem;
         }
 
         .ability-item strong {
-            color: #0d6efd;
+            color: var(--primary-blue);
         }
 
         /* Expandable abilities */
         .ability-item.expandable {
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: var(--transition-normal);
         }
 
         .ability-item.expandable:hover {
@@ -283,116 +336,450 @@
 
         .expand-icon {
             font-size: 0.7rem;
-            color: #6c757d;
-            transition: transform 0.2s;
+            color: var(--text-secondary);
+            transition: var(--transition-normal);
             display: inline-block;
         }
 
         /* Weapon keyword tooltips */
         .weapon-keyword {
-            border-bottom: 1px dotted #666;
+            border-bottom: 1px dotted var(--text-secondary);
             cursor: help;
             position: relative;
         }
 
         .weapon-keyword:hover {
-            color: #0d6efd;
-            border-bottom-color: #0d6efd;
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        /* Collapsible control panel */
+        .control-panel {
+            background-color: var(--background);
+            border: 1px solid var(--divider);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .control-panel .accordion-item {
+            border: none;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .control-panel .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .control-panel .accordion-button {
+            background-color: transparent;
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+            transition: var(--transition-normal);
+        }
+
+        .control-panel .accordion-button:not(.collapsed) {
+            background-color: #e9ecef;
+            color: var(--primary-blue);
+            box-shadow: none;
+        }
+
+        .control-panel .accordion-button:hover {
+            background-color: #e9ecef;
+        }
+
+        .control-panel .accordion-button:focus {
+            box-shadow: none;
+            border-color: var(--divider);
+        }
+
+        .control-panel .accordion-body {
+            padding: 1.25rem;
+            background-color: var(--surface);
+        }
+
+        .control-section-icon {
+            margin-right: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group-inline {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        /* Dashboard styles */
+        .dashboard-card {
+            box-shadow: var(--shadow-md);
+        }
+
+        .dashboard-subtitle {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            border-bottom: 2px solid var(--divider);
+            padding-bottom: 0.25rem;
+        }
+
+        .dashboard-section {
+            padding: var(--spacing-sm) 0;
+        }
+
+        .dashboard-stats {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .dashboard-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+        }
+
+        .stat-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .top-performers {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .top-performer-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: var(--spacing-sm);
+            background-color: var(--background);
+            border-radius: 4px;
+            transition: var(--transition-normal);
+        }
+
+        .top-performer-item:hover {
+            background-color: #e9ecef;
+        }
+
+        .performer-rank {
+            font-size: 1.2rem;
+        }
+
+        .performer-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .performer-dpp {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .efficiency-distribution {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .efficiency-bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .efficiency-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .efficiency-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .efficiency-bar {
+            height: 100%;
+            transition: var(--transition-slow);
+        }
+
+        .high-efficiency-bar {
+            background-color: var(--high-efficiency);
+        }
+
+        .medium-efficiency-bar {
+            background-color: var(--medium-efficiency);
+        }
+
+        .low-efficiency-bar {
+            background-color: var(--low-efficiency);
+        }
+
+        .efficiency-count {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Typography Improvements */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        h5.card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        /* Tabular numbers for stats - better alignment */
+        .stat-value,
+        .damage-value,
+        .efficiency-value,
+        .calculation-tooltip,
+        .table td,
+        .performer-dpp {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Enhanced damage value styling */
+        .damage-value {
+            font-weight: 700;
+        }
+
+        /* Label styling */
+        label, .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Small text improvements */
+        small, .text-muted {
+            color: var(--text-secondary);
+        }
+
+        /* Table header typography */
+        .table thead th {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        /* Enhanced unit card title */
+        .unit-card .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Sticky table header */
+        .table-responsive {
+            position: relative;
+        }
+
+        .table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: var(--surface);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Ensure proper background for sticky header */
+        .table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        /* Add slight shadow when scrolling */
+        .table-responsive:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent);
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="mb-4">40K Unit Efficiency Analysis <small class="text-muted">v1.9</small></h1>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <div class="toughness-selector mb-3">
-                    <label for="toughness" class="form-label">Target Toughness:</label>
-                    <select id="toughness" class="form-select" style="width: 200px;">
-                        <option value="3">T3</option>
-                        <option value="4">T4</option>
-                        <option value="5">T5</option>
-                        <option value="6">T6</option>
-                        <option value="7">T7</option>
-                        <option value="8">T8</option>
-                    </select>
-                </div>
+        <h1 class="mb-4">40K Unit Efficiency Analysis <small class="text-muted">v2.0</small></h1>
 
-                <div class="mb-3">
-                    <label for="rerollHits" class="form-label">Re-roll Hit Rolls:</label>
-                    <select id="rerollHits" class="form-select" style="width: 200px;">
-                        <option value="none">No Re-rolls</option>
-                        <option value="ones">Re-roll 1s</option>
-                        <option value="failed">Re-roll Failed</option>
-                        <option value="all">Re-roll All</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="rerollWounds" class="form-label">Re-roll Wound Rolls:</label>
-                    <select id="rerollWounds" class="form-select" style="width: 200px;">
-                        <option value="none">No Re-rolls</option>
-                        <option value="ones">Re-roll 1s</option>
-                        <option value="failed">Re-roll Failed</option>
-                        <option value="all">Re-roll All</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="targetFNP" class="form-label">Target Feel No Pain:</label>
-                    <select id="targetFNP" class="form-select" style="width: 200px;">
-                        <option value="0">No FNP</option>
-                        <option value="6">6+ FNP</option>
-                        <option value="5">5+ FNP</option>
-                        <option value="4">4+ FNP</option>
-                        <option value="3">3+ FNP</option>
-                        <option value="2">2+ FNP</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="weapon-mode">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="overchargeToggle">
-                        <label class="form-check-label" for="overchargeToggle">Show Overcharge Values</label>
+        <!-- Collapsible Control Panel -->
+        <div class="control-panel">
+            <div class="accordion" id="controlAccordion">
+                <!-- Combat Scenario Settings -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#combatScenarioCollapse" aria-expanded="true" aria-controls="combatScenarioCollapse">
+                            <span class="control-section-icon">⚙️</span>
+                            Combat Scenario Settings
+                        </button>
+                    </h2>
+                    <div id="combatScenarioCollapse" class="accordion-collapse collapse show" data-bs-parent="#controlAccordion">
+                        <div class="accordion-body">
+                            <div class="form-row">
+                                <div class="form-group-inline">
+                                    <label for="toughness" class="form-label">Target Toughness:</label>
+                                    <select id="toughness" class="form-select">
+                                        <option value="3">T3</option>
+                                        <option value="4">T4</option>
+                                        <option value="5">T5</option>
+                                        <option value="6">T6</option>
+                                        <option value="7">T7</option>
+                                        <option value="8">T8</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-inline">
+                                    <label for="targetFNP" class="form-label">Target Feel No Pain:</label>
+                                    <select id="targetFNP" class="form-select">
+                                        <option value="0">No FNP</option>
+                                        <option value="6">6+ FNP</option>
+                                        <option value="5">5+ FNP</option>
+                                        <option value="4">4+ FNP</option>
+                                        <option value="3">3+ FNP</option>
+                                        <option value="2">2+ FNP</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group-inline">
+                                    <label for="rerollHits" class="form-label">Re-roll Hit Rolls:</label>
+                                    <select id="rerollHits" class="form-select">
+                                        <option value="none">No Re-rolls</option>
+                                        <option value="ones">Re-roll 1s</option>
+                                        <option value="failed">Re-roll Failed</option>
+                                        <option value="all">Re-roll All</option>
+                                    </select>
+                                </div>
+                                <div class="form-group-inline">
+                                    <label for="rerollWounds" class="form-label">Re-roll Wound Rolls:</label>
+                                    <select id="rerollWounds" class="form-select">
+                                        <option value="none">No Re-rolls</option>
+                                        <option value="ones">Re-roll 1s</option>
+                                        <option value="failed">Re-roll Failed</option>
+                                        <option value="all">Re-roll All</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" type="checkbox" id="oneTimeWeaponsToggle">
-                        <label class="form-check-label" for="oneTimeWeaponsToggle">Include One-Time Weapons</label>
-                    </div>
-                    <div class="form-check form-switch mt-2">
-                        <input class="form-check-input" type="checkbox" id="optimalRangeToggle" checked>
-                        <label class="form-check-label" for="optimalRangeToggle">Optimal Range (Rapid Fire, Melta bonuses)</label>
-                    </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="file-selector">
-                    <label for="armyFile" class="form-label">Select Army File:</label>
-                    <select id="armyFile" class="form-select">
-                        <option value="800popti.json">T'au - 800 Points Optimized</option>
-                        <option value="all_models_opt.json">T'au - All Models Optimized</option>
-                        <option value="sunforges_opt.json">T'au - Sunforges Optimized</option>
-                        <option value="800p army.json">T'au - 800 Points Army</option>
-                        <option value="knights_optimized.json">Imperial Knights - Optimized</option>
-                        <option value="knights.json">Imperial Knights</option>
-                        <option value="belakor_demons_opt.json">Chaos Demons - Be'lakor Optimized</option>
-                        <option value="emperors_children.json">Emperor's Children</option>
-                        <option value="sisters_opt.json">Adepta Sororitas - Optimized</option>
-                    </select>
+                <!-- Weapon Options -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#weaponOptionsCollapse" aria-expanded="false" aria-controls="weaponOptionsCollapse">
+                            <span class="control-section-icon">🔫</span>
+                            Weapon Options
+                        </button>
+                    </h2>
+                    <div id="weaponOptionsCollapse" class="accordion-collapse collapse" data-bs-parent="#controlAccordion">
+                        <div class="accordion-body">
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="overchargeToggle">
+                                <label class="form-check-label" for="overchargeToggle">Show Overcharge Values</label>
+                            </div>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" id="oneTimeWeaponsToggle">
+                                <label class="form-check-label" for="oneTimeWeaponsToggle">Include One-Time Weapons</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="optimalRangeToggle" checked>
+                                <label class="form-check-label" for="optimalRangeToggle">Optimal Range (Rapid Fire, Melta bonuses)</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div id="dropZone" class="drop-zone">
-                    <div class="drop-zone-content">
-                        <i class="bi bi-cloud-upload"></i>
-                        <p>Drag and drop your army JSON file here</p>
-                        <p class="text-muted">or click to select a file</p>
-                        <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+                <!-- Army Selection -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#armySelectionCollapse" aria-expanded="false" aria-controls="armySelectionCollapse">
+                            <span class="control-section-icon">📁</span>
+                            Army Selection
+                        </button>
+                    </h2>
+                    <div id="armySelectionCollapse" class="accordion-collapse collapse" data-bs-parent="#controlAccordion">
+                        <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="armyFile" class="form-label">Select Army File:</label>
+                                <select id="armyFile" class="form-select">
+                                    <option value="800popti.json">T'au - 800 Points Optimized</option>
+                                    <option value="all_models_opt.json">T'au - All Models Optimized</option>
+                                    <option value="sunforges_opt.json">T'au - Sunforges Optimized</option>
+                                    <option value="800p army.json">T'au - 800 Points Army</option>
+                                    <option value="knights_optimized.json">Imperial Knights - Optimized</option>
+                                    <option value="knights.json">Imperial Knights</option>
+                                    <option value="belakor_demons_opt.json">Chaos Demons - Be'lakor Optimized</option>
+                                    <option value="emperors_children.json">Emperor's Children</option>
+                                    <option value="sisters_opt.json">Adepta Sororitas - Optimized</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Or upload your own:</label>
+                                <div id="dropZone" class="drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <p>Drag and drop your army JSON file here</p>
+                                        <p class="text-muted">or click to select a file</p>
+                                        <input type="file" id="fileInput" accept=".json" style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -279,6 +279,10 @@ export function displayAnalysisResults(
       : (bValue as number) - (aValue as number);
   });
 
+  // Create dashboard
+  const dashboard = createDashboard(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  resultsDiv.appendChild(dashboard);
+
   // Create summary table
   const summaryTable = createSummaryTable(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(summaryTable);
@@ -291,6 +295,161 @@ export function displayAnalysisResults(
 
   // Initialize tooltips for all elements with data-tooltip attribute
   initializeTooltips();
+}
+
+/**
+ * Create dashboard element with army statistics
+ */
+function createDashboard(
+  army: Army,
+  sortedUnits: Unit[],
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): HTMLElement {
+  // Calculate army-level statistics
+  const totalPoints = army.pointsTotal;
+  const unitCount = army.units.length;
+
+  // Calculate DPP and total damage for each unit
+  const unitStats = sortedUnits.map(unit => {
+    const damage = calculateUnitDamage(
+      unit,
+      targetToughness,
+      useOvercharge,
+      weaponModes.get(unit.id),
+      includeOneTimeWeapons,
+      optimalRange,
+      [],
+      1,
+      false,
+      null,
+      scenarioRerolls,
+      targetFNP
+    );
+    const dpp = damage.total / unit.points;
+    const efficiency = calculateUnitEfficiency(
+      unit,
+      targetToughness,
+      useOvercharge,
+      includeOneTimeWeapons,
+      optimalRange,
+      weaponModes.get(unit.id)
+    );
+    return {
+      unit,
+      damage: damage.total,
+      dpp,
+      efficiency
+    };
+  });
+
+  // Calculate average DPP
+  const totalDamage = unitStats.reduce((sum, stat) => sum + stat.damage, 0);
+  const averageDPP = totalDamage / totalPoints;
+
+  // Get top 3 performers
+  const topPerformers = [...unitStats]
+    .sort((a, b) => b.dpp - a.dpp)
+    .slice(0, 3);
+
+  // Calculate efficiency distribution
+  const highEfficiency = unitStats.filter(s => s.efficiency >= 0.200).length;
+  const mediumEfficiency = unitStats.filter(s => s.efficiency >= 0.100 && s.efficiency < 0.200).length;
+  const lowEfficiency = unitStats.filter(s => s.efficiency < 0.100).length;
+
+  const highPercent = ((highEfficiency / unitCount) * 100).toFixed(0);
+  const mediumPercent = ((mediumEfficiency / unitCount) * 100).toFixed(0);
+  const lowPercent = ((lowEfficiency / unitCount) * 100).toFixed(0);
+
+  const dashboard = document.createElement('div');
+  dashboard.className = 'card mb-4 dashboard-card';
+  dashboard.innerHTML = `
+    <div class="card-body">
+      <h5 class="card-title">📊 Army Dashboard</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="dashboard-section">
+            <h6 class="dashboard-subtitle">Army Overview</h6>
+            <div class="dashboard-stats">
+              <div class="dashboard-stat">
+                <span class="stat-label">Faction:</span>
+                <span class="stat-value">${army.faction}</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Army Name:</span>
+                <span class="stat-value">${army.armyName || 'Unnamed Army'}</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Total Points:</span>
+                <span class="stat-value">${totalPoints} pts</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Unit Count:</span>
+                <span class="stat-value">${unitCount} units</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Average DPP:</span>
+                <span class="stat-value ${getEfficiencyClass(averageDPP)}">${averageDPP.toFixed(3)}</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Total Damage vs T${targetToughness}:</span>
+                <span class="stat-value">${totalDamage.toFixed(1)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="dashboard-section">
+            <h6 class="dashboard-subtitle">Top Performers (vs T${targetToughness})</h6>
+            <div class="top-performers">
+              ${topPerformers.map((stat, index) => {
+                const medal = ['🥇', '🥈', '🥉'][index];
+                return `
+                  <div class="top-performer-item">
+                    <span class="performer-rank">${medal}</span>
+                    <span class="performer-name">${stat.unit.name}</span>
+                    <span class="performer-dpp ${getEfficiencyClass(stat.dpp)}">DPP: ${stat.dpp.toFixed(3)}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            <h6 class="dashboard-subtitle mt-3">Efficiency Distribution</h6>
+            <div class="efficiency-distribution">
+              <div class="efficiency-bar-item">
+                <span class="efficiency-label high-efficiency">High (≥0.200):</span>
+                <div class="efficiency-bar-container">
+                  <div class="efficiency-bar high-efficiency-bar" style="width: ${highPercent}%"></div>
+                </div>
+                <span class="efficiency-count">${highEfficiency} units (${highPercent}%)</span>
+              </div>
+              <div class="efficiency-bar-item">
+                <span class="efficiency-label medium-efficiency">Medium (0.100-0.199):</span>
+                <div class="efficiency-bar-container">
+                  <div class="efficiency-bar medium-efficiency-bar" style="width: ${mediumPercent}%"></div>
+                </div>
+                <span class="efficiency-count">${mediumEfficiency} units (${mediumPercent}%)</span>
+              </div>
+              <div class="efficiency-bar-item">
+                <span class="efficiency-label low-efficiency">Low (<0.100):</span>
+                <div class="efficiency-bar-container">
+                  <div class="efficiency-bar low-efficiency-bar" style="width: ${lowPercent}%"></div>
+                </div>
+                <span class="efficiency-count">${lowEfficiency} units (${lowPercent}%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return dashboard;
 }
 
 /**
