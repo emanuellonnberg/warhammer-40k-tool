@@ -249,6 +249,11 @@
             text-align: center;
         }
 
+        /* Make the save column slightly bolder when it contains invuln save */
+        .unit-stats-table td:nth-child(3) {
+            font-weight: 500;
+        }
+
         /* Unit abilities section */
         .unit-abilities {
             background-color: #f8f9fa;
@@ -264,6 +269,23 @@
 
         .ability-item strong {
             color: #0d6efd;
+        }
+
+        /* Expandable abilities */
+        .ability-item.expandable {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .ability-item.expandable:hover {
+            background-color: #e9ecef;
+        }
+
+        .expand-icon {
+            font-size: 0.7rem;
+            color: #6c757d;
+            transition: transform 0.2s;
+            display: inline-block;
         }
 
         /* Weapon keyword tooltips */

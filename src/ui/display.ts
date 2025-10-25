@@ -54,6 +54,49 @@ function isWeaponRule(ruleName: string): boolean {
 }
 
 /**
+ * Check if a rule should be hidden from the abilities list
+ */
+function shouldHideRule(ruleName: string): boolean {
+  // Check if it's a weapon rule
+  if (isWeaponRule(ruleName)) return true;
+
+  // Check if it's invulnerable save
+  if (ruleName.toLowerCase().includes('invulnerable save')) return true;
+
+  return false;
+}
+
+/**
+ * Extract invulnerable save value from unit's abilities/rules
+ * Returns something like "4+" or null if no invuln
+ */
+function extractInvulnerableSave(unit: Unit, army: Army): string | null {
+  const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
+
+  for (const ruleId of allRuleIds) {
+    const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+    if (!rule) continue;
+
+    // Check if this is an invulnerable save rule
+    if (rule.name.toLowerCase().includes('invulnerable save')) {
+      // Try to extract the value from the name, e.g., "Invulnerable Save (4+)" or "Invulnerable Save (4+*)"
+      const match = rule.name.match(/\((\d+)\+/);
+      if (match) {
+        return match[1] + '+';
+      }
+
+      // Also try to extract from description
+      const descMatch = rule.description.match(/(\d+)\+ invulnerable save/i);
+      if (descMatch) {
+        return descMatch[1] + '+';
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Find a rule that matches a weapon keyword
  */
 function findRuleByKeyword(keyword: string, army: Army): any {
@@ -485,7 +528,14 @@ function createUnitCard(
     return buildWeaponStatsHTML(baseName, weapons, includeOneTimeWeapons, army);
   }).join('');
 
-  // Build abilities and rules HTML (EXCLUDE weapon rules)
+  // Extract invulnerable save
+  const invulnSave = extractInvulnerableSave(unit, army);
+  const saveDisplay = invulnSave
+    ? `${unit.stats.save}/${invulnSave}+`
+    : unit.stats.save;
+  const svHeader = invulnSave ? 'Sv/Inv.Sv' : 'Sv';
+
+  // Build abilities and rules HTML (EXCLUDE weapon rules AND invulnerable save)
   let abilitiesHTML = '';
   if ((unit.rules && unit.rules.length > 0) || (unit.abilities && unit.abilities.length > 0)) {
     const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
@@ -495,13 +545,20 @@ function createUnitCard(
         const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
         if (!rule || rule.hidden) return '';
 
-        // Filter out weapon-specific rules
-        if (isWeaponRule(rule.name)) return '';
+        // Filter out weapon-specific rules AND invulnerable save
+        if (shouldHideRule(rule.name)) return '';
+
+        const isTruncated = rule.description.length > 150;
+        const truncatedText = truncateText(rule.description, 150);
 
         return `
-          <div class="ability-item mb-2">
+          <div class="ability-item mb-2 ${isTruncated ? 'expandable' : ''}" data-expanded="false">
             <strong>${rule.name}:</strong>
-            <span class="text-muted small">${truncateText(rule.description, 150)}</span>
+            <span class="ability-description text-muted small">
+              <span class="truncated-text">${truncatedText}</span>
+              ${isTruncated ? `<span class="full-text" style="display: none;">${rule.description}</span>` : ''}
+            </span>
+            ${isTruncated ? '<span class="expand-icon ms-1">▼</span>' : ''}
           </div>
         `;
       })
@@ -562,7 +619,7 @@ function createUnitCard(
             <tr>
               <th>M</th>
               <th>T</th>
-              <th>Sv</th>
+              <th>${svHeader}</th>
               <th>W</th>
               <th>Ld</th>
               <th>OC</th>
@@ -572,7 +629,7 @@ function createUnitCard(
             <tr>
               <td>${unit.stats.move}</td>
               <td>${unit.stats.toughness}</td>
-              <td>${unit.stats.save}</td>
+              <td>${saveDisplay}</td>
               <td>${unit.stats.wounds}</td>
               <td>${unit.stats.leadership}</td>
               <td>${unit.stats.objectiveControl}</td>
@@ -610,7 +667,40 @@ function createUnitCard(
     </div>
   `;
 
+  // Add click handlers for expandable abilities
+  setupAbilityClickHandlers(unitCard);
+
   return unitCard;
+}
+
+/**
+ * Setup click handlers for expandable abilities
+ */
+function setupAbilityClickHandlers(container: HTMLElement): void {
+  const expandableItems = container.querySelectorAll('.ability-item.expandable');
+
+  expandableItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const expanded = item.getAttribute('data-expanded') === 'true';
+      const truncatedText = item.querySelector('.truncated-text') as HTMLElement;
+      const fullText = item.querySelector('.full-text') as HTMLElement;
+      const expandIcon = item.querySelector('.expand-icon') as HTMLElement;
+
+      if (expanded) {
+        // Collapse
+        truncatedText.style.display = '';
+        fullText.style.display = 'none';
+        expandIcon.textContent = '▼';
+        item.setAttribute('data-expanded', 'false');
+      } else {
+        // Expand
+        truncatedText.style.display = 'none';
+        fullText.style.display = '';
+        expandIcon.textContent = '▲';
+        item.setAttribute('data-expanded', 'true');
+      }
+    });
+  });
 }
 
 /**
