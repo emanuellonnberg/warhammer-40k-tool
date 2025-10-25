@@ -67,6 +67,8 @@ export interface Unit {
     }
   };
   unitRerolls?: RerollConfig;  // Unit-wide re-roll abilities
+  rules?: string[];            // Array of rule IDs
+  abilities?: string[];        // Array of ability IDs
 }
 
 /**
@@ -77,6 +79,22 @@ export interface Army {
   faction: string;
   pointsTotal: number;
   units: Unit[];
+  rules?: {
+    [id: string]: {
+      id: string;
+      name: string;
+      description: string;
+      hidden?: boolean;
+    }
+  };
+  abilities?: {
+    [id: string]: {
+      id: string;
+      name: string;
+      description: string;
+      hidden?: boolean;
+    }
+  };
 }
 
 /**

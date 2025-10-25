@@ -11,6 +11,103 @@ import { getEfficiencyClass } from '../utils/styling';
 import { generateCalculationTooltip, initializeTooltips } from './tooltip';
 
 /**
+ * Weapon-specific rules that should not appear in the unit abilities section
+ * These will be shown as tooltips on weapon keywords instead
+ */
+const WEAPON_RULES = new Set([
+  'Melta',
+  'Twin-linked',
+  'Rapid Fire',
+  'Assault',
+  'Heavy',
+  'Pistol',
+  'Blast',
+  'Torrent',
+  'Sustained Hits',
+  'Lethal Hits',
+  'Devastating Wounds',
+  'Anti-',
+  'Hazardous',
+  'Lance',
+  'Precision',
+  'Ignores Cover',
+  'Extra Attacks',
+  'One Shot',
+  'Indirect Fire'
+]);
+
+/**
+ * Check if a rule is a weapon-specific rule
+ */
+function isWeaponRule(ruleName: string): boolean {
+  // Check exact matches first
+  if (WEAPON_RULES.has(ruleName)) return true;
+
+  // Check for rules that start with common weapon rule prefixes
+  if (ruleName.startsWith('Melta ')) return true;
+  if (ruleName.startsWith('Rapid Fire ')) return true;
+  if (ruleName.startsWith('Sustained Hits ')) return true;
+  if (ruleName.startsWith('Anti-')) return true;
+  if (ruleName.startsWith('Deadly Demise')) return true;
+
+  return false;
+}
+
+/**
+ * Find a rule that matches a weapon keyword
+ */
+function findRuleByKeyword(keyword: string, army: Army): any {
+  if (!army.rules) return null;
+
+  // Search through all rules to find one matching this keyword
+  for (const ruleId in army.rules) {
+    const rule = army.rules[ruleId];
+
+    // Exact match
+    if (rule.name === keyword) return rule;
+
+    // Partial matches for rules with values (e.g., "Melta 2" matches "Melta")
+    if (keyword.startsWith(rule.name + ' ')) return rule;
+
+    // For Anti- rules
+    if (keyword.startsWith('Anti-') && rule.name === 'Anti-') return rule;
+  }
+
+  return null;
+}
+
+/**
+ * Escape HTML for use in attributes
+ */
+function escapeHtml(text: string): string {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML.replace(/"/g, '&quot;');
+}
+
+/**
+ * Parse weapon keywords and add tooltips for known abilities
+ */
+function parseKeywordsWithTooltips(keywords: string, army: Army): string {
+  if (!keywords || keywords === '-') return keywords;
+
+  // Split by comma to get individual keywords
+  const keywordList = keywords.split(',').map(k => k.trim());
+
+  return keywordList.map(keyword => {
+    // Try to find a matching rule in army.rules
+    const matchingRule = findRuleByKeyword(keyword, army);
+
+    if (matchingRule) {
+      // Add tooltip with the rule description
+      return `<span class="weapon-keyword" title="${escapeHtml(matchingRule.description)}">${keyword}</span>`;
+    }
+
+    return keyword;
+  }).join(', ');
+}
+
+/**
  * Check if two weapons have identical characteristics
  */
 function weaponsAreIdentical(w1: Weapon, w2: Weapon): boolean {
@@ -385,8 +482,41 @@ function createUnitCard(
 
   // Build weapon stats table HTML
   const weaponStatsHTML = Array.from(weaponGroups.entries()).map(([baseName, weapons]) => {
-    return buildWeaponStatsHTML(baseName, weapons, includeOneTimeWeapons);
+    return buildWeaponStatsHTML(baseName, weapons, includeOneTimeWeapons, army);
   }).join('');
+
+  // Build abilities and rules HTML (EXCLUDE weapon rules)
+  let abilitiesHTML = '';
+  if ((unit.rules && unit.rules.length > 0) || (unit.abilities && unit.abilities.length > 0)) {
+    const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
+    const rulesHTML = allRuleIds
+      .map(ruleId => {
+        // Get rule/ability from army.rules or army.abilities object
+        const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+        if (!rule || rule.hidden) return '';
+
+        // Filter out weapon-specific rules
+        if (isWeaponRule(rule.name)) return '';
+
+        return `
+          <div class="ability-item mb-2">
+            <strong>${rule.name}:</strong>
+            <span class="text-muted small">${truncateText(rule.description, 150)}</span>
+          </div>
+        `;
+      })
+      .filter(html => html !== '')
+      .join('');
+
+    if (rulesHTML) {
+      abilitiesHTML = `
+        <div class="unit-abilities mb-3">
+          <h6>Abilities & Rules:</h6>
+          ${rulesHTML}
+        </div>
+      `;
+    }
+  }
 
   unitCard.innerHTML = `
     <div class="card-body">
@@ -425,6 +555,32 @@ function createUnitCard(
           ${includeOneTimeWeapons && unitDamage.onetime > 0 ? `| One-Time: ${unitDamage.onetime.toFixed(1)}` : ''}
         </small>
       </p>
+      <div class="unit-stats-table">
+        <h6>Unit Stats:</h6>
+        <table class="table table-sm table-bordered mb-3">
+          <thead>
+            <tr>
+              <th>M</th>
+              <th>T</th>
+              <th>Sv</th>
+              <th>W</th>
+              <th>Ld</th>
+              <th>OC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${unit.stats.move}</td>
+              <td>${unit.stats.toughness}</td>
+              <td>${unit.stats.save}</td>
+              <td>${unit.stats.wounds}</td>
+              <td>${unit.stats.leadership}</td>
+              <td>${unit.stats.objectiveControl}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      ${abilitiesHTML}
       <div class="weapon-list">
         <h6>Weapons:</h6>
         ${weaponListHTML}
@@ -585,7 +741,7 @@ function buildWeaponHTML(
 /**
  * Build weapon stats table rows HTML
  */
-function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTimeWeapons: boolean): string {
+function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTimeWeapons: boolean, army: Army): string {
   // Skip weapons that should be excluded based on settings
   if (!includeOneTimeWeapons && weapons.some(w => isOneTimeWeapon(w))) {
     return '';
@@ -611,8 +767,16 @@ function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTim
         <td>${chars.s || '-'}</td>
         <td>${chars.ap || '0'}</td>
         <td>${chars.d || '-'}</td>
-        <td><small>${chars.keywords || ''}</small></td>
+        <td><small>${parseKeywordsWithTooltips(chars.keywords || '', army)}</small></td>
       </tr>
     `;
   }).join('');
+}
+
+/**
+ * Truncate text to a maximum length
+ */
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
