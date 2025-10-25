@@ -9,6 +9,10 @@ import { calculateWeaponDamage } from '../calculators/damage';
 import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
 import { getEfficiencyClass } from '../utils/styling';
 import { generateCalculationTooltip, initializeTooltips } from './tooltip';
+import { Chart, registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 /**
  * Weapon-specific rules that should not appear in the unit abilities section
@@ -283,18 +287,478 @@ export function displayAnalysisResults(
   const dashboard = createDashboard(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(dashboard);
 
+  // Create filter panel
+  const filterPanel = createFilterPanel();
+  resultsDiv.appendChild(filterPanel);
+
+  // Create visualization area
+  const visualizationArea = createVisualizationArea(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  resultsDiv.appendChild(visualizationArea);
+
   // Create summary table
   const summaryTable = createSummaryTable(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(summaryTable);
 
   // Create unit cards
+  const unitsContainer = document.createElement('div');
+  unitsContainer.id = 'units-container';
   for (const unit of sortedUnits) {
     const unitCard = createUnitCard(unit, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, army, scenarioRerolls, targetFNP);
-    resultsDiv.appendChild(unitCard);
+    unitsContainer.appendChild(unitCard);
   }
+  resultsDiv.appendChild(unitsContainer);
 
   // Initialize tooltips for all elements with data-tooltip attribute
   initializeTooltips();
+
+  // Setup filter event handlers
+  setupFilterHandlers(army, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+}
+
+/**
+ * Create filter panel for unit filtering
+ */
+function createFilterPanel(): HTMLElement {
+  const filterPanel = document.createElement('div');
+  filterPanel.className = 'card mb-4 filter-panel';
+  filterPanel.innerHTML = `
+    <div class="card-body">
+      <h5 class="card-title">🔍 Filter Units</h5>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="searchInput" class="form-label">Search by Name:</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Type unit name...">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Points Range:</label>
+            <div class="d-flex gap-2 align-items-center">
+              <input type="number" id="minPoints" class="form-control" placeholder="Min" min="0" style="width: 100px;">
+              <span>to</span>
+              <input type="number" id="maxPoints" class="form-control" placeholder="Max" min="0" style="width: 100px;">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Efficiency Tier:</label>
+            <div class="filter-checkboxes">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input efficiency-filter" type="checkbox" id="filterHigh" value="high" checked>
+                <label class="form-check-label high-efficiency" for="filterHigh">High (≥0.200)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input efficiency-filter" type="checkbox" id="filterMedium" value="medium" checked>
+                <label class="form-check-label medium-efficiency" for="filterMedium">Medium (0.100-0.199)</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input efficiency-filter" type="checkbox" id="filterLow" value="low" checked>
+                <label class="form-check-label low-efficiency" for="filterLow">Low (<0.100)</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label class="form-label">Weapon Type:</label>
+            <div class="filter-checkboxes">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input weapon-filter" type="checkbox" id="filterRanged" value="ranged" checked>
+                <label class="form-check-label" for="filterRanged">Has Ranged</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input weapon-filter" type="checkbox" id="filterMelee" value="melee" checked>
+                <label class="form-check-label" for="filterMelee">Has Melee</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <button id="clearFilters" class="btn btn-sm btn-outline-secondary">Clear All Filters</button>
+          <span id="filterCount" class="ms-3 text-muted"></span>
+        </div>
+      </div>
+    </div>
+  `;
+  return filterPanel;
+}
+
+/**
+ * Setup filter event handlers
+ */
+function setupFilterHandlers(
+  army: Army,
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): void {
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+  const minPointsInput = document.getElementById('minPoints') as HTMLInputElement;
+  const maxPointsInput = document.getElementById('maxPoints') as HTMLInputElement;
+  const efficiencyFilters = document.querySelectorAll('.efficiency-filter') as NodeListOf<HTMLInputElement>;
+  const weaponFilters = document.querySelectorAll('.weapon-filter') as NodeListOf<HTMLInputElement>;
+  const clearButton = document.getElementById('clearFilters');
+
+  if (!searchInput || !minPointsInput || !maxPointsInput || !clearButton) return;
+
+  const applyFilters = () => {
+    const searchTerm = searchInput.value.toLowerCase().trim();
+    const minPoints = minPointsInput.value ? parseInt(minPointsInput.value) : 0;
+    const maxPoints = maxPointsInput.value ? parseInt(maxPointsInput.value) : Infinity;
+
+    // Get selected efficiency tiers
+    const selectedTiers = Array.from(efficiencyFilters)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    // Get selected weapon types
+    const selectedWeaponTypes = Array.from(weaponFilters)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    // Filter units
+    let visibleCount = 0;
+    const tableRows = document.querySelectorAll('.table tbody tr.unit-row-clickable');
+    const unitCards = document.querySelectorAll('.unit-card');
+
+    tableRows.forEach((row, index) => {
+      const unitName = (row as HTMLElement).dataset.name?.toLowerCase() || '';
+      const unitPoints = parseInt((row as HTMLElement).dataset.points || '0');
+      const unitEfficiency = parseFloat((row as HTMLElement).dataset.efficiency || '0');
+      const rangedDamage = parseFloat((row as HTMLElement).dataset.ranged || '0');
+      const meleeDamage = parseFloat((row as HTMLElement).dataset.melee || '0');
+
+      // Apply search filter
+      let visible = true;
+      if (searchTerm && !unitName.includes(searchTerm)) {
+        visible = false;
+      }
+
+      // Apply points range filter
+      if (visible && (unitPoints < minPoints || unitPoints > maxPoints)) {
+        visible = false;
+      }
+
+      // Apply efficiency filter
+      if (visible && selectedTiers.length > 0) {
+        const tier = unitEfficiency >= 0.200 ? 'high' : unitEfficiency >= 0.100 ? 'medium' : 'low';
+        if (!selectedTiers.includes(tier)) {
+          visible = false;
+        }
+      }
+
+      // Apply weapon type filter
+      if (visible && selectedWeaponTypes.length > 0) {
+        const hasRanged = rangedDamage > 0;
+        const hasMelee = meleeDamage > 0;
+        const matchesFilter = selectedWeaponTypes.some(type => {
+          if (type === 'ranged') return hasRanged;
+          if (type === 'melee') return hasMelee;
+          return false;
+        });
+        if (!matchesFilter) {
+          visible = false;
+        }
+      }
+
+      // Show/hide row and corresponding card
+      (row as HTMLElement).style.display = visible ? '' : 'none';
+      if (unitCards[index]) {
+        (unitCards[index] as HTMLElement).style.display = visible ? '' : 'none';
+      }
+
+      if (visible) visibleCount++;
+    });
+
+    // Update filter count
+    const filterCount = document.getElementById('filterCount');
+    if (filterCount) {
+      const totalCount = tableRows.length;
+      filterCount.textContent = `Showing ${visibleCount} of ${totalCount} units`;
+    }
+  };
+
+  // Add event listeners
+  searchInput.addEventListener('input', applyFilters);
+  minPointsInput.addEventListener('input', applyFilters);
+  maxPointsInput.addEventListener('input', applyFilters);
+  efficiencyFilters.forEach(cb => cb.addEventListener('change', applyFilters));
+  weaponFilters.forEach(cb => cb.addEventListener('change', applyFilters));
+
+  clearButton.addEventListener('click', () => {
+    searchInput.value = '';
+    minPointsInput.value = '';
+    maxPointsInput.value = '';
+    efficiencyFilters.forEach(cb => cb.checked = true);
+    weaponFilters.forEach(cb => cb.checked = true);
+    applyFilters();
+  });
+
+  // Initial filter application
+  applyFilters();
+}
+
+/**
+ * Create visualization area with charts
+ */
+function createVisualizationArea(
+  army: Army,
+  sortedUnits: Unit[],
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): HTMLElement {
+  const vizArea = document.createElement('div');
+  vizArea.className = 'card mb-4 visualization-card';
+  vizArea.innerHTML = `
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0">📈 Visualizations</h5>
+        <select id="chartTypeSelector" class="form-select" style="width: 200px;">
+          <option value="damage-curve">Damage vs Toughness</option>
+          <option value="dpp-bars">Efficiency (DPP) Bars</option>
+        </select>
+      </div>
+      <div class="chart-container" style="position: relative; height: 400px;">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+  `;
+
+  // Initialize with damage curve chart
+  setTimeout(() => {
+    createDamageCurveChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+
+    // Setup chart type selector
+    const selector = document.getElementById('chartTypeSelector') as HTMLSelectElement;
+    if (selector) {
+      selector.addEventListener('change', () => {
+        const chartType = selector.value;
+        if (chartType === 'damage-curve') {
+          createDamageCurveChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+        } else if (chartType === 'dpp-bars') {
+          createDPPBarChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+        }
+      });
+    }
+  }, 100);
+
+  return vizArea;
+}
+
+/**
+ * Create damage curve chart showing damage vs toughness
+ */
+let currentChart: Chart | null = null;
+
+function createDamageCurveChart(
+  units: Unit[],
+  currentToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): void {
+  const canvas = document.getElementById('mainChart') as HTMLCanvasElement;
+  if (!canvas) return;
+
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+
+  // Calculate damage for each unit across T3-T12
+  const toughnessValues = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const colors = [
+    '#1e88e5', '#43a047', '#fb8c00', '#e53935', '#7b1fa2',
+    '#00897b', '#d81b60', '#5e35b1', '#3949ab', '#00acc1'
+  ];
+
+  const datasets = units.slice(0, 10).map((unit, index) => {
+    const data = toughnessValues.map(t => {
+      const damage = calculateUnitDamage(
+        unit,
+        t,
+        useOvercharge,
+        weaponModes.get(unit.id),
+        includeOneTimeWeapons,
+        optimalRange,
+        [],
+        1,
+        false,
+        null,
+        scenarioRerolls,
+        targetFNP
+      );
+      return damage.total;
+    });
+
+    return {
+      label: unit.name,
+      data,
+      borderColor: colors[index % colors.length],
+      backgroundColor: colors[index % colors.length] + '20',
+      tension: 0.1,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    };
+  });
+
+  currentChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: toughnessValues.map(t => `T${t}`),
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Damage Output vs Target Toughness',
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: {
+          display: true,
+          position: 'bottom'
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Total Damage'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Target Toughness'
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    }
+  });
+}
+
+/**
+ * Create DPP bar chart showing efficiency ranking
+ */
+function createDPPBarChart(
+  units: Unit[],
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): void {
+  const canvas = document.getElementById('mainChart') as HTMLCanvasElement;
+  if (!canvas) return;
+
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+
+  // Calculate DPP for each unit and sort
+  const unitDPP = units.map(unit => {
+    const damage = calculateUnitDamage(
+      unit,
+      targetToughness,
+      useOvercharge,
+      weaponModes.get(unit.id),
+      includeOneTimeWeapons,
+      optimalRange,
+      [],
+      1,
+      false,
+      null,
+      scenarioRerolls,
+      targetFNP
+    );
+    const dpp = damage.total / unit.points;
+    return { name: unit.name, dpp, efficiency: dpp };
+  }).sort((a, b) => b.dpp - a.dpp);
+
+  // Color code by efficiency tier
+  const backgroundColors = unitDPP.map(u => {
+    if (u.efficiency >= 0.200) return '#43a047';  // High - green
+    if (u.efficiency >= 0.100) return '#fb8c00';  // Medium - orange
+    return '#e53935';  // Low - red
+  });
+
+  currentChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: unitDPP.map(u => u.name),
+      datasets: [{
+        label: 'Damage per Point (DPP)',
+        data: unitDPP.map(u => u.dpp),
+        backgroundColor: backgroundColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Unit Efficiency (vs T${targetToughness})`,
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `DPP: ${context.parsed.x.toFixed(3)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Damage per Point'
+          }
+        }
+      }
+    }
+  });
 }
 
 /**
@@ -470,7 +934,12 @@ function createSummaryTable(
   summaryTable.className = 'card mb-4';
   summaryTable.innerHTML = `
     <div class="card-body">
-      <h5 class="card-title">Unit Summary</h5>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0">Unit Summary</h5>
+        <button id="exportCSV" class="btn btn-sm btn-outline-primary">
+          📊 Export CSV
+        </button>
+      </div>
       <div class="table-responsive">
         <table class="table table-sm">
           <thead>
@@ -523,7 +992,8 @@ function createSummaryTable(
               const rangedDamagePerPoint = damage.ranged / unit.points;
               const meleeDamagePerPoint = damage.melee / unit.points;
               return `
-                <tr data-unit-id="${unit.id}"
+                <tr class="unit-row-clickable"
+                    data-unit-id="${unit.id}"
                     data-name="${unit.name}"
                     data-points="${unit.points}"
                     data-efficiency="${efficiency}"
@@ -562,6 +1032,13 @@ function createSummaryTable(
   const table = summaryTable.querySelector('table');
   if (table) {
     addTableSortHandlers(table);
+    addRowClickHandlers(table);
+  }
+
+  // Add CSV export handler
+  const exportButton = summaryTable.querySelector('#exportCSV');
+  if (exportButton && table) {
+    exportButton.addEventListener('click', () => exportTableToCSV(table, sortedUnits, targetToughness));
   }
 
   return summaryTable;
@@ -635,6 +1112,86 @@ function addTableSortHandlers(table: HTMLTableElement): void {
       rows.forEach(row => tbody.appendChild(row));
     });
   });
+}
+
+/**
+ * Add row click handlers to scroll to unit cards
+ */
+function addRowClickHandlers(table: HTMLTableElement): void {
+  const rows = table.querySelectorAll('tbody tr.unit-row-clickable');
+
+  rows.forEach(row => {
+    (row as HTMLElement).style.cursor = 'pointer';
+
+    row.addEventListener('click', () => {
+      const unitId = (row as HTMLElement).dataset.unitId;
+      if (unitId) {
+        const unitCard = document.getElementById(`unit-${unitId}`);
+        if (unitCard) {
+          unitCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Add brief highlight effect
+          unitCard.style.transition = 'box-shadow 0.3s ease';
+          unitCard.style.boxShadow = '0 0 20px rgba(30, 136, 229, 0.5)';
+          setTimeout(() => {
+            unitCard.style.boxShadow = '';
+          }, 1500);
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Export table data to CSV
+ */
+function exportTableToCSV(table: HTMLTableElement, units: Unit[], targetToughness: number): void {
+  const rows: string[][] = [];
+
+  // Add header row
+  const headers: string[] = [];
+  table.querySelectorAll('thead th').forEach(th => {
+    const text = (th.textContent || '').replace(/[↑↓]/g, '').trim();
+    headers.push(text);
+  });
+  rows.push(headers);
+
+  // Add data rows (only visible ones)
+  const visibleRows = Array.from(table.querySelectorAll('tbody tr')).filter(
+    row => (row as HTMLElement).style.display !== 'none'
+  );
+
+  visibleRows.forEach(tr => {
+    const cols: string[] = [];
+    tr.querySelectorAll('td').forEach(td => {
+      // Get text content, remove any HTML
+      const text = (td.textContent || '').trim();
+      cols.push(text);
+    });
+    rows.push(cols);
+  });
+
+  // Convert to CSV format
+  const csvContent = rows.map(row =>
+    row.map(cell => {
+      // Escape quotes and wrap in quotes if contains comma
+      const escaped = cell.replace(/"/g, '""');
+      return escaped.includes(',') ? `"${escaped}"` : escaped;
+    }).join(',')
+  ).join('\n');
+
+  // Create download link
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+
+  link.setAttribute('href', url);
+  link.setAttribute('download', `40k-efficiency-T${targetToughness}.csv`);
+  link.style.visibility = 'hidden';
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
 
 /**

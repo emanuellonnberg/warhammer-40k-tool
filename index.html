@@ -166,6 +166,20 @@
         .table tbody tr:hover {
             background-color: rgba(0,0,0,.05);
         }
+
+        .table tbody tr.unit-row-clickable {
+            transition: var(--transition-normal);
+        }
+
+        .table tbody tr.unit-row-clickable:hover {
+            background-color: rgba(30, 136, 229, 0.1);
+            transform: scale(1.01);
+            cursor: pointer;
+        }
+
+        .table tbody tr.unit-row-clickable:active {
+            background-color: rgba(30, 136, 229, 0.2);
+        }
         .points-value {
             font-weight: bold;
             color: var(--text-secondary);
@@ -416,6 +430,56 @@
         .form-group-inline {
             flex: 1;
             min-width: 200px;
+        }
+
+        /* Visualization styles */
+        .visualization-card {
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--chart-2);
+        }
+
+        .visualization-card .card-title {
+            color: var(--chart-2);
+        }
+
+        .chart-container {
+            background-color: var(--surface);
+            border-radius: 4px;
+            padding: var(--spacing-md);
+        }
+
+        /* Filter panel styles */
+        .filter-panel {
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .filter-panel .card-title {
+            color: var(--primary-blue);
+        }
+
+        .filter-checkboxes {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-checkboxes .form-check {
+            margin-right: 0;
+        }
+
+        #searchInput {
+            transition: var(--transition-normal);
+        }
+
+        #searchInput:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 0.2rem rgba(30, 136, 229, 0.25);
+        }
+
+        #filterCount {
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         /* Dashboard styles */
