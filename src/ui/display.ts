@@ -420,7 +420,7 @@ function setupFilterHandlers(
 
     // Filter units
     let visibleCount = 0;
-    const tableRows = document.querySelectorAll('.table tbody tr');
+    const tableRows = document.querySelectorAll('.table tbody tr.unit-row-clickable');
     const unitCards = document.querySelectorAll('.unit-card');
 
     tableRows.forEach((row, index) => {
