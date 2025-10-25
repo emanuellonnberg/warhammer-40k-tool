@@ -3,6 +3,25 @@
  */
 
 /**
+ * Types of re-roll mechanics in Warhammer 40K
+ */
+export enum RerollType {
+  NONE = "none",           // No re-roll
+  ONES = "ones",           // Re-roll 1s only
+  FAILED = "failed",       // Re-roll failed rolls
+  ALL = "all"              // Re-roll all rolls
+}
+
+/**
+ * Re-roll configuration for a specific roll type
+ */
+export interface RerollConfig {
+  hits?: RerollType;       // Re-roll for hit rolls
+  wounds?: RerollType;     // Re-roll for wound rolls
+  damage?: RerollType;     // Re-roll for damage rolls
+}
+
+/**
  * Weapon characteristics from army data
  */
 export interface Weapon {
@@ -15,6 +34,7 @@ export interface Weapon {
   base_name?: string;
   overcharge_mode?: string;
   is_one_time?: boolean;
+  rerolls?: RerollConfig;  // Re-roll configuration for this weapon
 }
 
 /**
@@ -46,6 +66,7 @@ export interface Unit {
       overcharge: string | null
     }
   };
+  unitRerolls?: RerollConfig;  // Unit-wide re-roll abilities
 }
 
 /**

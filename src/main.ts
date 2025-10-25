@@ -2,7 +2,8 @@
  * Main entry point for Warhammer 40K Unit Efficiency Analyzer
  */
 
-import type { Army } from './types';
+import type { Army, RerollConfig } from './types';
+import { RerollType } from './types';
 import { displayAnalysisResults, setupWeaponModeToggles } from './ui';
 
 /**
@@ -15,11 +16,16 @@ async function main() {
     const overchargeToggle = document.getElementById('overchargeToggle') as HTMLInputElement;
     const oneTimeWeaponsToggle = document.getElementById('oneTimeWeaponsToggle') as HTMLInputElement;
     const optimalRangeToggle = document.getElementById('optimalRangeToggle') as HTMLInputElement;
+    const rerollHitsSelect = document.getElementById('rerollHits') as HTMLSelectElement;
+    const rerollWoundsSelect = document.getElementById('rerollWounds') as HTMLSelectElement;
+    const targetFNPSelect = document.getElementById('targetFNP') as HTMLSelectElement;
     const armyFileSelect = document.getElementById('armyFile') as HTMLSelectElement;
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
 
-    if (!toughnessSelect || !overchargeToggle || !oneTimeWeaponsToggle || !optimalRangeToggle || !armyFileSelect || !dropZone || !fileInput) {
+    if (!toughnessSelect || !overchargeToggle || !oneTimeWeaponsToggle || !optimalRangeToggle ||
+        !rerollHitsSelect || !rerollWoundsSelect || !targetFNPSelect ||
+        !armyFileSelect || !dropZone || !fileInput) {
       throw new Error('Could not find required UI elements');
     }
 
@@ -54,6 +60,15 @@ async function main() {
      */
     const updateDisplay = (resetModes: boolean = false) => {
       if (currentArmy) {
+        // Get scenario re-rolls from dropdowns
+        const scenarioRerolls: RerollConfig = {
+          hits: rerollHitsSelect.value as RerollType,
+          wounds: rerollWoundsSelect.value as RerollType
+        };
+
+        // Get target FNP value
+        const targetFNP = parseInt(targetFNPSelect.value) || undefined;
+
         // Reset weapon modes only when loading a new army
         if (resetModes) {
           activeWeaponModes.clear();
@@ -65,7 +80,9 @@ async function main() {
           overchargeToggle.checked,
           activeWeaponModes,
           oneTimeWeaponsToggle.checked,
-          optimalRangeToggle.checked
+          optimalRangeToggle.checked,
+          scenarioRerolls,
+          targetFNP
         );
 
         // Setup event handlers for weapon mode toggles
@@ -75,7 +92,9 @@ async function main() {
           overchargeToggle.checked,
           activeWeaponModes,
           oneTimeWeaponsToggle.checked,
-          optimalRangeToggle.checked
+          optimalRangeToggle.checked,
+          scenarioRerolls,
+          targetFNP
         );
       }
     };
@@ -145,6 +164,9 @@ async function main() {
     overchargeToggle.addEventListener('change', updateDisplay);
     oneTimeWeaponsToggle.addEventListener('change', updateDisplay);
     optimalRangeToggle.addEventListener('change', updateDisplay);
+    rerollHitsSelect.addEventListener('change', updateDisplay);
+    rerollWoundsSelect.addEventListener('change', updateDisplay);
+    targetFNPSelect.addEventListener('change', updateDisplay);
 
     // Load initial army data
     try {

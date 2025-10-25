@@ -20,6 +20,7 @@ import { parseNumeric } from '../utils/numeric';
  * @param isCharging - Whether the attacker is charging (for Lance weapons)
  * @param targetSave - Target's save characteristic (e.g., "3+", "4+", null for no save)
  * @param weaponAP - Weapon's armor penetration value
+ * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
  * @returns Total damage and breakdown explanation
  */
 export function applySpecialRules(
@@ -34,7 +35,8 @@ export function applySpecialRules(
   targetUnitSize: number = 1,
   isCharging: boolean = false,
   targetSave: string | null = null,
-  weaponAP: number = 0
+  weaponAP: number = 0,
+  targetFNP?: number
 ): SpecialRulesResult {
   const keywords = weapon.characteristics.keywords || "";
   let effectiveAttacks = baseAttacks;
@@ -171,6 +173,14 @@ export function applySpecialRules(
   if (keywords.toLowerCase().includes("hazardous")) {
     const hazardRisk = 1 / 6 * 3; // One test per weapon: 1/6 chance of 3 MW
     breakdown.push(`Hazardous: ${hazardRisk.toFixed(2)} MW risk to attacker (not included in damage)`);
+  }
+
+  // Apply Feel No Pain
+  if (targetFNP && targetFNP >= 2 && targetFNP <= 6) {
+    const fnpChance = (7 - targetFNP) / 6;
+    const damageBeforeFNP = totalDamage;
+    totalDamage = totalDamage * (1 - fnpChance);
+    breakdown.push(`FNP ${targetFNP}+: ${damageBeforeFNP.toFixed(2)} -> ${totalDamage.toFixed(2)} damage`);
   }
 
   return {

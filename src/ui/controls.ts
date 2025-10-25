@@ -2,7 +2,7 @@
  * Event handlers and user interaction controls
  */
 
-import type { Army, Unit } from '../types';
+import type { Army, Unit, RerollConfig } from '../types';
 import { calculateUnitDamage, calculateUnitEfficiency } from '../calculators';
 import { getEfficiencyClass } from '../utils/styling';
 import { displayAnalysisResults } from './display';
@@ -15,6 +15,8 @@ import { displayAnalysisResults } from './display';
  * @param weaponModes - Map of weapon modes
  * @param includeOneTimeWeapons - Whether to include one-time weapons
  * @param optimalRange - Whether at optimal range
+ * @param scenarioRerolls - Scenario-based re-rolls
+ * @param targetFNP - Target Feel No Pain value
  */
 export function setupWeaponModeToggles(
   army: Army,
@@ -22,7 +24,9 @@ export function setupWeaponModeToggles(
   useOvercharge: boolean,
   weaponModes: Map<string, Map<string, number>>,
   includeOneTimeWeapons: boolean,
-  optimalRange: boolean
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): void {
   document.querySelectorAll('.weapon-mode-toggle').forEach(toggle => {
     toggle.addEventListener('change', (event) => {
@@ -59,7 +63,7 @@ export function setupWeaponModeToggles(
 
       // Recalculate damage with updated modes
       const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
-      const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
+      const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP);
       const damagePerPoint = damage.total / unit.points;
       const rangedDamagePerPoint = damage.ranged / unit.points;
       const meleeDamagePerPoint = damage.melee / unit.points;

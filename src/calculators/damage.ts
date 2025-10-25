@@ -2,10 +2,11 @@
  * Damage calculation logic for Warhammer 40K weapons and units
  */
 
-import type { Weapon, Unit, DamageBreakdown } from '../types';
+import type { Weapon, Unit, DamageBreakdown, RerollConfig } from '../types';
 import { parseNumeric, parseDamage } from '../utils/numeric';
 import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
 import { applySpecialRules } from '../rules/special-weapons';
+import { calculateHitChanceWithReroll, calculateWoundChanceWithReroll } from './rerolls';
 
 /**
  * Check if two weapons have identical characteristics
@@ -60,6 +61,9 @@ function combineIdenticalWeapons(weapons: Weapon[]): Weapon[] {
  * @param targetUnitSize - Number of models in target unit (for Blast weapons)
  * @param isCharging - Whether the attacker is charging (for Lance weapons)
  * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
+ * @param unitRerolls - Unit-wide re-roll abilities
+ * @param scenarioRerolls - Scenario-based re-rolls (from buffs, stratagems, etc.)
+ * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
  * @returns Expected damage value
  */
 export function calculateWeaponDamage(
@@ -71,7 +75,10 @@ export function calculateWeaponDamage(
   targetKeywords: string[] = [],
   targetUnitSize: number = 1,
   isCharging: boolean = false,
-  targetSave: string | null = null
+  targetSave: string | null = null,
+  unitRerolls?: RerollConfig,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): number {
   // Skip one-time weapons if not included
   if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
@@ -109,27 +116,29 @@ export function calculateWeaponDamage(
     hitChance = 1; // 100% hit chance
   } else {
     // Check for BS (ranged) or WS (melee)
-    const skill = chars.bs || chars.ws || "4+";
-    if (skill === "2+") hitChance = 5 / 6;
-    if (skill === "3+") hitChance = 2 / 3;
-    if (skill === "4+") hitChance = 1 / 2;
-    if (skill === "5+") hitChance = 1 / 3;
-    if (skill === "6+") hitChance = 1 / 6;
+    const skillStr = chars.bs || chars.ws || "4+";
+    const skillMatch = skillStr.match(/(\d+)\+/);
+    const skill = skillMatch ? parseInt(skillMatch[1]) : 4;
+
+    // Apply re-rolls to hit chance
+    hitChance = calculateHitChanceWithReroll(
+      skill,
+      weapon.rerolls?.hits,
+      unitRerolls?.hits,
+      scenarioRerolls?.hits
+    );
   }
 
-  // Calculate wound chance
-  let woundChance = 0;
-  if (strength >= targetToughness * 2) {
-    woundChance = 5 / 6; // 2+
-  } else if (strength > targetToughness) {
-    woundChance = 2 / 3; // 3+
-  } else if (strength === targetToughness) {
-    woundChance = 1 / 2; // 4+
-  } else if (strength * 2 <= targetToughness) {
-    woundChance = 1 / 6; // 6+
-  } else {
-    woundChance = 1 / 3; // 5+
-  }
+  // Calculate wound chance with re-rolls
+  // Note: Twin-Linked is handled in applySpecialRules for backward compatibility
+  const hasTwinLinked = keywords.toLowerCase().includes("twin-linked");
+  const woundChance = calculateWoundChanceWithReroll(
+    strength,
+    targetToughness,
+    hasTwinLinked ? undefined : weapon.rerolls?.wounds, // Don't apply weapon wound re-rolls if Twin-Linked
+    hasTwinLinked ? undefined : unitRerolls?.wounds,    // Don't apply unit wound re-rolls if Twin-Linked
+    hasTwinLinked ? undefined : scenarioRerolls?.wounds // Don't apply scenario wound re-rolls if Twin-Linked
+  );
 
   // Apply special weapon rules
   const specialRules = applySpecialRules(
@@ -144,7 +153,8 @@ export function calculateWeaponDamage(
     targetUnitSize,
     isCharging,
     targetSave,
-    Math.abs(ap) // Convert AP to positive number (AP -3 becomes 3)
+    Math.abs(ap), // Convert AP to positive number (AP -3 becomes 3)
+    targetFNP
   );
 
   // Calculate and return expected damage
@@ -163,6 +173,8 @@ export function calculateWeaponDamage(
  * @param targetUnitSize - Number of models in target unit (for Blast weapons)
  * @param isCharging - Whether the attacker is charging (for Lance weapons)
  * @param targetSave - Target's save characteristic (e.g., "3+", null for no save)
+ * @param scenarioRerolls - Scenario-based re-rolls (from buffs, stratagems, etc.)
+ * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
  * @returns Damage breakdown by weapon type
  */
 export function calculateUnitDamage(
@@ -175,7 +187,9 @@ export function calculateUnitDamage(
   targetKeywords: string[] = [],
   targetUnitSize: number = 1,
   isCharging: boolean = false,
-  targetSave: string | null = null
+  targetSave: string | null = null,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): DamageBreakdown {
   const damages: DamageBreakdown = {
     total: 0,
@@ -223,7 +237,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -243,7 +257,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
+      const damage = calculateWeaponDamage(activeWeapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(activeWeapon) && includeOneTimeWeapons) {
@@ -261,7 +275,7 @@ export function calculateUnitDamage(
       // Skip pistols if there are other ranged weapons
       if (weaponType === 'pistol' && hasRangedWeapons) return;
 
-      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave);
+      const damage = calculateWeaponDamage(weapon, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, targetKeywords, targetUnitSize, isCharging, targetSave, unit.unitRerolls, scenarioRerolls, targetFNP);
 
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {

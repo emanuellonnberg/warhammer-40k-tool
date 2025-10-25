@@ -2,7 +2,7 @@
  * UI display and rendering logic
  */
 
-import type { Army, Unit, Weapon, SortColumn, SortDirection } from '../types';
+import type { Army, Unit, Weapon, SortColumn, SortDirection, RerollConfig } from '../types';
 import { calculateUnitDamage } from '../calculators/damage';
 import { calculateUnitEfficiency } from '../calculators/efficiency';
 import { calculateWeaponDamage } from '../calculators/damage';
@@ -64,7 +64,9 @@ export function displayAnalysisResults(
   useOvercharge: boolean = false,
   activeWeaponModes?: Map<string, Map<string, number>>,
   includeOneTimeWeapons: boolean = false,
-  optimalRange: boolean = true
+  optimalRange: boolean = true,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): void {
   const resultsDiv = document.getElementById('analysis-results');
   if (!resultsDiv) return;
@@ -94,32 +96,32 @@ export function displayAnalysisResults(
         bValue = calculateUnitEfficiency(b, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(b.id));
         break;
       case 'dpp':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).total / a.points;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).total / b.points;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).total / a.points;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).total / b.points;
         break;
       case 'rangeddpp':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).ranged / a.points;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).ranged / b.points;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).ranged / a.points;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).ranged / b.points;
         break;
       case 'meleedpp':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).melee / a.points;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).melee / b.points;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).melee / a.points;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).melee / b.points;
         break;
       case 'ranged':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).ranged;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).ranged;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).ranged;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).ranged;
         break;
       case 'melee':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).melee;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).melee;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).melee;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).melee;
         break;
       case 'pistol':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).pistol;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).pistol;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).pistol;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).pistol;
         break;
       case 'onetime':
-        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange).onetime;
-        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange).onetime;
+        aValue = calculateUnitDamage(a, targetToughness, useOvercharge, weaponModes.get(a.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).onetime;
+        bValue = calculateUnitDamage(b, targetToughness, useOvercharge, weaponModes.get(b.id), includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP).onetime;
         break;
       default:
         aValue = calculateUnitEfficiency(a, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, weaponModes.get(a.id));
@@ -138,12 +140,12 @@ export function displayAnalysisResults(
   });
 
   // Create summary table
-  const summaryTable = createSummaryTable(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange);
+  const summaryTable = createSummaryTable(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(summaryTable);
 
   // Create unit cards
   for (const unit of sortedUnits) {
-    const unitCard = createUnitCard(unit, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, army);
+    const unitCard = createUnitCard(unit, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, army, scenarioRerolls, targetFNP);
     resultsDiv.appendChild(unitCard);
   }
 
@@ -160,7 +162,9 @@ function createSummaryTable(
   useOvercharge: boolean,
   weaponModes: Map<string, Map<string, number>>,
   includeOneTimeWeapons: boolean,
-  optimalRange: boolean
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): HTMLElement {
   const summaryTable = document.createElement('div');
   summaryTable.className = 'card mb-4';
@@ -214,7 +218,7 @@ function createSummaryTable(
               });
 
               const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
-              const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
+              const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP);
               const damagePerPoint = damage.total / unit.points;
               const rangedDamagePerPoint = damage.ranged / unit.points;
               const meleeDamagePerPoint = damage.melee / unit.points;
@@ -343,11 +347,13 @@ function createUnitCard(
   weaponModes: Map<string, Map<string, number>>,
   includeOneTimeWeapons: boolean,
   optimalRange: boolean,
-  army: Army
+  army: Army,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): HTMLElement {
   const unitModes = weaponModes.get(unit.id);
   const unitEfficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
-  const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange);
+  const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP);
   const damagePerPoint = unitDamage.total / unit.points;
   const rangedDamagePerPoint = unitDamage.ranged / unit.points;
   const meleeDamagePerPoint = unitDamage.melee / unit.points;
@@ -374,7 +380,7 @@ function createUnitCard(
 
   // Build weapon list HTML
   const weaponListHTML = Array.from(weaponGroups.entries()).map(([baseName, weapons], index) => {
-    return buildWeaponHTML(baseName, weapons, index, unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
+    return buildWeaponHTML(baseName, weapons, index, unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes, scenarioRerolls, targetFNP);
   }).join('');
 
   // Build weapon stats table HTML
@@ -463,7 +469,9 @@ function buildWeaponHTML(
   useOvercharge: boolean,
   includeOneTimeWeapons: boolean,
   optimalRange: boolean,
-  unitModes?: Map<string, number>
+  unitModes?: Map<string, number>,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
 ): string {
   // Skip weapons that should be excluded based on settings
   if (!includeOneTimeWeapons && weapons.some(w => isOneTimeWeapon(w))) {
@@ -475,8 +483,8 @@ function buildWeaponHTML(
 
   if (standardWeapon && overchargeWeapon) {
     // Weapon has standard/overcharge modes
-    const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
-    const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange);
+    const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
+    const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(standardWeapon);
     const isOneTime = isOneTimeWeapon(standardWeapon);
 
@@ -489,7 +497,7 @@ function buildWeaponHTML(
           <br>
           <span class="${!useOvercharge ? 'active-mode' : 'inactive-mode'}">
             Standard:
-            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(standardDamage)}" data-tooltip="${generateCalculationTooltip(standardWeapon, targetToughness, false, optimalRange)}">
+            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(standardDamage)}" data-tooltip="${generateCalculationTooltip(standardWeapon, targetToughness, false, optimalRange, unit.unitRerolls, scenarioRerolls, targetFNP)}">
               ${standardDamage.toFixed(3)}
             </span>
             <span class="damage-value">
@@ -499,7 +507,7 @@ function buildWeaponHTML(
           <br>
           <span class="${useOvercharge ? 'active-mode' : 'inactive-mode'}">
             Overcharge:
-            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(overchargeDamage)}" data-tooltip="${generateCalculationTooltip(overchargeWeapon, targetToughness, true, optimalRange)}">
+            <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(overchargeDamage)}" data-tooltip="${generateCalculationTooltip(overchargeWeapon, targetToughness, true, optimalRange, unit.unitRerolls, scenarioRerolls, targetFNP)}">
               ${overchargeDamage.toFixed(3)}
             </span>
             <span class="damage-value">
@@ -517,13 +525,13 @@ function buildWeaponHTML(
     const weaponId = `weapon-${unit.id}-${index}`;
 
     const modesHTML = weapons.map((weapon, modeIndex) => {
-      const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
+      const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
       const modeName = weapon.name.replace(baseName, '').replace(/^[ -]+/, '') || 'Mode ' + (modeIndex + 1);
       return `
         <span class="weapon-mode ${modeIndex === activeMode ? 'active-mode' : 'inactive-mode'}"
               data-mode-index="${modeIndex}">
           ${modeName}:
-          <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(damage)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange)}">
+          <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(damage)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange, unit.unitRerolls, scenarioRerolls, targetFNP)}">
             ${damage.toFixed(3)}
           </span>
           <span class="damage-value">
@@ -554,7 +562,7 @@ function buildWeaponHTML(
   } else {
     // Regular weapon
     const weapon = weapons[0];
-    const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange);
+    const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(weapon);
     const isOneTime = isOneTimeWeapon(weapon);
 
@@ -563,7 +571,7 @@ function buildWeaponHTML(
         ${baseName} (${weapon.count})
         <span class="weapon-type ${weaponType}">[${weaponType}]</span>
         ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
-        <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(damage)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange)}">
+        <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(damage)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange, unit.unitRerolls, scenarioRerolls, targetFNP)}">
           ${damage.toFixed(3)}
         </span>
         <span class="damage-value">
