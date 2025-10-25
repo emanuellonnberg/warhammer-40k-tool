@@ -548,10 +548,17 @@ function createUnitCard(
         // Filter out weapon-specific rules AND invulnerable save
         if (shouldHideRule(rule.name)) return '';
 
+        const isTruncated = rule.description.length > 150;
+        const truncatedText = truncateText(rule.description, 150);
+
         return `
-          <div class="ability-item mb-2">
+          <div class="ability-item mb-2 ${isTruncated ? 'expandable' : ''}" data-expanded="false">
             <strong>${rule.name}:</strong>
-            <span class="text-muted small">${truncateText(rule.description, 150)}</span>
+            <span class="ability-description text-muted small">
+              <span class="truncated-text">${truncatedText}</span>
+              ${isTruncated ? `<span class="full-text" style="display: none;">${rule.description}</span>` : ''}
+            </span>
+            ${isTruncated ? '<span class="expand-icon ms-1">▼</span>' : ''}
           </div>
         `;
       })
@@ -660,7 +667,40 @@ function createUnitCard(
     </div>
   `;
 
+  // Add click handlers for expandable abilities
+  setupAbilityClickHandlers(unitCard);
+
   return unitCard;
+}
+
+/**
+ * Setup click handlers for expandable abilities
+ */
+function setupAbilityClickHandlers(container: HTMLElement): void {
+  const expandableItems = container.querySelectorAll('.ability-item.expandable');
+
+  expandableItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const expanded = item.getAttribute('data-expanded') === 'true';
+      const truncatedText = item.querySelector('.truncated-text') as HTMLElement;
+      const fullText = item.querySelector('.full-text') as HTMLElement;
+      const expandIcon = item.querySelector('.expand-icon') as HTMLElement;
+
+      if (expanded) {
+        // Collapse
+        truncatedText.style.display = '';
+        fullText.style.display = 'none';
+        expandIcon.textContent = '▼';
+        item.setAttribute('data-expanded', 'false');
+      } else {
+        // Expand
+        truncatedText.style.display = 'none';
+        fullText.style.display = '';
+        expandIcon.textContent = '▲';
+        item.setAttribute('data-expanded', 'true');
+      }
+    });
+  });
 }
 
 /**
