@@ -9,6 +9,10 @@ import { calculateWeaponDamage } from '../calculators/damage';
 import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
 import { getEfficiencyClass } from '../utils/styling';
 import { generateCalculationTooltip, initializeTooltips } from './tooltip';
+import { Chart, registerables } from 'chart.js';
+
+// Register Chart.js components
+Chart.register(...registerables);
 
 /**
  * Weapon-specific rules that should not appear in the unit abilities section
@@ -287,6 +291,10 @@ export function displayAnalysisResults(
   const filterPanel = createFilterPanel();
   resultsDiv.appendChild(filterPanel);
 
+  // Create visualization area
+  const visualizationArea = createVisualizationArea(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  resultsDiv.appendChild(visualizationArea);
+
   // Create summary table
   const summaryTable = createSummaryTable(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(summaryTable);
@@ -498,6 +506,259 @@ function setupFilterHandlers(
 
   // Initial filter application
   applyFilters();
+}
+
+/**
+ * Create visualization area with charts
+ */
+function createVisualizationArea(
+  army: Army,
+  sortedUnits: Unit[],
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): HTMLElement {
+  const vizArea = document.createElement('div');
+  vizArea.className = 'card mb-4 visualization-card';
+  vizArea.innerHTML = `
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0">📈 Visualizations</h5>
+        <select id="chartTypeSelector" class="form-select" style="width: 200px;">
+          <option value="damage-curve">Damage vs Toughness</option>
+          <option value="dpp-bars">Efficiency (DPP) Bars</option>
+        </select>
+      </div>
+      <div class="chart-container" style="position: relative; height: 400px;">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+  `;
+
+  // Initialize with damage curve chart
+  setTimeout(() => {
+    createDamageCurveChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+
+    // Setup chart type selector
+    const selector = document.getElementById('chartTypeSelector') as HTMLSelectElement;
+    if (selector) {
+      selector.addEventListener('change', () => {
+        const chartType = selector.value;
+        if (chartType === 'damage-curve') {
+          createDamageCurveChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+        } else if (chartType === 'dpp-bars') {
+          createDPPBarChart(sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+        }
+      });
+    }
+  }, 100);
+
+  return vizArea;
+}
+
+/**
+ * Create damage curve chart showing damage vs toughness
+ */
+let currentChart: Chart | null = null;
+
+function createDamageCurveChart(
+  units: Unit[],
+  currentToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): void {
+  const canvas = document.getElementById('mainChart') as HTMLCanvasElement;
+  if (!canvas) return;
+
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+
+  // Calculate damage for each unit across T3-T12
+  const toughnessValues = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const colors = [
+    '#1e88e5', '#43a047', '#fb8c00', '#e53935', '#7b1fa2',
+    '#00897b', '#d81b60', '#5e35b1', '#3949ab', '#00acc1'
+  ];
+
+  const datasets = units.slice(0, 10).map((unit, index) => {
+    const data = toughnessValues.map(t => {
+      const damage = calculateUnitDamage(
+        unit,
+        t,
+        useOvercharge,
+        weaponModes.get(unit.id),
+        includeOneTimeWeapons,
+        optimalRange,
+        [],
+        1,
+        false,
+        null,
+        scenarioRerolls,
+        targetFNP
+      );
+      return damage.total;
+    });
+
+    return {
+      label: unit.name,
+      data,
+      borderColor: colors[index % colors.length],
+      backgroundColor: colors[index % colors.length] + '20',
+      tension: 0.1,
+      pointRadius: 4,
+      pointHoverRadius: 6
+    };
+  });
+
+  currentChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: toughnessValues.map(t => `T${t}`),
+      datasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Damage Output vs Target Toughness',
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: {
+          display: true,
+          position: 'bottom'
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Total Damage'
+          }
+        },
+        x: {
+          title: {
+            display: true,
+            text: 'Target Toughness'
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    }
+  });
+}
+
+/**
+ * Create DPP bar chart showing efficiency ranking
+ */
+function createDPPBarChart(
+  units: Unit[],
+  targetToughness: number,
+  useOvercharge: boolean,
+  weaponModes: Map<string, Map<string, number>>,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): void {
+  const canvas = document.getElementById('mainChart') as HTMLCanvasElement;
+  if (!canvas) return;
+
+  // Destroy existing chart
+  if (currentChart) {
+    currentChart.destroy();
+  }
+
+  // Calculate DPP for each unit and sort
+  const unitDPP = units.map(unit => {
+    const damage = calculateUnitDamage(
+      unit,
+      targetToughness,
+      useOvercharge,
+      weaponModes.get(unit.id),
+      includeOneTimeWeapons,
+      optimalRange,
+      [],
+      1,
+      false,
+      null,
+      scenarioRerolls,
+      targetFNP
+    );
+    const dpp = damage.total / unit.points;
+    return { name: unit.name, dpp, efficiency: dpp };
+  }).sort((a, b) => b.dpp - a.dpp);
+
+  // Color code by efficiency tier
+  const backgroundColors = unitDPP.map(u => {
+    if (u.efficiency >= 0.200) return '#43a047';  // High - green
+    if (u.efficiency >= 0.100) return '#fb8c00';  // Medium - orange
+    return '#e53935';  // Low - red
+  });
+
+  currentChart = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: unitDPP.map(u => u.name),
+      datasets: [{
+        label: 'Damage per Point (DPP)',
+        data: unitDPP.map(u => u.dpp),
+        backgroundColor: backgroundColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: {
+          display: true,
+          text: `Unit Efficiency (vs T${targetToughness})`,
+          font: { size: 16, weight: 'bold' }
+        },
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `DPP: ${context.parsed.x.toFixed(3)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Damage per Point'
+          }
+        }
+      }
+    }
+  });
 }
 
 /**
