@@ -348,12 +348,12 @@ describe('New Armies Integration Tests', () => {
 
       // 6 attacks, BS 2+ (5/6 hit), S6 vs T5 wound on 3+ (2/3), D6 avg 3.5
       // Devastating Wounds on 6s to wound creates mortal wounds
-      // Hazardous: 6 attacks * 1/6 * 3 MW = 3 self-damage significantly reduces output
-      // Net damage: ~7.28 (10.28 base - 3 hazardous penalty)
+      // Hazardous: 0.5 MW risk to attacker (not subtracted from offensive damage)
+      // Offensive damage: ~10.28
       // Psychic is currently just a tag for other rules to reference
-      expect(damage.total).toBeGreaterThan(6);
-      expect(damage.total).toBeLessThan(9);
-      expect(damage.ranged).toBeGreaterThan(6);
+      expect(damage.total).toBeGreaterThan(9);
+      expect(damage.total).toBeLessThan(11);
+      expect(damage.ranged).toBeGreaterThan(9);
     });
   });
 });
