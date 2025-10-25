@@ -388,6 +388,36 @@ function createUnitCard(
     return buildWeaponStatsHTML(baseName, weapons, includeOneTimeWeapons);
   }).join('');
 
+  // Build abilities and rules HTML
+  let abilitiesHTML = '';
+  if ((unit.rules && unit.rules.length > 0) || (unit.abilities && unit.abilities.length > 0)) {
+    const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
+    const rulesHTML = allRuleIds
+      .map(ruleId => {
+        // Get rule/ability from army.rules or army.abilities object
+        const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+        if (!rule || rule.hidden) return '';
+
+        return `
+          <div class="ability-item mb-2">
+            <strong>${rule.name}:</strong>
+            <span class="text-muted small">${truncateText(rule.description, 150)}</span>
+          </div>
+        `;
+      })
+      .filter(html => html !== '')
+      .join('');
+
+    if (rulesHTML) {
+      abilitiesHTML = `
+        <div class="unit-abilities mb-3">
+          <h6>Abilities & Rules:</h6>
+          ${rulesHTML}
+        </div>
+      `;
+    }
+  }
+
   unitCard.innerHTML = `
     <div class="card-body">
       <h5 class="card-title">${unit.name}</h5>
@@ -425,6 +455,32 @@ function createUnitCard(
           ${includeOneTimeWeapons && unitDamage.onetime > 0 ? `| One-Time: ${unitDamage.onetime.toFixed(1)}` : ''}
         </small>
       </p>
+      <div class="unit-stats-table">
+        <h6>Unit Stats:</h6>
+        <table class="table table-sm table-bordered mb-3">
+          <thead>
+            <tr>
+              <th>M</th>
+              <th>T</th>
+              <th>Sv</th>
+              <th>W</th>
+              <th>Ld</th>
+              <th>OC</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>${unit.stats.move}</td>
+              <td>${unit.stats.toughness}</td>
+              <td>${unit.stats.save}</td>
+              <td>${unit.stats.wounds}</td>
+              <td>${unit.stats.leadership}</td>
+              <td>${unit.stats.objectiveControl}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      ${abilitiesHTML}
       <div class="weapon-list">
         <h6>Weapons:</h6>
         ${weaponListHTML}
@@ -615,4 +671,12 @@ function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTim
       </tr>
     `;
   }).join('');
+}
+
+/**
+ * Truncate text to a maximum length
+ */
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
