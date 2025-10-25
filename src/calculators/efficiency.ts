@@ -12,6 +12,7 @@ import { calculateUnitDamage } from './damage';
  * @param useOvercharge - Whether to use overcharge mode
  * @param includeOneTimeWeapons - Whether to include one-time weapons
  * @param optimalRange - Whether at optimal range
+ * @param activeModes - Map of active weapon modes
  * @returns Efficiency value (damage per point)
  */
 export function calculateUnitEfficiency(
@@ -19,8 +20,9 @@ export function calculateUnitEfficiency(
   targetToughness: number,
   useOvercharge: boolean = false,
   includeOneTimeWeapons: boolean = false,
-  optimalRange: boolean = true
+  optimalRange: boolean = true,
+  activeModes?: Map<string, number>
 ): number {
-  const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, undefined, includeOneTimeWeapons, optimalRange);
+  const unitDamage = calculateUnitDamage(unit, targetToughness, useOvercharge, activeModes, includeOneTimeWeapons, optimalRange);
   return unit.points > 0 ? unitDamage.total / unit.points : 0;
 }

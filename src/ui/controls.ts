@@ -62,7 +62,7 @@ export function setupWeaponModeToggles(
       });
 
       // Recalculate damage with updated modes
-      const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange);
+      const efficiency = calculateUnitEfficiency(unit, targetToughness, useOvercharge, includeOneTimeWeapons, optimalRange, unitModes);
       const damage = calculateUnitDamage(unit, targetToughness, useOvercharge, unitModes, includeOneTimeWeapons, optimalRange, [], 1, false, null, scenarioRerolls, targetFNP);
       const damagePerPoint = damage.total / unit.points;
       const rangedDamagePerPoint = damage.ranged / unit.points;

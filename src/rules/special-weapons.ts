@@ -168,13 +168,11 @@ export function applySpecialRules(
   const normalDamage = woundsAfterSaves * effectiveDamage;
   let totalDamage = normalDamage + mortalWounds; // Mortal wounds = 1 damage each
 
-  // Hazardous - weapon has a chance to deal mortal wounds to the attacker
-  // On each attack roll of 1, the unit suffers 3 mortal wounds
+  // Hazardous - informational only, doesn't affect offensive damage output
+  // One test per weapon: roll D6, on 1 the unit suffers 3 mortal wounds
   if (keywords.toLowerCase().includes("hazardous")) {
-    const hazardChance = 1 / 6; // 1 in 6 chance per attack
-    const hazardousMortalWounds = effectiveAttacks * hazardChance * 3;
-    totalDamage -= hazardousMortalWounds; // Subtract self-inflicted damage from total
-    breakdown.push(`Hazardous: -${hazardousMortalWounds.toFixed(2)} damage (self-inflicted)`);
+    const hazardRisk = 1 / 6 * 3; // One test per weapon: 1/6 chance of 3 MW
+    breakdown.push(`Hazardous: ${hazardRisk.toFixed(2)} MW risk to attacker (not included in damage)`);
   }
 
   // Apply Feel No Pain

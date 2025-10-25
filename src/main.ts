@@ -56,8 +56,9 @@ async function main() {
 
     /**
      * Update display with current settings
+     * @param resetModes - Whether to reset weapon mode toggles (true when loading new army)
      */
-    const updateDisplay = () => {
+    const updateDisplay = (resetModes: boolean = false) => {
       if (currentArmy) {
         // Get scenario re-rolls from dropdowns
         const scenarioRerolls: RerollConfig = {
@@ -68,8 +69,11 @@ async function main() {
         // Get target FNP value
         const targetFNP = parseInt(targetFNPSelect.value) || undefined;
 
-        // Reset active weapon modes when updating display
-        activeWeaponModes = new Map();
+        // Reset weapon modes only when loading a new army
+        if (resetModes) {
+          activeWeaponModes.clear();
+        }
+
         displayAnalysisResults(
           currentArmy,
           parseInt(toughnessSelect.value),
@@ -99,7 +103,7 @@ async function main() {
     armyFileSelect.addEventListener('change', async () => {
       try {
         currentArmy = await loadArmyData(armyFileSelect.value);
-        updateDisplay();
+        updateDisplay(true); // Reset weapon modes when loading new army
       } catch (error) {
         console.error('Error loading army file:', error);
         alert('Error loading army file. Please check the console for details.');
@@ -126,7 +130,7 @@ async function main() {
         if (file.type === 'application/json' || file.name.endsWith('.json')) {
           try {
             currentArmy = await loadArmyData(file);
-            updateDisplay();
+            updateDisplay(true); // Reset weapon modes when loading new army
           } catch (error) {
             console.error('Error loading dropped file:', error);
             alert('Error loading file. Please check the console for details.');
@@ -147,7 +151,7 @@ async function main() {
       if (files && files.length > 0) {
         try {
           currentArmy = await loadArmyData(files[0]);
-          updateDisplay();
+          updateDisplay(true); // Reset weapon modes when loading new army
         } catch (error) {
           console.error('Error loading selected file:', error);
           alert('Error loading file. Please check the console for details.');
@@ -167,7 +171,7 @@ async function main() {
     // Load initial army data
     try {
       currentArmy = await loadArmyData(armyFileSelect.value);
-      updateDisplay();
+      updateDisplay(true); // Reset weapon modes on initial load
     } catch (error) {
       console.error('Error loading initial army data:', error);
       const resultsDiv = document.getElementById('analysis-results');
