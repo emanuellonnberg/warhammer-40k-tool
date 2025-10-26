@@ -142,9 +142,12 @@ function getMaxWeaponRange(unit: Unit): number {
 
   let maxRange = 0;
   for (const weapon of unit.weapons) {
-    // Check if range exists and is a string before calling replace
-    if (!weapon.range) continue;
-    const range = parseInt(weapon.range.replace(/[^0-9]/g, '')) || 0;
+    // Access range from characteristics object
+    const rangeStr = weapon.characteristics?.range;
+    if (!rangeStr) continue;
+
+    // Parse numeric value from range string (e.g., "24\"" → 24, "Melee" → 0)
+    const range = parseInt(rangeStr.replace(/[^0-9]/g, '')) || 0;
     if (range > maxRange) maxRange = range;
   }
   return maxRange;
