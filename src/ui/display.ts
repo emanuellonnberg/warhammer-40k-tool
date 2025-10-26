@@ -1358,6 +1358,21 @@ function createUnitCard(
   const rangedDamagePerPoint = unitDamage.ranged / unit.points;
   const meleeDamagePerPoint = unitDamage.melee / unit.points;
 
+  // Calculate survivability metrics
+  const effectiveWounds = calculateEffectiveWounds(unit);
+  const survivabilityScore = calculateSurvivabilityScore(unit);
+  const toughnessValue = parseInt(unit.stats.toughness) || 1;
+  const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
+  const woundsValue = parseInt(unit.stats.wounds) || 1;
+
+  // Build survivability tooltip
+  const survTooltip = `Survivability Calculation:
+Wounds: ${woundsValue}
+Save: ${unit.stats.save} (fails on ${saveValue - 1} or less)
+Effective Wounds: ${effectiveWounds.toFixed(1)} (wounds ÷ save failure rate)
+Toughness: ${toughnessValue}
+Survivability Score: ${effectiveWounds.toFixed(1)} × (${toughnessValue}/4) = ${survivabilityScore.toFixed(1)}`;
+
   const unitCard = document.createElement('div');
   unitCard.className = 'card unit-card';
   unitCard.setAttribute('data-unit-id', unit.id);
@@ -1474,6 +1489,25 @@ function createUnitCard(
           ${includeOneTimeWeapons && unitDamage.onetime > 0 ? `| One-Time: ${unitDamage.onetime.toFixed(1)}` : ''}
         </small>
       </p>
+      <div class="survivability-section mb-3 p-2 border-start border-success border-2 bg-light">
+        <h6 class="text-success mb-2">
+          <i class="bi bi-shield-fill-check"></i> Survivability Metrics
+        </h6>
+        <div class="row">
+          <div class="col-6">
+            <small class="text-muted">Effective Wounds:</small>
+            <div class="calculation-tooltip" data-tooltip="Effective Wounds&#10;${woundsValue} wounds ÷ save failure rate&#10;= ${effectiveWounds.toFixed(1)}">
+              <strong class="text-success">${effectiveWounds.toFixed(1)}</strong>
+            </div>
+          </div>
+          <div class="col-6">
+            <small class="text-muted">Survivability Score:</small>
+            <div class="calculation-tooltip" data-tooltip="${survTooltip.replace(/\n/g, '&#10;')}">
+              <strong class="text-success">${survivabilityScore.toFixed(1)}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="unit-stats-table">
         <h6>Unit Stats:</h6>
         <table class="table table-sm table-bordered mb-3">
