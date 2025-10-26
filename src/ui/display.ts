@@ -101,6 +101,40 @@ function extractInvulnerableSave(unit: Unit, army: Army): string | null {
 }
 
 /**
+ * Calculate effective wounds for a unit based on save characteristic
+ * Better saves mean more effective wounds (harder to kill)
+ * Formula: Wounds × (1 / failure_rate)
+ * Example: W10 with Sv3+ (fail on 1-2, 2/6 = 0.33) = 10 × 3 = 30 effective wounds
+ */
+function calculateEffectiveWounds(unit: Unit): number {
+  const wounds = parseInt(unit.stats.wounds) || 1;
+  const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
+
+  // Calculate save failure rate
+  // Sv3+ means you fail on 1-2 (2/6), Sv5+ means you fail on 1-4 (4/6)
+  const failureRate = (saveValue - 1) / 6;
+
+  // Avoid division by zero for theoretical 1+ save
+  if (failureRate <= 0) return wounds * 6; // Effectively unkillable
+
+  // Effective wounds = wounds / failure rate
+  return wounds / failureRate;
+}
+
+/**
+ * Calculate survivability score combining wounds, toughness, and save
+ * Higher score = more durable unit
+ */
+function calculateSurvivabilityScore(unit: Unit): number {
+  const effectiveWounds = calculateEffectiveWounds(unit);
+  const toughness = parseInt(unit.stats.toughness) || 1;
+
+  // Survivability = effective wounds × toughness modifier
+  // Toughness contributes to survivability (harder to wound)
+  return effectiveWounds * (toughness / 4); // Normalized to T4
+}
+
+/**
  * Find a rule that matches a weapon keyword
  */
 function findRuleByKeyword(keyword: string, army: Army): any {
@@ -831,6 +865,34 @@ function createDashboard(
   const mediumPercent = unitCount > 0 ? ((mediumEfficiency / unitCount) * 100).toFixed(0) : '0';
   const lowPercent = unitCount > 0 ? ((lowEfficiency / unitCount) * 100).toFixed(0) : '0';
 
+  // Calculate mobility and survivability statistics
+  const movementValues = sortedUnits.map(u => parseInt(u.stats.move.replace(/[^0-9]/g, '')) || 0);
+  const averageMovement = movementValues.length > 0
+    ? (movementValues.reduce((sum, m) => sum + m, 0) / movementValues.length).toFixed(1)
+    : '0';
+
+  const fastUnits = sortedUnits.filter(u => (parseInt(u.stats.move.replace(/[^0-9]/g, '')) || 0) >= 10).length;
+  const slowUnits = sortedUnits.filter(u => (parseInt(u.stats.move.replace(/[^0-9]/g, '')) || 0) <= 6).length;
+
+  const totalWounds = sortedUnits.reduce((sum, u) => sum + (parseInt(u.stats.wounds) || 0), 0);
+  const toughnessValues = sortedUnits.map(u => parseInt(u.stats.toughness) || 0).sort((a, b) => a - b);
+  const medianToughness = toughnessValues.length > 0
+    ? toughnessValues[Math.floor(toughnessValues.length / 2)]
+    : 0;
+
+  const survivabilityStats = sortedUnits.map(u => ({
+    unit: u,
+    survivability: calculateSurvivabilityScore(u)
+  }));
+
+  const averageSurvivability = survivabilityStats.length > 0
+    ? (survivabilityStats.reduce((sum, s) => sum + s.survivability, 0) / survivabilityStats.length).toFixed(1)
+    : '0';
+
+  const topSurvivors = [...survivabilityStats]
+    .sort((a, b) => b.survivability - a.survivability)
+    .slice(0, 3);
+
   const dashboard = document.createElement('div');
   dashboard.className = 'card mb-4 dashboard-card';
   dashboard.innerHTML = `
@@ -911,6 +973,59 @@ function createDashboard(
           </div>
         </div>
       </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div class="dashboard-section">
+            <h6 class="dashboard-subtitle">⚡ Army Mobility</h6>
+            <div class="dashboard-stats">
+              <div class="dashboard-stat">
+                <span class="stat-label">Average Movement:</span>
+                <span class="stat-value">${averageMovement}"</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Fast Units (M≥10"):</span>
+                <span class="stat-value">${fastUnits} unit${fastUnits !== 1 ? 's' : ''}</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Slow Units (M≤6"):</span>
+                <span class="stat-value">${slowUnits} unit${slowUnits !== 1 ? 's' : ''}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="dashboard-section">
+            <h6 class="dashboard-subtitle">🛡️ Army Survivability</h6>
+            <div class="dashboard-stats">
+              <div class="dashboard-stat">
+                <span class="stat-label">Total Wounds:</span>
+                <span class="stat-value">${totalWounds} W</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Median Toughness:</span>
+                <span class="stat-value">T${medianToughness}</span>
+              </div>
+              <div class="dashboard-stat">
+                <span class="stat-label">Avg Survivability Score:</span>
+                <span class="stat-value">${averageSurvivability}</span>
+              </div>
+            </div>
+            <h6 class="dashboard-subtitle mt-3">Most Durable Units</h6>
+            <div class="top-performers">
+              ${topSurvivors.map((stat, index) => {
+                const medal = ['🥇', '🥈', '🥉'][index];
+                return `
+                  <div class="top-performer-item">
+                    <span class="performer-rank">${medal}</span>
+                    <span class="performer-name">${stat.unit.name}</span>
+                    <span class="performer-dpp">Surv: ${stat.survivability.toFixed(1)}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   `;
 
@@ -946,6 +1061,11 @@ function createSummaryTable(
             <tr>
               <th class="sortable" data-sort="name">Unit</th>
               <th class="sortable" data-sort="points">Points</th>
+              <th class="sortable" data-sort="move" title="Movement">M</th>
+              <th class="sortable" data-sort="toughness" title="Toughness">T</th>
+              <th class="sortable" data-sort="save" title="Save">Sv</th>
+              <th class="sortable" data-sort="wounds" title="Wounds">W</th>
+              <th class="sortable" data-sort="survivability" title="Survivability Score (Effective Wounds × Toughness)">Surv.</th>
               <th class="sortable" data-sort="efficiency">Total D/Point</th>
               <th class="sortable" data-sort="rangeddpp">Ranged D/Point</th>
               <th class="sortable" data-sort="meleedpp">Melee D/Point</th>
@@ -991,11 +1111,27 @@ function createSummaryTable(
               const damagePerPoint = damage.total / unit.points;
               const rangedDamagePerPoint = damage.ranged / unit.points;
               const meleeDamagePerPoint = damage.melee / unit.points;
+
+              // Parse numeric values from stats for sorting
+              const moveValue = parseInt(unit.stats.move.replace(/[^0-9]/g, '')) || 0;
+              const toughnessValue = parseInt(unit.stats.toughness) || 0;
+              const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 0;
+              const woundsValue = parseInt(unit.stats.wounds) || 0;
+
+              // Calculate survivability metrics
+              const survivability = calculateSurvivabilityScore(unit);
+              const effectiveWounds = calculateEffectiveWounds(unit);
+
               return `
                 <tr class="unit-row-clickable"
                     data-unit-id="${unit.id}"
                     data-name="${unit.name}"
                     data-points="${unit.points}"
+                    data-move="${moveValue}"
+                    data-toughness="${toughnessValue}"
+                    data-save="${saveValue}"
+                    data-wounds="${woundsValue}"
+                    data-survivability="${survivability}"
                     data-efficiency="${efficiency}"
                     data-dpp="${damagePerPoint}"
                     data-rangeddpp="${rangedDamagePerPoint}"
@@ -1006,6 +1142,13 @@ function createSummaryTable(
                     ${includeOneTimeWeapons ? `data-onetime="${damage.onetime}"` : ''}>
                   <td><a href="#unit-${unit.id}" class="unit-link">${unit.name}</a></td>
                   <td>${unit.points}</td>
+                  <td>${unit.stats.move}</td>
+                  <td>${unit.stats.toughness}</td>
+                  <td>${unit.stats.save}</td>
+                  <td>${unit.stats.wounds}</td>
+                  <td class="calculation-tooltip" data-tooltip="Survivability Score&#10;Effective Wounds: ${effectiveWounds.toFixed(1)}&#10;Toughness: ${unit.stats.toughness}&#10;Total: ${survivability.toFixed(1)}">
+                    ${survivability.toFixed(1)}
+                  </td>
                   <td class="calculation-tooltip ${getEfficiencyClass(efficiency)}" data-tooltip="Total Damage per Point&#10;${damage.total.toFixed(1)} damage ÷ ${unit.points} points = ${efficiency.toFixed(3)}">
                     ${efficiency.toFixed(3)}
                   </td>
@@ -1284,8 +1427,10 @@ function createUnitCard(
 
     if (rulesHTML) {
       abilitiesHTML = `
-        <div class="unit-abilities mb-3">
-          <h6>Abilities & Rules:</h6>
+        <div class="unit-abilities mb-3 p-3 border-start border-primary border-3 bg-light">
+          <h6 class="text-primary mb-2">
+            <i class="bi bi-lightning-charge-fill"></i> Abilities & Rules
+          </h6>
           ${rulesHTML}
         </div>
       `;
@@ -1355,7 +1500,7 @@ function createUnitCard(
         </table>
       </div>
       ${abilitiesHTML}
-      <div class="weapon-list">
+      <div class="weapon-list mt-3">
         <h6>Weapons:</h6>
         ${weaponListHTML}
       </div>
