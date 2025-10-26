@@ -1543,8 +1543,8 @@ function createUnitCard(
 
   const tacticalTooltip = `Tactical Survivability
 Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} Sv${unit.stats.save} T${toughnessValue})
-Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}") x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
-Movement: ${tacticalSurv.breakdown.moveValue}" x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
+Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}in) x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
+Movement: ${tacticalSurv.breakdown.moveValue}in x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
 Abilities: ${abilityLines} x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
 Total: ${tacticalSurv.score.toFixed(1)}`;
 
