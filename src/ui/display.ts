@@ -1533,31 +1533,20 @@ function createUnitCard(
 
   // Build detailed tactical survivability tooltip
   const rangeCategory = tacticalSurv.breakdown.maxRange === 0 ? 'Melee only' :
-                       tacticalSurv.breakdown.maxRange <= 12 ? 'Short (≤12")' :
-                       tacticalSurv.breakdown.maxRange <= 24 ? 'Medium (13-24")' :
-                       tacticalSurv.breakdown.maxRange <= 36 ? 'Long (25-36")' : 'Extreme (37"+)';
+                       tacticalSurv.breakdown.maxRange <= 12 ? 'Short' :
+                       tacticalSurv.breakdown.maxRange <= 24 ? 'Medium' :
+                       tacticalSurv.breakdown.maxRange <= 36 ? 'Long' : 'Extreme';
 
   const abilityLines = tacticalSurv.breakdown.abilityDetails.length > 0
-    ? tacticalSurv.breakdown.abilityDetails.map(d => `  • ${d}`).join('\n')
-    : '  • None';
+    ? tacticalSurv.breakdown.abilityDetails.join(', ')
+    : 'None';
 
-  const tacticalTooltip = `Tactical Survivability: ${tacticalSurv.score.toFixed(1)}
-
-Base Stats:
-├─ Wounds: ${woundsValue}
-├─ Save: ${unit.stats.save}
-├─ Toughness: ${toughnessValue}
-└─ Base Survivability: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)}
-
-Tactical Modifiers:
-├─ Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}")
-│  └─ Protection: ×${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
-├─ Movement: ${tacticalSurv.breakdown.moveValue}"
-│  └─ Factor: ×${tacticalSurv.breakdown.movementFactor.toFixed(1)}
-└─ Abilities: ×${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
-${abilityLines}
-
-Final: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} × ${tacticalSurv.breakdown.rangeProtection.toFixed(1)} × ${tacticalSurv.breakdown.movementFactor.toFixed(1)} × ${tacticalSurv.breakdown.abilityFactor.toFixed(2)} = ${tacticalSurv.score.toFixed(1)}`;
+  const tacticalTooltip = `Tactical Survivability
+Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} Sv${unit.stats.save} T${toughnessValue})
+Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}") x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
+Movement: ${tacticalSurv.breakdown.moveValue}" x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
+Abilities: ${abilityLines} x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
+Total: ${tacticalSurv.score.toFixed(1)}`;
 
   const unitCard = document.createElement('div');
   unitCard.className = 'card unit-card';
