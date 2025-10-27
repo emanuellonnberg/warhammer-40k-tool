@@ -209,6 +209,62 @@ function getMaxWeaponRange(unit: Unit): number {
 }
 
 /**
+ * Get weighted average weapon range based on damage output
+ * This gives a more accurate picture of a unit's effective range than just max range
+ * Example: Unit with 10 damage at 48" and 40 damage at 24" → ~26" weighted average
+ */
+function getWeaponRangeWeightedByDamage(
+  unit: Unit,
+  targetToughness: number,
+  useOvercharge: boolean,
+  unitModes: Map<string, number> | undefined,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): number {
+  if (!unit.weapons || unit.weapons.length === 0) return 0; // Melee only
+
+  let totalWeightedRange = 0;
+  let totalDamage = 0;
+
+  for (const weapon of unit.weapons) {
+    // Calculate damage for this weapon
+    const damage = calculateWeaponDamage(
+      weapon,
+      targetToughness,
+      useOvercharge,
+      includeOneTimeWeapons,
+      optimalRange,
+      [],
+      1,
+      false,
+      null,
+      unit.unitRerolls,
+      scenarioRerolls,
+      targetFNP
+    );
+
+    // Skip weapons with no damage
+    if (damage <= 0) continue;
+
+    // Get range
+    const rangeStr = weapon.characteristics?.range;
+    if (!rangeStr) continue;
+
+    // Parse numeric value from range string (e.g., "24\"" → 24, "Melee" → 0)
+    const range = parseInt(rangeStr.replace(/[^0-9]/g, '')) || 0;
+
+    // Add to weighted total
+    totalWeightedRange += damage * range;
+    totalDamage += damage;
+  }
+
+  // Return weighted average, or 0 if no ranged weapons
+  return totalDamage > 0 ? totalWeightedRange / totalDamage : 0;
+}
+
+/**
  * Check if unit has a specific ability by name pattern
  */
 function hasAbility(unit: Unit, army: Army, pattern: string): boolean {
@@ -317,24 +373,47 @@ function getAbilityModifiers(unit: Unit, army: Army): { factor: number; details:
 
 /**
  * Calculate tactical survivability accounting for range, movement, and abilities
+ * Uses weighted average range by damage for more accurate positioning assessment
  */
-function calculateTacticalSurvivability(unit: Unit, army: Army): {
+function calculateTacticalSurvivability(
+  unit: Unit,
+  army: Army,
+  targetToughness: number,
+  useOvercharge: boolean,
+  unitModes: Map<string, number> | undefined,
+  includeOneTimeWeapons: boolean,
+  optimalRange: boolean,
+  scenarioRerolls?: RerollConfig,
+  targetFNP?: number
+): {
   score: number;
   breakdown: {
     baseSurvivability: number;
     rangeProtection: number;
     movementFactor: number;
     abilityFactor: number;
-    maxRange: number;
+    effectiveRange: number;
     moveValue: number;
     abilityDetails: string[];
   };
 } {
   const baseSurvivability = calculateSurvivabilityScore(unit, army);
-  const maxRange = getMaxWeaponRange(unit);
+
+  // Use weighted average range based on damage output for more accurate assessment
+  const effectiveRange = getWeaponRangeWeightedByDamage(
+    unit,
+    targetToughness,
+    useOvercharge,
+    unitModes,
+    includeOneTimeWeapons,
+    optimalRange,
+    scenarioRerolls,
+    targetFNP
+  );
+
   const moveValue = parseInt(unit.stats.move.replace(/[^0-9]/g, '')) || 0;
 
-  const rangeProtection = getRangeProtectionFactor(maxRange);
+  const rangeProtection = getRangeProtectionFactor(effectiveRange);
   const movementFactor = getMovementFactor(moveValue);
   const abilityMods = getAbilityModifiers(unit, army);
 
@@ -347,7 +426,7 @@ function calculateTacticalSurvivability(unit: Unit, army: Army): {
       rangeProtection,
       movementFactor,
       abilityFactor: abilityMods.factor,
-      maxRange,
+      effectiveRange,
       moveValue,
       abilityDetails: abilityMods.details
     }
@@ -1342,7 +1421,17 @@ function createSummaryTable(
               // Calculate survivability metrics
               const baseSurvivability = calculateSurvivabilityScore(unit, army);
               const effectiveWounds = calculateEffectiveWounds(unit, army);
-              const tacticalSurv = calculateTacticalSurvivability(unit, army);
+              const tacticalSurv = calculateTacticalSurvivability(
+                unit,
+                army,
+                targetToughness,
+                useOvercharge,
+                unitModes,
+                includeOneTimeWeapons,
+                optimalRange,
+                scenarioRerolls,
+                targetFNP
+              );
               const survivability = tacticalSurv.score; // Use tactical for sorting
 
               return `
@@ -1369,7 +1458,7 @@ function createSummaryTable(
                   <td>${unit.stats.toughness}</td>
                   <td>${unit.stats.save}</td>
                   <td>${unit.stats.wounds}</td>
-                  <td class="calculation-tooltip" data-tooltip="Tactical Survivability: ${survivability.toFixed(1)}&#10;Base: ${baseSurvivability.toFixed(1)}&#10;Range: ×${tacticalSurv.breakdown.rangeProtection.toFixed(1)} (${tacticalSurv.breakdown.maxRange}\")&#10;Move: ×${tacticalSurv.breakdown.movementFactor.toFixed(1)}&#10;Abilities: ×${tacticalSurv.breakdown.abilityFactor.toFixed(2)}">
+                  <td class="calculation-tooltip" data-tooltip="Tactical Survivability: ${survivability.toFixed(1)}&#10;Base: ${baseSurvivability.toFixed(1)}&#10;Range: ×${tacticalSurv.breakdown.rangeProtection.toFixed(1)} (${tacticalSurv.breakdown.effectiveRange.toFixed(0)}\")&#10;Move: ×${tacticalSurv.breakdown.movementFactor.toFixed(1)}&#10;Abilities: ×${tacticalSurv.breakdown.abilityFactor.toFixed(2)}">
                     ${survivability.toFixed(1)}
                   </td>
                   <td class="calculation-tooltip ${getEfficiencyClass(efficiency)}" data-tooltip="Total Damage per Point&#10;${damage.total.toFixed(1)} damage ÷ ${unit.points} points = ${efficiency.toFixed(3)}">
@@ -1584,7 +1673,17 @@ function createUnitCard(
   // Calculate survivability metrics
   const effectiveWounds = calculateEffectiveWounds(unit, army);
   const survivabilityScore = calculateSurvivabilityScore(unit, army);
-  const tacticalSurv = calculateTacticalSurvivability(unit, army);
+  const tacticalSurv = calculateTacticalSurvivability(
+    unit,
+    army,
+    targetToughness,
+    useOvercharge,
+    unitModes,
+    includeOneTimeWeapons,
+    optimalRange,
+    scenarioRerolls,
+    targetFNP
+  );
   const toughnessValue = parseInt(unit.stats.toughness) || 1;
   const armorSaveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
   const woundsValue = parseInt(unit.stats.wounds) || 1;
@@ -1597,10 +1696,11 @@ function createUnitCard(
   const fnpValue = extractFeelNoPain(unit, army);
 
   // Build detailed tactical survivability tooltip
-  const rangeCategory = tacticalSurv.breakdown.maxRange === 0 ? 'Melee only' :
-                       tacticalSurv.breakdown.maxRange <= 12 ? 'Short' :
-                       tacticalSurv.breakdown.maxRange <= 24 ? 'Medium' :
-                       tacticalSurv.breakdown.maxRange <= 36 ? 'Long' : 'Extreme';
+  const effectiveRange = tacticalSurv.breakdown.effectiveRange;
+  const rangeCategory = effectiveRange === 0 ? 'Melee only' :
+                       effectiveRange <= 12 ? 'Short' :
+                       effectiveRange <= 24 ? 'Medium' :
+                       effectiveRange <= 36 ? 'Long' : 'Extreme';
 
   const abilityLines = tacticalSurv.breakdown.abilityDetails.length > 0
     ? tacticalSurv.breakdown.abilityDetails.join(', ')
@@ -1620,7 +1720,7 @@ function createUnitCard(
 
   const tacticalTooltip = `Tactical Survivability
 Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} ${tooltipSaveDisplay} T${toughnessValue})
-Range Protection: ${rangeCategory} ${tacticalSurv.breakdown.maxRange}in → x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
+Range Protection: ${rangeCategory} ${effectiveRange.toFixed(0)}in (weighted avg) → x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
 Movement Bonus: ${tacticalSurv.breakdown.moveValue}in → x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
 Ability Bonus: ${abilityLines} → x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
 Total: ${tacticalSurv.score.toFixed(1)}`;
