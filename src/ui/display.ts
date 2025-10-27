@@ -197,9 +197,12 @@ function getMaxWeaponRange(unit: Unit): number {
 
   let maxRange = 0;
   for (const weapon of unit.weapons) {
-    // Check if range exists and is a string before calling replace
-    if (!weapon.range) continue;
-    const range = parseInt(weapon.range.replace(/[^0-9]/g, '')) || 0;
+    // Access range from characteristics object
+    const rangeStr = weapon.characteristics?.range;
+    if (!rangeStr) continue;
+
+    // Parse numeric value from range string (e.g., "24\"" → 24, "Melee" → 0)
+    const range = parseInt(rangeStr.replace(/[^0-9]/g, '')) || 0;
     if (range > maxRange) maxRange = range;
   }
   return maxRange;
@@ -1617,9 +1620,9 @@ function createUnitCard(
 
   const tacticalTooltip = `Tactical Survivability
 Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} ${tooltipSaveDisplay} T${toughnessValue})
-Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}") x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
-Movement: ${tacticalSurv.breakdown.moveValue}" x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
-Abilities: ${abilityLines} x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
+Range Protection: ${rangeCategory} ${tacticalSurv.breakdown.maxRange}in → x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
+Movement Bonus: ${tacticalSurv.breakdown.moveValue}in → x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
+Ability Bonus: ${abilityLines} → x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
 Total: ${tacticalSurv.score.toFixed(1)}`;
 
   const unitCard = document.createElement('div');
