@@ -101,18 +101,59 @@ function extractInvulnerableSave(unit: Unit, army: Army): string | null {
 }
 
 /**
+ * Extract Feel No Pain value from unit's abilities/rules
+ * Returns numeric value like 5 for "5+" or null if no FNP
+ */
+function extractFeelNoPain(unit: Unit, army: Army): number | null {
+  const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
+
+  for (const ruleId of allRuleIds) {
+    const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+    if (!rule) continue;
+
+    // Check if this is a Feel No Pain rule
+    const nameLower = rule.name.toLowerCase();
+    const descLower = rule.description.toLowerCase();
+
+    if (nameLower.includes('feel no pain') || descLower.includes('feel no pain')) {
+      // Try to extract the value from the name, e.g., "Feel No Pain (5+)"
+      const nameMatch = rule.name.match(/\((\d+)\+/);
+      if (nameMatch) {
+        return parseInt(nameMatch[1]);
+      }
+
+      // Try to extract from description, e.g., "5+ Feel No Pain"
+      const descMatch = rule.description.match(/(\d+)\+\s*feel no pain/i);
+      if (descMatch) {
+        return parseInt(descMatch[1]);
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Calculate effective wounds for a unit based on save characteristic
  * Better saves mean more effective wounds (harder to kill)
+ * Now accounts for invulnerable saves (uses the better of armor or invuln)
  * Formula: Wounds × (1 / failure_rate)
  * Example: W10 with Sv3+ (fail on 1-2, 2/6 = 0.33) = 10 × 3 = 30 effective wounds
  */
-function calculateEffectiveWounds(unit: Unit): number {
+function calculateEffectiveWounds(unit: Unit, army: Army): number {
   const wounds = parseInt(unit.stats.wounds) || 1;
-  const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
+  const armorSaveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
+
+  // Check for invulnerable save
+  const invulnSaveStr = extractInvulnerableSave(unit, army);
+  const invulnSaveValue = invulnSaveStr ? parseInt(invulnSaveStr.replace(/\+/g, '')) : 7;
+
+  // Use the better save (lower number is better)
+  const bestSaveValue = Math.min(armorSaveValue, invulnSaveValue);
 
   // Calculate save failure rate
   // Sv3+ means you fail on 1-2 (2/6), Sv5+ means you fail on 1-4 (4/6)
-  const failureRate = (saveValue - 1) / 6;
+  const failureRate = (bestSaveValue - 1) / 6;
 
   // Avoid division by zero for theoretical 1+ save
   if (failureRate <= 0) return wounds * 6; // Effectively unkillable
@@ -122,16 +163,30 @@ function calculateEffectiveWounds(unit: Unit): number {
 }
 
 /**
- * Calculate survivability score combining wounds, toughness, and save
+ * Calculate survivability score combining wounds, toughness, save, and FNP
  * Higher score = more durable unit
+ * Now includes Feel No Pain which adds significant survivability
  */
-function calculateSurvivabilityScore(unit: Unit): number {
-  const effectiveWounds = calculateEffectiveWounds(unit);
+function calculateSurvivabilityScore(unit: Unit, army: Army): number {
+  const effectiveWounds = calculateEffectiveWounds(unit, army);
   const toughness = parseInt(unit.stats.toughness) || 1;
 
-  // Survivability = effective wounds × toughness modifier
+  // Base survivability = effective wounds × toughness modifier
   // Toughness contributes to survivability (harder to wound)
-  return effectiveWounds * (toughness / 4); // Normalized to T4
+  let survivability = effectiveWounds * (toughness / 4); // Normalized to T4
+
+  // Apply Feel No Pain multiplier
+  // FNP essentially multiplies effective wounds since it ignores wounds after failed saves
+  const fnpValue = extractFeelNoPain(unit, army);
+  if (fnpValue && fnpValue >= 2 && fnpValue <= 6) {
+    // FNP X+ means you ignore (7-X)/6 of wounds
+    // This multiplies survivability by 1/(1 - ignore_rate) = 6/(X-1)
+    const fnpIgnoreRate = (7 - fnpValue) / 6;
+    const fnpMultiplier = 1 / (1 - fnpIgnoreRate);
+    survivability *= fnpMultiplier;
+  }
+
+  return survivability;
 }
 
 /**
@@ -272,7 +327,7 @@ function calculateTacticalSurvivability(unit: Unit, army: Army): {
     abilityDetails: string[];
   };
 } {
-  const baseSurvivability = calculateSurvivabilityScore(unit);
+  const baseSurvivability = calculateSurvivabilityScore(unit, army);
   const maxRange = getMaxWeaponRange(unit);
   const moveValue = parseInt(unit.stats.move.replace(/[^0-9]/g, '')) || 0;
 
@@ -1044,7 +1099,7 @@ function createDashboard(
 
   const survivabilityStats = sortedUnits.map(u => ({
     unit: u,
-    survivability: calculateSurvivabilityScore(u)
+    survivability: calculateSurvivabilityScore(u, army)
   }));
 
   const averageSurvivability = survivabilityStats.length > 0
@@ -1282,8 +1337,8 @@ function createSummaryTable(
               const woundsValue = parseInt(unit.stats.wounds) || 0;
 
               // Calculate survivability metrics
-              const baseSurvivability = calculateSurvivabilityScore(unit);
-              const effectiveWounds = calculateEffectiveWounds(unit);
+              const baseSurvivability = calculateSurvivabilityScore(unit, army);
+              const effectiveWounds = calculateEffectiveWounds(unit, army);
               const tacticalSurv = calculateTacticalSurvivability(unit, army);
               const survivability = tacticalSurv.score; // Use tactical for sorting
 
@@ -1524,12 +1579,19 @@ function createUnitCard(
   const meleeDamagePerPoint = unitDamage.melee / unit.points;
 
   // Calculate survivability metrics
-  const effectiveWounds = calculateEffectiveWounds(unit);
-  const survivabilityScore = calculateSurvivabilityScore(unit);
+  const effectiveWounds = calculateEffectiveWounds(unit, army);
+  const survivabilityScore = calculateSurvivabilityScore(unit, army);
   const tacticalSurv = calculateTacticalSurvivability(unit, army);
   const toughnessValue = parseInt(unit.stats.toughness) || 1;
-  const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
+  const armorSaveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
   const woundsValue = parseInt(unit.stats.wounds) || 1;
+
+  // Get invuln save and FNP for tooltip
+  const invulnSaveStr = extractInvulnerableSave(unit, army);
+  const invulnSaveValue = invulnSaveStr ? parseInt(invulnSaveStr.replace(/\+/g, '')) : 7;
+  const bestSaveValue = Math.min(armorSaveValue, invulnSaveValue);
+  const usingInvuln = invulnSaveValue < armorSaveValue;
+  const fnpValue = extractFeelNoPain(unit, army);
 
   // Build detailed tactical survivability tooltip
   const rangeCategory = tacticalSurv.breakdown.maxRange === 0 ? 'Melee only' :
@@ -1541,8 +1603,20 @@ function createUnitCard(
     ? tacticalSurv.breakdown.abilityDetails.join(', ')
     : 'None';
 
+  // Build save display for tooltip
+  let tooltipSaveDisplay = `Sv${unit.stats.save}`;
+  if (invulnSaveStr) {
+    tooltipSaveDisplay += ` / Inv${invulnSaveStr}`;
+    if (usingInvuln) {
+      tooltipSaveDisplay += ' (using Invuln)';
+    }
+  }
+  if (fnpValue) {
+    tooltipSaveDisplay += ` + FNP${fnpValue}+`;
+  }
+
   const tacticalTooltip = `Tactical Survivability
-Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} Sv${unit.stats.save} T${toughnessValue})
+Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} ${tooltipSaveDisplay} T${toughnessValue})
 Range: ${rangeCategory} (${tacticalSurv.breakdown.maxRange}") x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
 Movement: ${tacticalSurv.breakdown.moveValue}" x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
 Abilities: ${abilityLines} x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
@@ -1671,13 +1745,13 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
         <div class="row">
           <div class="col-4">
             <small class="text-muted">Effective Wounds:</small>
-            <div class="calculation-tooltip" data-tooltip="Effective Wounds&#10;${woundsValue} wounds ÷ save failure rate&#10;= ${effectiveWounds.toFixed(1)}">
+            <div class="calculation-tooltip" data-tooltip="Effective Wounds&#10;${woundsValue} wounds ÷ save failure rate&#10;Using: ${usingInvuln ? invulnSaveStr + '+ invuln' : unit.stats.save + ' armor'}&#10;= ${effectiveWounds.toFixed(1)}">
               <strong class="text-success">${effectiveWounds.toFixed(1)}</strong>
             </div>
           </div>
           <div class="col-4">
             <small class="text-muted">Base Surv.:</small>
-            <div class="calculation-tooltip" data-tooltip="Base Survivability&#10;Effective Wounds × (Toughness/4)&#10;${effectiveWounds.toFixed(1)} × (${toughnessValue}/4) = ${survivabilityScore.toFixed(1)}">
+            <div class="calculation-tooltip" data-tooltip="Base Survivability&#10;Effective Wounds × (Toughness/4)${fnpValue ? ' × FNP' + fnpValue + '+ multiplier' : ''}&#10;${effectiveWounds.toFixed(1)} × (${toughnessValue}/4)${fnpValue ? ' × ' + (1 / (1 - (7 - fnpValue) / 6)).toFixed(2) : ''} = ${survivabilityScore.toFixed(1)}">
               <strong class="text-success">${survivabilityScore.toFixed(1)}</strong>
             </div>
           </div>
