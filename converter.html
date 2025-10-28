@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roster Converter - 40K Unit Efficiency</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-blue: #1e88e5;
+            --primary-dark: #0d47a1;
+            --primary-light: #e3f2fd;
+            --success-color: #43a047;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        body {
+            background-color: var(--background);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .converter-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .converter-card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            color: var(--primary-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--primary-blue);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--primary-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary-dark);
+            background-color: #bbdefb;
+            transform: scale(1.02);
+        }
+
+        .drop-zone i {
+            font-size: 4rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone p {
+            margin: 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .drop-zone .text-muted {
+            color: var(--text-secondary) !important;
+            font-size: 0.9rem;
+        }
+
+        .file-name {
+            display: none;
+            padding: 1rem;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .file-name.show {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-name i {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .btn-convert {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .btn-convert:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+        }
+
+        .btn-convert:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 1.5rem;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .status-message {
+            display: none;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .status-message.error {
+            background-color: #ffebee;
+            color: #e53935;
+            border-left: 4px solid #e53935;
+        }
+
+        .info-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .info-section h5 {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+        }
+
+        .info-section ul {
+            color: var(--text-secondary);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-blue);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+
+        .stats-display {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stats-display.show {
+            display: block;
+        }
+
+        .stats-display p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="converter-container">
+        <a href="index.html" class="back-link">
+            <i class="bi bi-arrow-left"></i>
+            Back to Analysis Tool
+        </a>
+
+        <div class="page-header">
+            <h1>Roster Converter</h1>
+            <p>Convert Warhammer 40K roster files to optimized JSON format</p>
+        </div>
+
+        <div class="converter-card">
+            <div id="dropZone" class="drop-zone">
+                <i class="bi bi-cloud-upload"></i>
+                <p><strong>Drag & Drop your roster file here</strong></p>
+                <p class="text-muted">or click to browse</p>
+                <p class="text-muted">Supports .json and .roz files</p>
+                <input type="file" id="fileInput" accept=".json,.roz" style="display: none;">
+            </div>
+
+            <div id="fileName" class="file-name">
+                <div style="display: flex; align-items: center;">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <div>
+                        <strong id="fileNameText">No file selected</strong>
+                        <div class="text-muted" id="fileSizeText"></div>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" id="clearFile">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+
+            <button id="convertBtn" class="btn-convert" disabled>
+                <i class="bi bi-gear"></i> Convert to Optimized JSON
+            </button>
+
+            <div id="progressContainer" class="progress-container">
+                <div class="progress" style="height: 8px;">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar" style="width: 0%"></div>
+                </div>
+                <p class="text-center text-muted mt-2" id="progressText">Processing...</p>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <div id="statsDisplay" class="stats-display">
+                <h6>Conversion Statistics:</h6>
+                <p id="statsText"></p>
+            </div>
+        </div>
+
+        <div class="converter-card info-section">
+            <h5>How to Use</h5>
+            <ul>
+                <li>Export your army roster from BattleScribe or similar tools as JSON format</li>
+                <li>Drop the file into the area above or click to browse</li>
+                <li>Click "Convert to Optimized JSON" to process the file</li>
+                <li>You'll be automatically redirected to the analysis tool with your army loaded</li>
+            </ul>
+
+            <h5 class="mt-4">What Gets Optimized</h5>
+            <ul>
+                <li>Rules and abilities are centralized to reduce duplication</li>
+                <li>File size typically reduced by 60-70%</li>
+                <li>All unit stats, weapons, and characteristics are preserved</li>
+                <li>Special weapon modes (overcharge, etc.) are properly linked</li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="module" src="/src/converter.ts"></script>
+</body>
+</html>

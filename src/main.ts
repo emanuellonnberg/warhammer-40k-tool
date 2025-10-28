@@ -227,7 +227,35 @@ async function main() {
 
     // Load initial army data
     try {
-      currentArmy = await loadArmyData(armyFileSelect.value);
+      // Check if coming from converter with a converted army
+      const urlParams = new URLSearchParams(window.location.search);
+      const convertedArmyData = localStorage.getItem('convertedArmy');
+
+      if (urlParams.get('from') === 'converter' && convertedArmyData) {
+        // Load the converted army from localStorage
+        currentArmy = JSON.parse(convertedArmyData);
+
+        // Clear the localStorage after loading
+        localStorage.removeItem('convertedArmy');
+
+        // Clear URL parameters
+        window.history.replaceState({}, '', window.location.pathname);
+
+        // Show success message
+        const resultsDiv = document.getElementById('analysis-results');
+        if (resultsDiv) {
+          resultsDiv.innerHTML = `
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <strong>Success!</strong> Your roster "${currentArmy.armyName}" has been loaded.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          `;
+        }
+      } else {
+        // Load default army from dropdown
+        currentArmy = await loadArmyData(armyFileSelect.value);
+      }
+
       updateDisplay(true); // Reset weapon modes on initial load
     } catch (error) {
       console.error('Error loading initial army data:', error);
