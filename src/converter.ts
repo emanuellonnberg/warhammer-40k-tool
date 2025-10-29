@@ -77,8 +77,8 @@ export function parseXMLRoster(xmlContent: string): RosterData {
     ignoreAttributes: false,
     attributeNamePrefix: '',
     textNodeName: '$text',
-    parseAttributeValue: true,
-    parseTagValue: true,
+    parseAttributeValue: false,  // Don't auto-parse attribute values to preserve strings
+    parseTagValue: false,         // Don't auto-parse tag values to preserve strings
     trimValues: true,
     isArray: (tagName: string) => {
       // Force these tags to always be arrays
@@ -107,7 +107,8 @@ export function parseXMLRoster(xmlContent: string): RosterData {
     const costs = Array.isArray(roster.costs.cost) ? roster.costs.cost : [roster.costs.cost];
     const ptsCost = costs.find((c: any) => c.name === 'pts' || c['@_name'] === 'pts');
     if (ptsCost) {
-      normalized.roster.points!.total = parseFloat(ptsCost.value || ptsCost['@_value'] || 0);
+      const pointsValue = ptsCost.value || ptsCost['@_value'] || '0';
+      normalized.roster.points!.total = parseFloat(String(pointsValue));
     }
   }
 
@@ -157,11 +158,12 @@ function normalizeSelections(selections: any): any[] {
   const selectionsArray = Array.isArray(selections) ? selections : [selections];
 
   return selectionsArray.map((sel: any) => {
+    const numberValue = sel.number || sel['@_number'] || '1';
     const normalized: any = {
       id: sel.id || sel['@_id'],
       name: sel.name || sel['@_name'],
       type: sel.type || sel['@_type'],
-      number: parseFloat(sel.number || sel['@_number'] || 1)
+      number: parseFloat(String(numberValue))
     };
 
     // Handle nested selections
@@ -215,10 +217,20 @@ function normalizeProfiles(profiles: any): any[] {
 function normalizeCharacteristics(characteristics: any): any[] {
   const charsArray = Array.isArray(characteristics) ? characteristics : [characteristics];
 
-  return charsArray.map((char: any) => ({
-    name: char.name || char['@_name'],
-    $text: char.$text || char['#text'] || char || ''
-  }));
+  return charsArray.map((char: any) => {
+    // Extract the value and ensure it's a string
+    let value = char.$text || char['#text'] || char || '';
+
+    // Convert to string if it's a number or other type
+    if (typeof value !== 'string') {
+      value = String(value);
+    }
+
+    return {
+      name: char.name || char['@_name'],
+      $text: value
+    };
+  });
 }
 
 /**
@@ -241,11 +253,14 @@ function normalizeCategories(categories: any): any[] {
 function normalizeCosts(costs: any): any[] {
   const costsArray = Array.isArray(costs) ? costs : [costs];
 
-  return costsArray.map((cost: any) => ({
-    name: cost.name || cost['@_name'],
-    typeId: cost.typeId || cost['@_typeId'],
-    value: parseFloat(cost.value || cost['@_value'] || 0)
-  }));
+  return costsArray.map((cost: any) => {
+    const costValue = cost.value || cost['@_value'] || '0';
+    return {
+      name: cost.name || cost['@_name'],
+      typeId: cost.typeId || cost['@_typeId'],
+      value: parseFloat(String(costValue))
+    };
+  });
 }
 
 /**
