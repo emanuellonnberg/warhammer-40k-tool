@@ -621,14 +621,16 @@ function extractWeaponsAbilitiesRules(selections: RosterSelection[], optimized: 
           const totalWeapons = numberOfWeapons;
 
           // Update weapon counts for this unit only
+          // Note: numberOfWeapons indicates how many models have this weapon,
+          // not the total model count of the unit
           if (weaponCounts[weaponId]) {
             weaponCounts[weaponId].count += totalWeapons;
-            weaponCounts[weaponId].models_with_weapon += modelCount;
+            weaponCounts[weaponId].models_with_weapon += numberOfWeapons;
           } else {
             weaponCounts[weaponId] = {
               weapon: weapon,
               count: totalWeapons,
-              models_with_weapon: modelCount
+              models_with_weapon: numberOfWeapons
             };
           }
         } else if (profile.typeName === "Abilities") {

@@ -577,7 +577,66 @@ describe('Roster Converter', () => {
 
       expect(result.units[0].weapons).toHaveLength(1);
       expect(result.units[0].weapons[0].count).toBe(1);
-      expect(result.units[0].weapons[0].models_with_weapon).toBe(3);
+      // numberOfWeapons is 1, so only 1 model has this weapon in this selection context
+      expect(result.units[0].weapons[0].models_with_weapon).toBe(1);
+    });
+
+    it('should correctly count models with special weapons (not all models)', () => {
+      const input = {
+        name: 'Test Army',
+        roster: {
+          forces: [{
+            selections: [{
+              id: 'unit-1',
+              name: 'Tactical Squad',
+              type: 'unit',
+              number: 5,
+              categories: [{ name: 'Infantry', primary: true }],
+              costs: [{ name: 'pts', value: 100 }],
+              profiles: [{
+                id: 'profile-1',
+                name: 'Tactical Marine',
+                typeName: 'Unit',
+                characteristics: [
+                  { name: 'M', $text: '6"' },
+                  { name: 'T', $text: '4' },
+                  { name: 'SV', $text: '3+' },
+                  { name: 'W', $text: '2' },
+                  { name: 'LD', $text: '6+' },
+                  { name: 'OC', $text: '1' }
+                ]
+              }],
+              selections: [{
+                id: 'weapon-sel-1',
+                name: 'Plasma Gun',
+                type: 'upgrade',
+                number: 2,  // Only 2 models get plasma guns
+                profiles: [{
+                  id: 'weapon-1',
+                  name: 'Plasma gun',
+                  typeName: 'Ranged Weapons',
+                  characteristics: [
+                    { name: 'Range', $text: '24"' },
+                    { name: 'A', $text: '1' },
+                    { name: 'BS', $text: '3+' },
+                    { name: 'S', $text: '7' },
+                    { name: 'AP', $text: '-2' },
+                    { name: 'D', $text: '1' }
+                  ]
+                }]
+              }]
+            }]
+          }],
+          points: { total: 1000 }
+        }
+      };
+
+      const result = optimizeWarhammerRoster(input);
+
+      expect(result.units[0].weapons).toHaveLength(1);
+      expect(result.units[0].weapons[0].count).toBe(2);
+      // Only 2 models have plasma guns (based on number=2), not all 5
+      expect(result.units[0].weapons[0].models_with_weapon).toBe(2);
     });
 
     it('should handle missing points gracefully', () => {
