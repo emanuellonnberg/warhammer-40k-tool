@@ -1,9 +1,10 @@
 /**
  * Roster Converter - Port of Python parse_json.py to TypeScript
- * Converts BattleScribe roster JSON to optimized format
+ * Converts BattleScribe roster JSON/XML to optimized format
  */
 
 import type { Army, Unit, Weapon, UnitStats } from './types';
+import { XMLParser } from 'fast-xml-parser';
 
 // BattleScribe roster input types
 interface RosterSelection {
@@ -66,6 +67,185 @@ interface WeaponCount {
   weapon: Weapon;
   count: number;
   models_with_weapon: number;
+}
+
+/**
+ * Parse XML (.roz) file and convert to RosterData JSON format
+ */
+export function parseXMLRoster(xmlContent: string): RosterData {
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: '',
+    textNodeName: '$text',
+    parseAttributeValue: true,
+    parseTagValue: true,
+    trimValues: true,
+    isArray: (tagName: string) => {
+      // Force these tags to always be arrays
+      return ['selection', 'force', 'profile', 'characteristic', 'rule', 'category', 'cost'].includes(tagName);
+    }
+  });
+
+  const parsed = parser.parse(xmlContent);
+
+  // Transform XML structure to match JSON structure
+  const roster = parsed.roster;
+
+  // Normalize the structure to match RosterData interface
+  const normalized: RosterData = {
+    name: roster.name || roster['@_name'] || 'Unknown Army',
+    roster: {
+      forces: [],
+      points: {
+        total: 0
+      }
+    }
+  };
+
+  // Extract points from costs
+  if (roster.costs?.cost) {
+    const costs = Array.isArray(roster.costs.cost) ? roster.costs.cost : [roster.costs.cost];
+    const ptsCost = costs.find((c: any) => c.name === 'pts' || c['@_name'] === 'pts');
+    if (ptsCost) {
+      normalized.roster.points!.total = parseFloat(ptsCost.value || ptsCost['@_value'] || 0);
+    }
+  }
+
+  // Process forces
+  if (roster.forces?.force) {
+    const forces = Array.isArray(roster.forces.force) ? roster.forces.force : [roster.forces.force];
+
+    for (const force of forces) {
+      const normalizedForce: any = {
+        selections: []
+      };
+
+      // Extract force-level rules
+      if (force.rules?.rule) {
+        normalizedForce.rules = normalizeRules(force.rules.rule);
+      }
+
+      // Extract selections
+      if (force.selections?.selection) {
+        normalizedForce.selections = normalizeSelections(force.selections.selection);
+      }
+
+      normalized.roster.forces.push(normalizedForce);
+    }
+  }
+
+  return normalized;
+}
+
+/**
+ * Normalize XML rules to JSON format
+ */
+function normalizeRules(rules: any): any[] {
+  const rulesArray = Array.isArray(rules) ? rules : [rules];
+  return rulesArray.map((rule: any) => ({
+    id: rule.id || rule['@_id'],
+    name: rule.name || rule['@_name'],
+    description: rule.description || rule['@_description'] || '',
+    hidden: rule.hidden === 'true' || rule['@_hidden'] === 'true' || false
+  }));
+}
+
+/**
+ * Normalize XML selections to JSON format (recursive)
+ */
+function normalizeSelections(selections: any): any[] {
+  const selectionsArray = Array.isArray(selections) ? selections : [selections];
+
+  return selectionsArray.map((sel: any) => {
+    const normalized: any = {
+      id: sel.id || sel['@_id'],
+      name: sel.name || sel['@_name'],
+      type: sel.type || sel['@_type'],
+      number: parseFloat(sel.number || sel['@_number'] || 1)
+    };
+
+    // Handle nested selections
+    if (sel.selections?.selection) {
+      normalized.selections = normalizeSelections(sel.selections.selection);
+    }
+
+    // Handle profiles
+    if (sel.profiles?.profile) {
+      normalized.profiles = normalizeProfiles(sel.profiles.profile);
+    }
+
+    // Handle rules
+    if (sel.rules?.rule) {
+      normalized.rules = normalizeRules(sel.rules.rule);
+    }
+
+    // Handle categories
+    if (sel.categories?.category) {
+      normalized.categories = normalizeCategories(sel.categories.category);
+    }
+
+    // Handle costs
+    if (sel.costs?.cost) {
+      normalized.costs = normalizeCosts(sel.costs.cost);
+    }
+
+    return normalized;
+  });
+}
+
+/**
+ * Normalize XML profiles to JSON format
+ */
+function normalizeProfiles(profiles: any): any[] {
+  const profilesArray = Array.isArray(profiles) ? profiles : [profiles];
+
+  return profilesArray.map((profile: any) => ({
+    id: profile.id || profile['@_id'],
+    name: profile.name || profile['@_name'],
+    typeName: profile.typeName || profile['@_typeName'],
+    characteristics: profile.characteristics?.characteristic
+      ? normalizeCharacteristics(profile.characteristics.characteristic)
+      : []
+  }));
+}
+
+/**
+ * Normalize XML characteristics to JSON format
+ */
+function normalizeCharacteristics(characteristics: any): any[] {
+  const charsArray = Array.isArray(characteristics) ? characteristics : [characteristics];
+
+  return charsArray.map((char: any) => ({
+    name: char.name || char['@_name'],
+    $text: char.$text || char['#text'] || char || ''
+  }));
+}
+
+/**
+ * Normalize XML categories to JSON format
+ */
+function normalizeCategories(categories: any): any[] {
+  const categoriesArray = Array.isArray(categories) ? categories : [categories];
+
+  return categoriesArray.map((cat: any) => ({
+    id: cat.id || cat['@_id'],
+    name: cat.name || cat['@_name'],
+    entryId: cat.entryId || cat['@_entryId'],
+    primary: cat.primary === 'true' || cat['@_primary'] === 'true' || false
+  }));
+}
+
+/**
+ * Normalize XML costs to JSON format
+ */
+function normalizeCosts(costs: any): any[] {
+  const costsArray = Array.isArray(costs) ? costs : [costs];
+
+  return costsArray.map((cost: any) => ({
+    name: cost.name || cost['@_name'],
+    typeId: cost.typeId || cost['@_typeId'],
+    value: parseFloat(cost.value || cost['@_value'] || 0)
+  }));
 }
 
 /**
@@ -741,8 +921,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = await file.text();
       showProgress(40, 'Parsing roster data...');
 
-      // Parse JSON
-      const rosterData: RosterData = JSON.parse(text);
+      // Detect file type and parse accordingly
+      let rosterData: RosterData;
+      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+
+      if (fileExtension === '.roz' || text.trim().startsWith('<?xml')) {
+        // Parse XML (.roz) file
+        rosterData = parseXMLRoster(text);
+      } else {
+        // Parse JSON file
+        rosterData = JSON.parse(text);
+      }
+
       showProgress(60, 'Optimizing structure...');
 
       // Convert to optimized format

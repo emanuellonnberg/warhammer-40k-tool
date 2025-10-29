@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { optimizeWarhammerRoster, calculateStats } from '../src/converter';
+import { optimizeWarhammerRoster, calculateStats, parseXMLRoster } from '../src/converter';
 import type { Army } from '../src/types';
 
 describe('Roster Converter', () => {
@@ -708,6 +708,243 @@ describe('Roster Converter', () => {
 
       const expectedSaving = (1 - stats.compressionRatio) * 100;
       expect(stats.spaceSaving).toBeCloseTo(expectedSaving, 5);
+    });
+  });
+
+  describe('parseXMLRoster', () => {
+    it('should parse basic XML roster structure', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1" name="Test Army">
+          <costs>
+            <cost name="pts" typeId="points" value="1000"/>
+          </costs>
+          <forces>
+            <force id="force-1" name="Primary Force">
+              <selections/>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+
+      expect(result.name).toBe('Test Army');
+      expect(result.roster.points?.total).toBe(1000);
+      expect(result.roster.forces).toHaveLength(1);
+    });
+
+    it('should parse XML roster with units', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1" name="T'au Army">
+          <costs>
+            <cost name="pts" typeId="points" value="500"/>
+          </costs>
+          <forces>
+            <force id="force-1" name="Primary Force">
+              <selections>
+                <selection id="unit-1" name="Crisis Battlesuit" type="unit" number="1">
+                  <costs>
+                    <cost name="pts" typeId="points" value="150"/>
+                  </costs>
+                  <categories>
+                    <category id="cat-1" name="Vehicle" primary="true"/>
+                  </categories>
+                  <profiles>
+                    <profile id="profile-1" name="Crisis Battlesuit" typeName="Unit">
+                      <characteristics>
+                        <characteristic name="M">10"</characteristic>
+                        <characteristic name="T">5</characteristic>
+                        <characteristic name="SV">3+</characteristic>
+                        <characteristic name="W">5</characteristic>
+                        <characteristic name="LD">7+</characteristic>
+                        <characteristic name="OC">2</characteristic>
+                      </characteristics>
+                    </profile>
+                  </profiles>
+                </selection>
+              </selections>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+
+      expect(result.name).toBe('T\'au Army');
+      expect(result.roster.forces[0].selections).toHaveLength(1);
+      expect(result.roster.forces[0].selections[0].name).toBe('Crisis Battlesuit');
+      expect(result.roster.forces[0].selections[0].type).toBe('unit');
+    });
+
+    it('should parse XML roster with weapons', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1" name="Test Army">
+          <costs>
+            <cost name="pts" typeId="points" value="500"/>
+          </costs>
+          <forces>
+            <force id="force-1" name="Primary Force">
+              <selections>
+                <selection id="unit-1" name="Crisis Battlesuit" type="unit" number="1">
+                  <costs>
+                    <cost name="pts" typeId="points" value="150"/>
+                  </costs>
+                  <categories>
+                    <category id="cat-1" name="Vehicle" primary="true"/>
+                  </categories>
+                  <profiles>
+                    <profile id="profile-1" name="Crisis Battlesuit" typeName="Unit">
+                      <characteristics>
+                        <characteristic name="M">10"</characteristic>
+                        <characteristic name="T">5</characteristic>
+                        <characteristic name="SV">3+</characteristic>
+                        <characteristic name="W">5</characteristic>
+                        <characteristic name="LD">7+</characteristic>
+                        <characteristic name="OC">2</characteristic>
+                      </characteristics>
+                    </profile>
+                  </profiles>
+                  <selections>
+                    <selection id="weapon-1" name="Fusion Blaster" type="upgrade" number="1">
+                      <profiles>
+                        <profile id="weapon-profile-1" name="Fusion blaster" typeName="Ranged Weapons">
+                          <characteristics>
+                            <characteristic name="Range">12"</characteristic>
+                            <characteristic name="A">1</characteristic>
+                            <characteristic name="BS">4+</characteristic>
+                            <characteristic name="S">9</characteristic>
+                            <characteristic name="AP">-4</characteristic>
+                            <characteristic name="D">D6</characteristic>
+                            <characteristic name="Keywords">Melta 2</characteristic>
+                          </characteristics>
+                        </profile>
+                      </profiles>
+                    </selection>
+                  </selections>
+                </selection>
+              </selections>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+      const optimized = optimizeWarhammerRoster(result);
+
+      expect(optimized.units).toHaveLength(1);
+      expect(optimized.units[0].weapons).toHaveLength(1);
+      expect(optimized.units[0].weapons[0].name).toBe('Fusion blaster');
+      expect(optimized.units[0].weapons[0].characteristics.range).toBe('12"');
+    });
+
+    it('should parse XML roster with rules', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1" name="Test Army">
+          <costs>
+            <cost name="pts" typeId="points" value="500"/>
+          </costs>
+          <forces>
+            <force id="force-1" name="Primary Force">
+              <rules>
+                <rule id="rule-1" name="For The Greater Good" hidden="false">
+                  <description>Team work makes the dream work</description>
+                </rule>
+              </rules>
+              <selections>
+                <selection id="unit-1" name="Crisis Battlesuit" type="unit" number="1">
+                  <costs>
+                    <cost name="pts" typeId="points" value="150"/>
+                  </costs>
+                  <categories>
+                    <category id="cat-1" name="Vehicle" primary="true"/>
+                  </categories>
+                  <profiles>
+                    <profile id="profile-1" name="Crisis Battlesuit" typeName="Unit">
+                      <characteristics>
+                        <characteristic name="M">10"</characteristic>
+                        <characteristic name="T">5</characteristic>
+                        <characteristic name="SV">3+</characteristic>
+                        <characteristic name="W">5</characteristic>
+                        <characteristic name="LD">7+</characteristic>
+                        <characteristic name="OC">2</characteristic>
+                      </characteristics>
+                    </profile>
+                  </profiles>
+                </selection>
+              </selections>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+      const optimized = optimizeWarhammerRoster(result);
+
+      expect(optimized.rules).toBeDefined();
+      expect(optimized.rules!['rule-1']).toBeDefined();
+      expect(optimized.rules!['rule-1'].name).toBe('For The Greater Good');
+    });
+
+    it('should handle missing XML attributes gracefully', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1">
+          <forces>
+            <force id="force-1">
+              <selections/>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+
+      expect(result.name).toBe('Unknown Army');
+      expect(result.roster.points?.total).toBe(0);
+    });
+
+    it('should parse full XML roster and optimize', () => {
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+        <roster id="roster-1" name="Full Test Army">
+          <costs>
+            <cost name="pts" typeId="points" value="1000"/>
+          </costs>
+          <forces>
+            <force id="force-1" name="Primary Force">
+              <selections>
+                <selection id="detachment" name="Detachment" type="upgrade">
+                  <selections>
+                    <selection id="det-1" name="Mont'ka" type="upgrade"/>
+                  </selections>
+                </selection>
+                <selection id="unit-1" name="Crisis Battlesuits" type="unit" number="3">
+                  <costs>
+                    <cost name="pts" typeId="points" value="450"/>
+                  </costs>
+                  <categories>
+                    <category id="cat-1" name="Vehicle" primary="true"/>
+                  </categories>
+                  <profiles>
+                    <profile id="profile-1" name="Crisis Battlesuit" typeName="Unit">
+                      <characteristics>
+                        <characteristic name="M">10"</characteristic>
+                        <characteristic name="T">5</characteristic>
+                        <characteristic name="SV">3+</characteristic>
+                        <characteristic name="W">5</characteristic>
+                        <characteristic name="LD">7+</characteristic>
+                        <characteristic name="OC">2</characteristic>
+                      </characteristics>
+                    </profile>
+                  </profiles>
+                </selection>
+              </selections>
+            </force>
+          </forces>
+        </roster>`;
+
+      const result = parseXMLRoster(xml);
+      const optimized = optimizeWarhammerRoster(result);
+
+      expect(optimized.armyName).toBe('Full Test Army');
+      expect(optimized.faction).toBe('Mont\'ka');
+      expect(optimized.pointsTotal).toBe(1000);
+      expect(optimized.units).toHaveLength(1);
+      expect(optimized.units[0].name).toBe('Crisis Battlesuits');
+      expect(optimized.units[0].count).toBe(3);
     });
   });
 });
