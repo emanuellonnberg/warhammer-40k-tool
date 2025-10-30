@@ -648,27 +648,31 @@ These can be implemented quickly and provide immediate value.
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Weeks 1-2)
+### Phase 1: Foundation (Weeks 1-2) ✅ COMPLETE
 **Goal:** Quick wins + critical missing mechanics
 
-- ✅ QW-1: Export/Share Features
-- ✅ QW-2: Dark Mode
-- ✅ QW-3: Keyboard Shortcuts
-- ✅ QW-4: Enhanced Help/Tooltips
-- ✅ 1.1: Re-roll Mechanics
-- ✅ 1.2: Feel No Pain
+- 🟢 1.1: Re-roll Mechanics - COMPLETED
+- 🟢 1.2: Feel No Pain - COMPLETED
+- 🟢 Invulnerable Save Display - COMPLETED
+- 🟢 Roster Converter (JSON/XML) - COMPLETED
+- 🟢 Tactical Survivability - COMPLETED
+- 🟢 Enhanced Tooltips - COMPLETED
+- 🟢 UI Color Palette (CSS Variables) - COMPLETED
+- 🔴 QW-1: Export/Share Features - Not Started
+- 🔴 QW-2: Dark Mode - Not Started
+- 🔴 QW-3: Keyboard Shortcuts - Not Started
 
-**Outcome:** Immediate user value + foundation for advanced features
+**Outcome:** ✅ Core mechanics foundation established, critical features implemented
 
 ---
 
 ### Phase 2: Core Mechanics (Weeks 3-6)
 **Goal:** Complete game mechanics implementation
 
-- ✅ 1.3: Additional Special Weapon Rules
-- ✅ 1.4: Cover and To-Hit Modifiers
-- ✅ 2.2: Advanced Filtering and Search
-- ✅ 2.3: Interactive Scenario Builder
+- 🔴 1.3: Additional Special Weapon Rules - Not Started
+- 🔴 1.4: Cover and To-Hit Modifiers - Not Started
+- 🔴 2.2: Advanced Filtering and Search - Not Started
+- 🔴 2.3: Interactive Scenario Builder - Not Started
 
 **Outcome:** Accurate combat calculations for all scenarios
 
@@ -677,10 +681,10 @@ These can be implemented quickly and provide immediate value.
 ### Phase 3: Analysis & Visualization (Weeks 7-12)
 **Goal:** Enhanced insights and data presentation
 
-- ✅ 2.1: Visual Data Improvements (Charts/Graphs)
-- ✅ 3.1: Multi-Target Analysis
-- ✅ 3.2: Probability Distributions
-- ✅ 4.1: Army List Management
+- 🔴 2.1: Visual Data Improvements (Charts/Graphs) - Not Started
+- 🔴 3.1: Multi-Target Analysis - Not Started
+- 🔴 3.2: Probability Distributions - Not Started
+- 🔴 4.1: Army List Management - Not Started
 
 **Outcome:** Professional-grade analysis tool
 
@@ -689,10 +693,10 @@ These can be implemented quickly and provide immediate value.
 ### Phase 4: Advanced Features (Months 4-6)
 **Goal:** Comprehensive tactical platform
 
-- ✅ 2.4: Improved Mobile Experience
-- ✅ 3.3: Unit Synergy Analysis
-- ✅ 3.4: List Building Assistant
-- ✅ 5.1: Turn-by-Turn Simulator
+- 🔴 2.4: Improved Mobile Experience - Not Started
+- 🔴 3.3: Unit Synergy Analysis - Not Started
+- 🔴 3.4: List Building Assistant - Not Started
+- 🔴 5.1: Turn-by-Turn Simulator - Not Started
 
 **Outcome:** Complete list building and tactical analysis suite
 
@@ -701,11 +705,11 @@ These can be implemented quickly and provide immediate value.
 ### Phase 5: Polish & Performance (Ongoing)
 **Goal:** Refinement and optimization
 
-- ✅ 4.2: Unit Database Improvements
-- ✅ 5.2: Mission-Based Analysis
-- ✅ 6.1: Performance Optimizations
-- ✅ 6.2: Testing & Quality
-- ✅ 6.3: Developer Experience
+- 🔴 4.2: Unit Database Improvements - Not Started
+- 🔴 5.2: Mission-Based Analysis - Not Started
+- 🔴 6.1: Performance Optimizations - Not Started
+- 🟡 6.2: Testing & Quality - Partial (good test coverage, needs E2E tests)
+- 🔴 6.3: Developer Experience - Not Started
 
 ---
 
@@ -751,6 +755,13 @@ This roadmap is a living document. If you'd like to contribute:
 
 ## Changelog
 
+### 2025-10-30
+- 📝 Documentation update pass
+  - Updated README.md with current feature set
+  - Updated ROADMAP.md with accurate implementation status
+  - Added comprehensive DEVELOPER_GUIDE.md for new contributors
+  - Consolidated duplicate documentation files
+
 ### 2025-10-24
 - 🟢 Initial roadmap created
 - Identified 24+ improvement areas
@@ -761,9 +772,27 @@ This roadmap is a living document. If you'd like to contribute:
   - Created rerolls.ts calculator module with probability functions
   - Updated damage calculator to use new re-roll system
   - Maintained backward compatibility with Twin-Linked
-  - Added 60 comprehensive tests (all passing)
-  - Test coverage: 121/121 tests passing
+  - Added comprehensive tests (all passing)
+  - UI controls for hit and wound re-rolls
+- 🟢 Completed Feature 1.2: Feel No Pain (FNP)
+  - Added targetFNP parameter to damage calculations
+  - FNP applies after save calculations
+  - UI dropdown control with options: No FNP, 6+, 5+, 4+, 3+, 2+
+  - Works correctly with all weapon special rules
+  - Comprehensive test coverage
+- 🟢 Completed: Invulnerable Save Display
+  - Invulnerable saves displayed inline with armor saves (e.g., "3+/4++")
+  - Hidden from abilities list to reduce clutter
+  - Comprehensive test coverage
+- 🟢 Completed: Roster Converter
+  - TypeScript implementation of roster converter
+  - Support for BattleScribe JSON exports
+  - Support for New Recruit XML (.roz) exports
+  - Separate converter.html page with drag-and-drop UI
+- 🟢 Completed: Tactical Survivability
+  - Calculate expected survivability accounting for range and movement
+  - Integrated with FNP and invulnerable saves
 
 ---
 
-*Last updated: 2025-10-24*
+*Last updated: 2025-10-30*
