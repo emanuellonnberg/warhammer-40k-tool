@@ -92,7 +92,8 @@ export function calculateWoundChanceWithReroll(
   toughness: number,
   weaponReroll?: RerollType,
   unitReroll?: RerollType,
-  scenarioReroll?: RerollType
+  scenarioReroll?: RerollType,
+  woundModifier: number = 0
 ): number {
   // Calculate wound target based on S vs T comparison
   let woundTarget: number;
@@ -109,6 +110,7 @@ export function calculateWoundChanceWithReroll(
     woundTarget = 5;
   }
 
+  woundTarget = Math.min(6, Math.max(2, woundTarget - woundModifier));
   const baseChance = (7 - woundTarget) / 6;
   const bestReroll = getBestReroll(weaponReroll, unitReroll, scenarioReroll);
   return applyReroll(baseChance, bestReroll);

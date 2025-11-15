@@ -39,12 +39,14 @@ const createUnit = (partial: Partial<Unit>): Unit => ({
   weapons: partial.weapons || [createWeapon(`${partial.id || 'unit'}-w1`, `${partial.name || 'Unit'} Weapon`)],
   linked_weapons: partial.linked_weapons,
   unitRerolls: partial.unitRerolls,
+  unitModifiers: partial.unitModifiers,
   rules: partial.rules,
   abilities: partial.abilities,
   isLeader: partial.isLeader,
   leaderOptions: partial.leaderOptions,
   attachedLeaders: partial.attachedLeaders,
-  leaderAuraRerolls: partial.leaderAuraRerolls
+  leaderAuraRerolls: partial.leaderAuraRerolls,
+  leaderAuraModifiers: partial.leaderAuraModifiers
 });
 
 describe('leader attachment utilities', () => {
@@ -142,6 +144,22 @@ describe('leader attachment utilities', () => {
     const result = applyLeaderAttachments(army, { host: ['leader'] });
     const merged = result.units[0];
     expect(merged.unitRerolls?.hits).toBe(RerollType.ONES);
+  });
+
+  it('adds leader aura hit/wound modifiers to host unit', () => {
+    const host = createUnit({
+      id: 'host',
+      unitModifiers: { hit: 1 }
+    });
+    const leader = createUnit({
+      id: 'leader',
+      isLeader: true,
+      leaderOptions: ['Unit'],
+      leaderAuraModifiers: { wound: 1 }
+    });
+
+    const merged = mergeLeaderIntoUnit(host, leader);
+    expect(merged.unitModifiers).toEqual({ hit: 1, wound: 1 });
   });
 });
 

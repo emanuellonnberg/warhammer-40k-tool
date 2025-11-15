@@ -1,4 +1,4 @@
-import type { Army, AttachmentMap, Unit, AttachedLeaderInfo } from '../types';
+import type { Army, AttachmentMap, Unit, AttachedLeaderInfo, AttackModifiers } from '../types';
 
 /**
  * Deep clone a unit to avoid mutating original data structures
@@ -60,6 +60,24 @@ function mergeUnitRerolls(
   };
 }
 
+function mergeAttackModifiers(
+  hostModifiers: AttackModifiers | undefined,
+  leaderModifiers: AttackModifiers | undefined
+): AttackModifiers | undefined {
+  if (!hostModifiers && !leaderModifiers) {
+    return undefined;
+  }
+  const merged: AttackModifiers = { ...(leaderModifiers || {}), ...(hostModifiers || {}) };
+  (['hit', 'wound'] as (keyof AttackModifiers)[]).forEach(key => {
+    const hostValue = hostModifiers?.[key] || 0;
+    const leaderValue = leaderModifiers?.[key] || 0;
+    if (hostValue || leaderValue) {
+      merged[key] = hostValue + leaderValue;
+    }
+  });
+  return merged;
+}
+
 /**
  * Build the attached leader summary used by the UI
  */
@@ -95,6 +113,10 @@ export function mergeLeaderIntoUnit(host: Unit, leader: Unit): Unit {
   mergedHost.unitRerolls = mergeUnitRerolls(mergedHost.unitRerolls, leaderClone.unitRerolls);
   if (leaderClone.leaderAuraRerolls) {
     mergedHost.unitRerolls = mergeUnitRerolls(mergedHost.unitRerolls, leaderClone.leaderAuraRerolls);
+  }
+  mergedHost.unitModifiers = mergeAttackModifiers(mergedHost.unitModifiers, leaderClone.unitModifiers);
+  if (leaderClone.leaderAuraModifiers) {
+    mergedHost.unitModifiers = mergeAttackModifiers(mergedHost.unitModifiers, leaderClone.leaderAuraModifiers);
   }
 
   const attachedLeaders = mergedHost.attachedLeaders ? [...mergedHost.attachedLeaders] : [];

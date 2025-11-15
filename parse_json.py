@@ -23,6 +23,15 @@ ROLL_KEY_MAP = {
     "damage": "damage"
 }
 
+MODIFIER_PATTERNS = [
+    (re.compile(r"add\s+(\d+)\s+to\s+(?:the\s+)?(hit|wound) roll", re.IGNORECASE), 1),
+    (re.compile(r"add\s+(\d+)\s+to\s+(?:the\s+)?(hit|wound) rolls", re.IGNORECASE), 1),
+    (re.compile(r"improve\s+(?:the\s+)?(hit|wound) roll(?:s)? by\s+(\d+)", re.IGNORECASE), 1),
+    (re.compile(r"subtract\s+(\d+)\s+from\s+(?:the\s+)?(hit|wound) roll", re.IGNORECASE), -1),
+    (re.compile(r"subtract\s+(\d+)\s+from\s+(?:the\s+)?(hit|wound) rolls", re.IGNORECASE), -1),
+    (re.compile(r"worsen\s+(?:the\s+)?(hit|wound) roll(?:s)? by\s+(\d+)", re.IGNORECASE), -1),
+]
+
 def optimize_warhammer_roster(input_file, output_file):
     """
     Parse and optimize a Warhammer 40k roster JSON file
@@ -207,6 +216,17 @@ def maybe_add_reroll_metadata(profile, unit):
         apply_reroll_effects(unit, reroll_data)
 
 
+def maybe_add_modifier_metadata(profile, unit):
+    """Detect hit/wound modifiers and store metadata."""
+    if not isinstance(profile, dict) or not isinstance(unit, dict):
+        return
+    
+    description = extract_profile_description(profile)
+    modifier_data = extract_modifier_effects(description)
+    if modifier_data:
+        apply_modifier_effects(unit, modifier_data)
+
+
 def extract_profile_description(profile):
     """Get the description text from a profile's characteristics."""
     for char in profile.get("characteristics", []):
@@ -297,6 +317,64 @@ def apply_reroll_effects(target, reroll_data):
             unit_rerolls.setdefault(key, value)
 
 
+def extract_modifier_effects(description):
+    """Return hit/wound modifier metadata extracted from ability text."""
+    if not description:
+        return None
+    
+    normalized = description.lower()
+    if "hit roll" not in normalized and "wound roll" not in normalized:
+        return None
+    
+    scope = "unit" if any(marker in normalized for marker in UNIT_SCOPE_MARKERS) else "self"
+    modifiers = {}
+    
+    for pattern, multiplier in MODIFIER_PATTERNS:
+        for match in pattern.finditer(normalized):
+            groups = match.groups()
+            if len(groups) != 2:
+                continue
+            first, second = groups
+            if first.isdigit():
+                value = int(first) * multiplier
+                roll_type = second
+            elif second.isdigit():
+                value = int(second) * multiplier
+                roll_type = first
+            else:
+                continue
+            key = ROLL_KEY_MAP.get(roll_type)
+            if not key:
+                continue
+            modifiers[key] = modifiers.get(key, 0) + value
+    
+    if not modifiers:
+        return None
+    
+    return {
+        "scope": scope,
+        "effects": modifiers
+    }
+
+
+def apply_modifier_effects(target, modifier_data):
+    """Merge hit/wound modifiers onto a unit or leader aura."""
+    if not modifier_data:
+        return
+    
+    effects = modifier_data["effects"]
+    scope = modifier_data["scope"]
+    
+    if scope == "unit" and target.get("isLeader"):
+        aura = target.setdefault("leaderAuraModifiers", {})
+        for key, value in effects.items():
+            aura[key] = aura.get(key, 0) + value
+    else:
+        unit_modifiers = target.setdefault("unitModifiers", {})
+        for key, value in effects.items():
+            unit_modifiers[key] = unit_modifiers.get(key, 0) + value
+
+
 def register_default_attachment(optimized, host, leader):
     """Record leader attachments present in the original roster."""
     host_id = host.get("id")
@@ -372,6 +450,7 @@ def extract_weapons_abilities_rules(selections, optimized, unit):
                     # Attach leader metadata when applicable
                     maybe_add_leader_metadata(profile, unit)
                     maybe_add_reroll_metadata(profile, unit)
+                maybe_add_modifier_metadata(profile, unit)
                     
                     # Add ability reference to the unit
                     if ability_id:
@@ -461,6 +540,7 @@ def create_unit(selection, optimized):
                 # Attach leader metadata when applicable
                 maybe_add_leader_metadata(profile, unit)
                 maybe_add_reroll_metadata(profile, unit)
+                maybe_add_modifier_metadata(profile, unit)
                 
                 # Add reference to the unit
                 if ability_id:

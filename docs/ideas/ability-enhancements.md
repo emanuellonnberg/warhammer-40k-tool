@@ -2,9 +2,9 @@
 
 ## High-Value Improvements (Status)
 
-1. **Aura/Reroll Detection** ✅ *(implemented in parsing + UI)*
-   - Parse recurring phrasing (“While this model is leading a unit… re-roll hits”) into structured reroll metadata.
-   - Feed those flags into calculators so unit damage automatically reflects granted rerolls instead of relying solely on scenario dropdowns.
+1. **Aura/Reroll/Hit Mod Detection** ✅ *(implemented in parsing + UI)*
+   - Parse recurring phrasing (“While this model is leading a unit… re-roll hits”, “Add 1 to the Hit roll”) into structured metadata.
+   - Feed those flags into calculators so unit damage automatically reflects granted rerolls and +/- to-hit/-to-wound buffs instead of relying solely on scenario dropdowns.
    - Pros: Makes leader buffs automatic, reduces user error, and improves accuracy for every damage calculation.
    - Cons: Requires natural-language heuristics that can fail on unusual wording, and needs ongoing maintenance as GW phrasing evolves.
    - Implementation approach:

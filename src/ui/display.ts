@@ -362,6 +362,7 @@ function getWeaponRangeWeightedByDamage(
       1,
       false,
       null,
+      unit.unitModifiers,
       unit.unitRerolls,
       scenarioRerolls,
       targetFNP
@@ -2255,8 +2256,8 @@ function buildWeaponHTML(
 
   if (standardWeapon && overchargeWeapon) {
     // Weapon has standard/overcharge modes
-    const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
-    const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
+    const standardDamage = calculateWeaponDamage(standardWeapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
+    const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(standardWeapon);
     const isOneTime = isOneTimeWeapon(standardWeapon);
 
@@ -2297,7 +2298,7 @@ function buildWeaponHTML(
     const weaponId = `weapon-${unit.id}-${index}`;
 
     const modesHTML = weapons.map((weapon, modeIndex) => {
-      const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
+      const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
       const modeName = weapon.name.replace(baseName, '').replace(/^[ -]+/, '') || 'Mode ' + (modeIndex + 1);
       return `
         <span class="weapon-mode ${modeIndex === activeMode ? 'active-mode' : 'inactive-mode'}"
@@ -2334,7 +2335,7 @@ function buildWeaponHTML(
   } else {
     // Regular weapon
     const weapon = weapons[0];
-    const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitRerolls, scenarioRerolls, targetFNP);
+    const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(weapon);
     const isOneTime = isOneTimeWeapon(weapon);
 

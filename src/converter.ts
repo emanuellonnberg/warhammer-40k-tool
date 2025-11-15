@@ -3,7 +3,7 @@
  * Converts BattleScribe roster JSON/XML to optimized format
  */
 
-import type { Army, Unit, Weapon, UnitStats, RerollConfig } from './types';
+import type { Army, Unit, Weapon, UnitStats, RerollConfig, AttackModifiers } from './types';
 import { RerollType } from './types';
 import { XMLParser } from 'fast-xml-parser';
 
@@ -84,6 +84,14 @@ const ROLL_KEY_MAP: Record<string, keyof RerollConfig> = {
   wound: 'wounds',
   damage: 'damage'
 };
+const MODIFIER_PATTERNS: Array<[RegExp, number]> = [
+  [/add\s+(\d+)\s+to\s+(?:the\s+)?(hit|wound) roll/gi, 1],
+  [/add\s+(\d+)\s+to\s+(?:the\s+)?(hit|wound) rolls/gi, 1],
+  [/improve\s+(?:the\s+)?(hit|wound) roll(?:s)? by\s+(\d+)/gi, 1],
+  [/subtract\s+(\d+)\s+from\s+(?:the\s+)?(hit|wound) roll/gi, -1],
+  [/subtract\s+(\d+)\s+from\s+(?:the\s+)?(hit|wound) rolls/gi, -1],
+  [/worsen\s+(?:the\s+)?(hit|wound) roll(?:s)? by\s+(\d+)/gi, -1],
+];
 
 /**
  * Parse XML (.roz) file and convert to RosterData JSON format
@@ -575,6 +583,7 @@ function createUnit(selection: RosterSelection, optimized: Army): Unit {
 
         maybeAddLeaderMetadata(profile, unit);
         maybeAddRerollMetadata(profile, unit);
+        maybeAddModifierMetadata(profile, unit);
       }
     }
   }
@@ -686,6 +695,7 @@ function extractWeaponsAbilitiesRules(selections: RosterSelection[], optimized: 
 
           maybeAddLeaderMetadata(profile, unit);
           maybeAddRerollMetadata(profile, unit);
+          maybeAddModifierMetadata(profile, unit);
         }
       }
     }
@@ -873,6 +883,17 @@ function mergeRerollConfig(base: RerollConfig | undefined, addition: Partial<Rer
   return merged;
 }
 
+function mergeAttackModifiers(base: AttackModifiers | undefined, addition: Partial<AttackModifiers>): AttackModifiers {
+  const merged: AttackModifiers = { ...(base || {}) };
+  (["hit", "wound"] as (keyof AttackModifiers)[]).forEach(key => {
+    const value = addition[key];
+    if (typeof value === 'number' && value !== 0) {
+      merged[key] = (merged[key] || 0) + value;
+    }
+  });
+  return merged;
+}
+
 type RerollDetection = {
   scope: 'unit' | 'self';
   effects: Partial<RerollConfig>;
@@ -925,6 +946,68 @@ function maybeAddRerollMetadata(profile: RosterProfile, unit: Unit): void {
     unit.leaderAuraRerolls = mergeRerollConfig(unit.leaderAuraRerolls, detection.effects);
   } else {
     unit.unitRerolls = mergeRerollConfig(unit.unitRerolls, detection.effects);
+  }
+}
+
+type ModifierDetection = {
+  scope: 'unit' | 'self';
+  effects: Partial<AttackModifiers>;
+};
+
+function detectModifierConfig(description: string): ModifierDetection | null {
+  if (!description) return null;
+  const text = description.toLowerCase();
+  if (!text.includes('hit roll') && !text.includes('wound roll')) {
+    return null;
+  }
+
+  const scope: 'unit' | 'self' = UNIT_SCOPE_MARKERS.some(marker => text.includes(marker))
+    ? 'unit'
+    : 'self';
+
+  const effects: Partial<AttackModifiers> = {};
+  MODIFIER_PATTERNS.forEach(([regex, multiplier]) => {
+    regex.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(text)) !== null) {
+      const groupA = match[1];
+      const groupB = match[2];
+      let valueStr: string | undefined;
+      let typeStr: string | undefined;
+
+      if (groupA && /^\d+$/.test(groupA)) {
+        valueStr = groupA;
+        typeStr = groupB;
+      } else if (groupB && /^\d+$/.test(groupB)) {
+        valueStr = groupB;
+        typeStr = groupA;
+      }
+
+      if (!valueStr || !typeStr) continue;
+      const key = typeStr.toLowerCase().startsWith('hit') ? 'hit' : typeStr.toLowerCase().startsWith('wound') ? 'wound' : null;
+      if (!key) continue;
+
+      const value = parseInt(valueStr, 10) * multiplier;
+      effects[key] = (effects[key] || 0) + value;
+    }
+  });
+
+  if (Object.keys(effects).length === 0) {
+    return null;
+  }
+
+  return { scope, effects };
+}
+
+function maybeAddModifierMetadata(profile: RosterProfile, unit: Unit): void {
+  const description = extractProfileDescription(profile);
+  const detection = detectModifierConfig(description);
+  if (!detection) return;
+
+  if (detection.scope === 'unit' && unit.isLeader) {
+    unit.leaderAuraModifiers = mergeAttackModifiers(unit.leaderAuraModifiers, detection.effects);
+  } else {
+    unit.unitModifiers = mergeAttackModifiers(unit.unitModifiers, detection.effects);
   }
 }
 

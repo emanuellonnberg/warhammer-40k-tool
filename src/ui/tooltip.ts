@@ -100,7 +100,8 @@ export function generateCalculationTooltip(
     targetToughness,
     hasTwinLinked ? undefined : weapon.rerolls?.wounds,
     hasTwinLinked ? undefined : unitRerolls?.wounds,
-    hasTwinLinked ? undefined : scenarioRerolls?.wounds
+    hasTwinLinked ? undefined : scenarioRerolls?.wounds,
+    0
   );
 
   // Apply special rules (including FNP)

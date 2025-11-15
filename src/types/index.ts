@@ -51,6 +51,11 @@ export interface AttachedLeaderInfo {
   abilities?: string[];
 }
 
+export interface AttackModifiers {
+  hit?: number;
+  wound?: number;
+}
+
 /**
  * Unit statistics
  */
@@ -81,6 +86,7 @@ export interface Unit {
     }
   };
   unitRerolls?: RerollConfig;  // Unit-wide re-roll abilities
+  unitModifiers?: AttackModifiers; // Unit-wide hit/wound modifiers
   rules?: string[];            // Array of rule IDs
   abilities?: string[];        // Array of ability IDs
   isLeader?: boolean;          // Indicates if the unit can attach as a leader
@@ -88,6 +94,7 @@ export interface Unit {
   attachedLeaders?: AttachedLeaderInfo[]; // Leaders currently attached to this unit
   defaultHostId?: string;      // Host unit ID if roster pre-attached this leader
   leaderAuraRerolls?: RerollConfig; // Rerolls granted to a unit this leader is attached to
+  leaderAuraModifiers?: AttackModifiers; // Hit/wound modifiers granted while leading
 }
 
 /**
