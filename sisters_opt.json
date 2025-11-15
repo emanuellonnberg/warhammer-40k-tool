@@ -622,6 +622,93 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "mc7dupl9czsr56xhap5",
+          "name": "Ephrael Stern",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "76d3-4d01-3b30-62c4",
+              "name": "Sanctity",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "2+",
+                "s": "6",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Anti-Chaos 2+, Precision"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc7dupl9clx5d8xxnvm",
+          "name": "Kyganil of the Bloody Tears",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "3",
+            "save": "6+",
+            "wounds": "3",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "c12e-e65d-d748-7a97",
+              "name": "The Outcast's Blades",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "6",
+                "ws": "2+",
+                "s": "4",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Precision"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -651,6 +738,14 @@
         "588a-b45-3f30-e6c8",
         "dbf3-7183-63e4-e7bf",
         "d642-3373-8e19-9571"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Noviatiate Squad"
       ],
       "weapons": [
         {
@@ -710,11 +805,19 @@
         "be1e-ac8e-1e2c-3528",
         "6c1f-1cf7-ff25-c99e"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "abilities": [
         "5e86-cb68-9205-16c4",
         "83e4-fab8-e77c-b285",
         "f819-fb81-c42f-4295",
         "e943-656f-197b-b510"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Paragon Warsuits"
       ],
       "linked_weapons": {
         "➤ Lance of Illumination": {
@@ -847,6 +950,11 @@
         "3cae-8884-fe99-233f",
         "e7e5-76df-af3c-f545"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Seraphim Squad",
+        "Zephyrim Squad"
+      ],
       "weapons": [
         {
           "id": "8949-7d5b-2045-ef1c",
@@ -912,6 +1020,114 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m639ouipvob59mn8eas",
+          "name": "Geminae Superia",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "2",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "8949-7d5b-2045-ef1c",
+              "name": "Bolt Pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "fd72-8bc8-8e6d-5abf",
+              "name": "Power Weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "4",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "m639ouiozf9lshwdx3",
+          "name": "Saint Celestine",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "2+",
+            "wounds": "5",
+            "leadership": "6+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "5edf-d619-23e0-9b56",
+            "4640-43e7-30b-215a",
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "5782-725c-b14a-2ac3",
+              "name": "The Ardent Blade",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "6",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c203-7b5b-35fd-da3d",
+              "name": "The Ardent Blade",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "5",
+                "ws": "2+",
+                "s": "6",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -945,6 +1161,13 @@
         "3d31-2f99-c625-f047",
         "3eb6-8c59-3e85-181f",
         "1c6e-8ff9-af2e-ffb9"
+      ],
+      "unitRerolls": {
+        "wounds": "ones"
+      },
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad"
       ],
       "weapons": [
         {
@@ -1007,6 +1230,14 @@
         "e754-bda4-580f-5e56",
         "e8c6-0df9-48c0-7c29",
         "aba-82be-3c51-e90d"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Novitiate Squad"
       ],
       "linked_weapons": {
         "➤ Plasma pistol": {
@@ -1094,6 +1325,11 @@
         "e8c6-0df9-48c0-7c29",
         "fbef-a9a2-d744-6ce0"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Seraphim Squad",
+        "Zephyrim Squad"
+      ],
       "weapons": [
         {
           "id": "ee64-108f-ec59-9c81",
@@ -1137,6 +1373,14 @@
         "c7dc-3ddb-ce59-3c1e",
         "2c6b-cb4a-e7f9-3b6f",
         "e5c8-ff8c-ad6a-1a31"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Novitiate Squad"
       ],
       "weapons": [
         {
@@ -1198,6 +1442,14 @@
         "2c6b-cb4a-e7f9-3b6f",
         "e5c8-ff8c-ad6a-1a31"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Novitiate Squad"
+      ],
       "weapons": [
         {
           "id": "c934-fc40-d6a2-8919",
@@ -1258,6 +1510,13 @@
         "ecf0-4fea-74c7-1091",
         "e47a-617-31f5-8186",
         "76a1-5a9f-64c5-19ed"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad"
       ],
       "weapons": [
         {
@@ -1333,6 +1592,14 @@
         "d505-3475-8bdc-a018",
         "20b3-dac6-46c2-361b",
         "1ea1-b3c-25f8-8533"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Novitiate Squad"
       ],
       "linked_weapons": {
         "➤ Plasma pistol": {
@@ -1418,6 +1685,14 @@
         "d505-3475-8bdc-a018",
         "20b3-dac6-46c2-361b",
         "1ea1-b3c-25f8-8533"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Battle Sisters Squad",
+        "Celestian Sacresants",
+        "Dominion Squad",
+        "Retributor Squad",
+        "Sisters Novitiate Squad"
       ],
       "linked_weapons": {
         "➤ Plasma pistol": {
@@ -1621,6 +1896,374 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m639qfuwohlfqysfuj",
+          "name": "Sister Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "ad23-704a-8225-bb37",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "1456-cb87-f320-1136",
+              "name": "Ministorum hand flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Pistol, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m639qfuxrsdz22jg31",
+          "name": "Battle Sister",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 6,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            }
+          ]
+        },
+        {
+          "id": "m63ab0ppq6rvxpm8zpc",
+          "name": "Battle Sister w/ Simulacrum Imperialis",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "abilities": [
+            "ee6b-50fc-3b24-6884"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m63ab0pp6ki4x3st646",
+          "name": "Battle Sister w/ Special or Heavy Weapon",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "7689-6689-bb7-4b53",
+              "name": "Ministorum heavy flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m63ab0pp5k5wrecavgs",
+          "name": "Battle Sister w/ Special Weapon",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "df04-84ff-f841-7e9c",
+              "name": "Meltagun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -1662,6 +2305,37 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "mc7cy9dlwaf0jfu1fyk",
+          "name": "Arco-Flagellant",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "1897-c22c-9597-12b1"
+          ],
+          "weapons": [
+            {
+              "id": "42a9-7f25-36e-6bda",
+              "name": "Arco-flails",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Sustained Hits 1"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
         }
       ]
     },
@@ -1792,6 +2466,307 @@
           },
           "count": 4,
           "models_with_weapon": 4
+        }
+      ],
+      "models": [
+        {
+          "id": "mc4sj5s6ezintdz3huj",
+          "name": "Dominion Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "ad23-704a-8225-bb37",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "1456-cb87-f320-1136",
+              "name": "Ministorum hand flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Pistol, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc4sj5s62xkjsjtof1l",
+          "name": "Dominion",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1, Assault"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        },
+        {
+          "id": "mc4sj5s6f9xfkfrglfi",
+          "name": "Dominion w/ Simulacrum Imperialis",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "ee6b-50fc-3b24-6884"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1, Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc4t0ihwqijpay0981k",
+          "name": "Dominion w/ Special Weapon",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "fc8a-8c24-bae9-cc1c",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "9101-f21a-dab0-d068",
+              "name": "Meltagun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2, Assault"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
         }
       ]
     },
@@ -1948,6 +2923,332 @@
           "count": 4,
           "models_with_weapon": 4
         }
+      ],
+      "models": [
+        {
+          "id": "mc7euyw74d4j17pcajl",
+          "name": "Dominion Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "8367-374c-f87-c627"
+          ],
+          "linked_weapons": {
+            "➤ Plasma pistol": {
+              "standard": "746a-c1ea-2929-a835",
+              "overcharge": null
+            }
+          },
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "ad23-704a-8225-bb37",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c87a-f537-456c-ee5a",
+              "name": "➤ Plasma pistol - supercharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "8",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Hazardous, Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "746a-c1ea-2929-a835",
+              "name": "➤ Plasma pistol - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "7",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc7euyw7yq2ktlst1v",
+          "name": "Dominion",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1, Assault"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        },
+        {
+          "id": "mc7euyw7gl0mda106zq",
+          "name": "Dominion w/ Simulacrum Imperialis",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "ee6b-50fc-3b24-6884"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "f772-8828-ae5e-80ca",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1, Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc7euyx4fyftuce9mor",
+          "name": "Dominion w/ Special Weapon",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "fc8a-8c24-bae9-cc1c",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "9101-f21a-dab0-d068",
+              "name": "Meltagun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2, Assault"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        }
       ]
     },
     {
@@ -1971,6 +3272,10 @@
         "4111-82e3-9444-e942",
         "1897-c22c-9597-12b1"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "abilities": [
         "367b-f75c-5fc9-8d6e",
         "7d81-1d12-745c-1984"
@@ -2023,6 +3328,97 @@
           },
           "count": 4,
           "models_with_weapon": 4
+        }
+      ],
+      "models": [
+        {
+          "id": "mcfhj59ax9qpg33xm5",
+          "name": "Repentia Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4111-82e3-9444-e942"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "27e3-bddd-c647-968e",
+              "name": "Neural Whips",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Anti-Infantry 4+"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mcfhj59au7nfzok1q5f",
+          "name": "Sister Repentia",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "7+",
+            "wounds": "1",
+            "leadership": "8+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "1897-c22c-9597-12b1"
+          ],
+          "weapons": [
+            {
+              "id": "d0b1-7a39-abb4-8aad",
+              "name": "Penitent Eviscerator",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "6",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Sustained Hits 1"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
         }
       ]
     },
@@ -2159,6 +3555,209 @@
           "count": 4,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "mc4sjagglh6rampgijn",
+          "name": "Seraphim Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "linked_weapons": {
+            "➤ Plasma pistol": {
+              "standard": "746a-c1ea-2929-a835",
+              "overcharge": null
+            }
+          },
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "8367-374c-f87-c627"
+          ],
+          "weapons": [
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3d04-2c6-46f4-5e03",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c87a-f537-456c-ee5a",
+              "name": "➤ Plasma pistol - supercharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "8",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Hazardous, Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "746a-c1ea-2929-a835",
+              "name": "➤ Plasma pistol - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "7",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc4sjaggt7oo776379",
+          "name": "Seraphim",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "mc7m5jafyajob4k8jv",
+          "name": "Seraphim with Special Weapons",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "8bf7-8812-923d-29e4",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "1456-cb87-f320-1136",
+              "name": "Ministorum hand flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Pistol, Torrent"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -2294,6 +3893,209 @@
           "count": 4,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "mc4sjituoj4h41at44a",
+          "name": "Seraphim Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "linked_weapons": {
+            "➤ Plasma pistol": {
+              "standard": "746a-c1ea-2929-a835",
+              "overcharge": null
+            }
+          },
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "8367-374c-f87-c627"
+          ],
+          "weapons": [
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3d04-2c6-46f4-5e03",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c87a-f537-456c-ee5a",
+              "name": "➤ Plasma pistol - supercharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "8",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Hazardous, Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "746a-c1ea-2929-a835",
+              "name": "➤ Plasma pistol - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "7",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc4sjitvd53klr2x4hl",
+          "name": "Seraphim",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "mc7m89e4xtiug8aodjm",
+          "name": "Seraphim with Special Weapons",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "8bf7-8812-923d-29e4",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "b36b-d6a8-ddb1-fbcb",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "1456-cb87-f320-1136",
+              "name": "Ministorum hand flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Pistol, Torrent"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -2319,6 +4121,9 @@
         "5edf-d619-23e0-9b56",
         "c5c8-8b58-b8b6-7786"
       ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
       "abilities": [
         "e35-588d-b21e-33d8",
         "dbdc-2f28-490b-e918",
@@ -2447,6 +4252,328 @@
           },
           "count": 5,
           "models_with_weapon": 5
+        }
+      ],
+      "models": [
+        {
+          "id": "m63afbu88fdhoucyyi",
+          "name": "Novitiate Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "3+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "linked_weapons": {
+            "➤ Plasma pistol": {
+              "standard": "746a-c1ea-2929-a835",
+              "overcharge": null
+            }
+          },
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "8367-374c-f87-c627"
+          ],
+          "weapons": [
+            {
+              "id": "c87a-f537-456c-ee5a",
+              "name": "➤ Plasma pistol - supercharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "8",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Hazardous, Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "746a-c1ea-2929-a835",
+              "name": "➤ Plasma pistol - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "7",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e7ec-d544-5267-993f",
+              "name": "Power weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "4",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m63ag5d7zee8cz4sowa",
+          "name": "Novitiate with Ministorum Flamer",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "8+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "3e10-d7df-b71c-6af3",
+              "name": "Novitiate autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "c089-248b-f018-2ef7",
+              "name": "Ministorum flamer",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "m63afbu8yfv2hm7ql5",
+          "name": "Novitiate with Sacred Banner",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "8+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "a98b-c507-2078-b22"
+          ],
+          "weapons": [
+            {
+              "id": "3e10-d7df-b71c-6af3",
+              "name": "Novitiate autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m65l2wpbor5x601gl7",
+          "name": "Novitiate with Simulacrum Imperialis",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "8+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "ee6b-50fc-3b24-6884"
+          ],
+          "weapons": [
+            {
+              "id": "3e10-d7df-b71c-6af3",
+              "name": "Novitiate autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m63afbu8l0ciiu9d7w",
+          "name": "Sister Novitiate (Autogun)",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "8+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 5,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "3e10-d7df-b71c-6af3",
+              "name": "Novitiate autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 5,
+              "models_with_weapon": 5
+            },
+            {
+              "id": "8619-2e4f-8e9a-4ccf",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 5,
+              "models_with_weapon": 5
+            },
+            {
+              "id": "bdba-7ec2-c5ad-a2",
+              "name": "Novitiate autogun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 5,
+              "models_with_weapon": 5
+            }
+          ]
         }
       ]
     },
@@ -3013,6 +5140,180 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "mc4gli261wqkfb7dlta",
+          "name": "Paragon Superior",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "7",
+            "save": "2+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "cf93-ad4d-2f08-a79d",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c94a-44b4-29a4-8abb",
+              "name": "Paragon Grenade Launchers",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-2",
+                "d": "D3",
+                "keywords": "Twin-Linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "1d2a-350e-1b76-b11d",
+              "name": "Paragon War Mace",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "12",
+                "ap": "-1",
+                "d": "3",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "fb85-f329-fd95-9834",
+              "name": "Multi-melta",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mc4gli29tro9o6gtot",
+          "name": "Paragon Warsuit",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "7",
+            "save": "2+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "cf93-ad4d-2f08-a79d",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "c934-fc40-d6a2-8919",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "b83b-f2dc-42d-63a7",
+              "name": "Paragon Grenade Launchers",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-2",
+                "d": "D3",
+                "keywords": "Twin-Linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "b95f-badf-7699-322a",
+              "name": "Paragon War Mace",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "12",
+                "ap": "-1",
+                "d": "3",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "9aeb-2363-a0af-b37d",
+              "name": "Multi-melta",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -3091,6 +5392,80 @@
           },
           "count": 1,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m65l9qm58ltqilgh1pa",
+          "name": "Penitent Engine",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "6",
+            "save": "4+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56",
+            "cf93-ad4d-2f08-a79d",
+            "1897-c22c-9597-12b1"
+          ],
+          "weapons": [
+            {
+              "id": "6a17-28c-9e0a-e561",
+              "name": "Penitent Flamers",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "2D6",
+                "bs": "N/A",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Ignores Cover, Torrent, Twin-Linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6e93-a932-2059-3049",
+              "name": "Penitent Buzz-Blade",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "10",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Sustained Hits 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c16e-a07e-925e-8e1f",
+              "name": "Penitent Flail",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "8",
+                "ws": "4+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Sustained Hits 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
         }
       ]
     },
@@ -3676,5 +6051,6 @@
         }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }

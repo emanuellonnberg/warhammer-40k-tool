@@ -38,6 +38,20 @@ export interface Weapon {
 }
 
 /**
+ * Summary of a leader attached to a bodyguard unit
+ */
+export interface AttachedLeaderInfo {
+  id: string;
+  name: string;
+  points: number;
+  type: string;
+  stats: UnitStats;
+  weapons: Weapon[];
+  rules?: string[];
+  abilities?: string[];
+}
+
+/**
  * Unit statistics
  */
 export interface UnitStats {
@@ -69,6 +83,11 @@ export interface Unit {
   unitRerolls?: RerollConfig;  // Unit-wide re-roll abilities
   rules?: string[];            // Array of rule IDs
   abilities?: string[];        // Array of ability IDs
+  isLeader?: boolean;          // Indicates if the unit can attach as a leader
+  leaderOptions?: string[];    // Names of units this leader can join
+  attachedLeaders?: AttachedLeaderInfo[]; // Leaders currently attached to this unit
+  defaultHostId?: string;      // Host unit ID if roster pre-attached this leader
+  leaderAuraRerolls?: RerollConfig; // Rerolls granted to a unit this leader is attached to
 }
 
 /**
@@ -95,6 +114,7 @@ export interface Army {
       hidden?: boolean;
     }
   };
+  attachments?: AttachmentMap;
 }
 
 /**
@@ -135,3 +155,8 @@ export type SortColumn = 'name' | 'points' | 'efficiency' | 'dpp' | 'rangeddpp' 
  * Sort direction
  */
 export type SortDirection = 'asc' | 'desc';
+
+/**
+ * Mapping of host unit IDs to the leader IDs currently attached
+ */
+export type AttachmentMap = Record<string, string[]>;

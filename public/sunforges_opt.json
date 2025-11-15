@@ -78,6 +78,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
       "abilities": [
         "883e-96af-3014-6550",
         "a892-303e-34b8-116a",
@@ -133,7 +137,139 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "m6p6i0m5uh0957luvvc",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "abilities": [
+            "2026-4469-a453-d24e",
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6p6i0m650co80onfmf",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }

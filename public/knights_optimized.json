@@ -473,6 +473,136 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "me4nnpdfory0qovy7i",
+          "name": "Canis Rex",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "11",
+            "save": "3+",
+            "wounds": "26",
+            "leadership": "5+",
+            "objectiveControl": "10"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "b68a-5ded-65ac-98c",
+            "1897-c22c-9597-12b1",
+            "5e13-1624-d280-418d",
+            "6c1f-1cf7-ff25-c99e",
+            "cbd-943-bc7b-20ec"
+          ],
+          "abilities": [
+            "7f8-ef35-95d5-6fc7",
+            "b927-9dc2-5b23-19dd",
+            "8552-862d-6a49-4879",
+            "a274-b647-186a-54ee"
+          ],
+          "linked_weapons": {
+            "➤ Chainbreaker las-impulsor": {
+              "standard": "433f-6684-ff4f-23b7",
+              "overcharge": null
+            },
+            "➤ Freedom's Hand": {
+              "standard": "51c7-ad78-6365-91ee",
+              "overcharge": null
+            }
+          },
+          "weapons": [
+            {
+              "id": "822a-223f-fbd-21e0",
+              "name": "➤ Chainbreaker las-impulsor - high intensity",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "D6",
+                "bs": "2+",
+                "s": "14",
+                "ap": "-3",
+                "d": "4",
+                "keywords": "Blast, Sustained Hits 1"
+              },
+              "base_name": "➤ Chainbreaker las-impulsor",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "433f-6684-ff4f-23b7",
+              "name": "➤ Chainbreaker las-impulsor - low intensity",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2D6",
+                "bs": "2+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "Blast, Sustained Hits 1"
+              },
+              "base_name": "➤ Chainbreaker las-impulsor",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "95dd-25ae-f5e0-f3f8",
+              "name": "Chainbreaker multi-laser",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "4",
+                "bs": "2+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Sustained Hits 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "74ec-e144-10c4-7ece",
+              "name": "➤ Freedom's Hand - strike",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "5",
+                "ws": "2+",
+                "s": "20",
+                "ap": "-3",
+                "d": "9",
+                "keywords": "Sustained Hits 1"
+              },
+              "base_name": "➤ Freedom's Hand",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "51c7-ad78-6365-91ee",
+              "name": "➤ Freedom's Hand - sweep",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "10",
+                "ws": "2+",
+                "s": "10",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Sustained Hits 1"
+              },
+              "base_name": "➤ Freedom's Hand",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -505,6 +635,10 @@
         "1934-9c67-78e2-4fd9",
         "5216-4a0b-633c-64a"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "linked_weapons": {
         "➤ Atrapos lascutter": {
           "standard": "c9f0-76bb-4602-e4f7",
@@ -1889,7 +2023,366 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "me4no5mmz75eti8vtc",
+          "name": "Sister Superior",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "8367-374c-f87-c627"
+          ],
+          "linked_weapons": {
+            "➤ Plasma pistol": {
+              "standard": "211f-c645-a85e-30d1",
+              "overcharge": null
+            }
+          },
+          "weapons": [
+            {
+              "id": "2157-1926-df10-90f8",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9522-b10f-5943-435d",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "ddc8-eb55-1d2b-c53f",
+              "name": "Chainsword",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "71fd-b6d9-a025-88a6",
+              "name": "➤ Plasma pistol - supercharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "8",
+                "ap": "-3",
+                "d": "2",
+                "keywords": "Hazardous, Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "211f-c645-a85e-30d1",
+              "name": "➤ Plasma pistol - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "7",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "base_name": "➤ Plasma pistol",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "me4no5mmm1idhmdt2j",
+          "name": "Battle Sister",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 6,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "2157-1926-df10-90f8",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "d194-b2f3-ad36-b3d9",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "9522-b10f-5943-435d",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            }
+          ]
+        },
+        {
+          "id": "me4no5mmz13zjtidkgc",
+          "name": "Battle Sister w/ Simulacrum Imperialis",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "5000-04c7-36a4-2a95"
+          ],
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "2157-1926-df10-90f8",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "d194-b2f3-ad36-b3d9",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9522-b10f-5943-435d",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "me4no5mms9kn02p2kga",
+          "name": "Battle Sister w/ Special or Heavy Weapon",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "1202-10a8-78e9-4c67",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "2157-1926-df10-90f8",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9522-b10f-5943-435d",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9811-9876-9345-cfe0",
+              "name": "Multi-melta",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Heavy, Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "me4no5mm8b184xjnsva",
+          "name": "Battle Sister w/ Special Weapon",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "2157-1926-df10-90f8",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9522-b10f-5943-435d",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "5645-1303-b9d6-6abb",
+              "name": "Meltagun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }

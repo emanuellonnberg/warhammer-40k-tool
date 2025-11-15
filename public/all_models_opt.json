@@ -522,6 +522,12 @@
         "5b77-29f8-7b77-75e3",
         "a15a-7948-3ddb-ebd4"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
+      ],
       "linked_weapons": {
         "➤ Dawn Blade": {
           "standard": "9673-edd-1e61-2a22",
@@ -613,6 +619,9 @@
         "8bf2-521f-d66-b9c",
         "27f4-7449-a636-ae8c"
       ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
       "weapons": [
         {
           "id": "453-2e3-9561-628b",
@@ -722,6 +731,10 @@
         "784c-ed1d-8f6-7c7b",
         "7872-ee2c-cffa-7dfb"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "PATHFINDER TEAM"
+      ],
       "weapons": [
         {
           "id": "cdb3-583c-f777-493b",
@@ -785,6 +798,10 @@
         "6c1e-179e-a2dc-85d6",
         "fefe-3546-8754-2e26"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "weapons": [
         {
           "id": "ec22-219d-9edf-9005",
@@ -878,6 +895,11 @@
         "7c91-fe45-cd-7abc",
         "e084-9d6c-36d3-d635"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "BREACHER TEAM",
+        "STRIKE TEAM"
+      ],
       "weapons": [
         {
           "id": "cdb3-583c-f777-493b",
@@ -954,6 +976,11 @@
         "5fe0-afe2-451c-38d2",
         "7c91-fe45-cd-7abc",
         "e084-9d6c-36d3-d635"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "BREACHER TEAM",
+        "STRIKE TEAM"
       ],
       "weapons": [
         {
@@ -1032,6 +1059,11 @@
         "7c91-fe45-cd-7abc",
         "e084-9d6c-36d3-d635"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "BREACHER TEAM",
+        "STRIKE TEAM"
+      ],
       "weapons": [
         {
           "id": "cdb3-583c-f777-493b",
@@ -1105,6 +1137,12 @@
         "8367-374c-f87-c627",
         "7cdb-fb99-44a9-8849",
         "cf93-ad4d-2f08-a79d"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
       ],
       "abilities": [
         "1286-6475-344a-bdcb",
@@ -1226,6 +1264,12 @@
         "7cdb-fb99-44a9-8849",
         "cf93-ad4d-2f08-a79d"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
+      ],
       "abilities": [
         "1286-6475-344a-bdcb",
         "e09d-50a0-b1a2-f705"
@@ -1345,6 +1389,12 @@
         "8367-374c-f87-c627",
         "7cdb-fb99-44a9-8849",
         "cf93-ad4d-2f08-a79d"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
       ],
       "abilities": [
         "1286-6475-344a-bdcb",
@@ -1470,6 +1520,11 @@
         "a3bb-77b8-a18f-23e1",
         "274d-797e-a00f-62"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "BREACHER TEAM",
+        "STRIKE TEAM"
+      ],
       "weapons": [
         {
           "id": "4857-a947-2073-1773",
@@ -1512,6 +1567,11 @@
         "9bf4-280f-bbe2-6fbb",
         "fc8a-8c24-bae9-cc1c",
         "cf93-ad4d-2f08-a79d"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "KROOT CARNIVORES",
+        "KROOT FARSTALKERS"
       ],
       "abilities": [
         "2cf3-4a30-f476-453f",
@@ -1580,6 +1640,9 @@
         "fff7-dbdb-e49e-55ee",
         "711e-6ae9-712a-8365"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "weapons": [
         {
           "id": "38dd-91a0-394c-ca49",
@@ -1674,6 +1737,9 @@
         "fff7-dbdb-e49e-55ee",
         "711e-6ae9-712a-8365"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "weapons": [
         {
           "id": "38dd-91a0-394c-ca49",
@@ -1767,6 +1833,9 @@
         "fff7-dbdb-e49e-55ee",
         "711e-6ae9-712a-8365"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "weapons": [
         {
           "id": "38dd-91a0-394c-ca49",
@@ -1847,6 +1916,11 @@
         "f42-3984-7ed8-157",
         "2f16-ccca-7d1e-6cc4"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "KROOT CARNIVORES",
+        "KROOT FARSTALKERS"
+      ],
       "weapons": [
         {
           "id": "2a86-2018-5eed-62d7",
@@ -1919,6 +1993,9 @@
         "4ddd-4e29-acdd-5e6d",
         "cf93-ad4d-2f08-a79d"
       ],
+      "unitRerolls": {
+        "wounds": "all"
+      },
       "abilities": [
         "3926-4865-e8c7-c5eb",
         "3354-9520-c907-c618",
@@ -2004,6 +2081,183 @@
           },
           "count": 1,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m7hm0te5j6c3ldriho",
+          "name": "Breacher Fire Warrior Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4",
+            "4ddd-4e29-acdd-5e6d",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "abilities": [
+            "7c13-8707-b827-3d35"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b3d4-211a-48f8-266e",
+              "name": "Support turret (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m7hm0te4uynfrvhl29h",
+          "name": "Breacher Fire Warriors",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
         }
       ]
     },
@@ -2028,6 +2282,9 @@
         "4ddd-4e29-acdd-5e6d",
         "cf93-ad4d-2f08-a79d"
       ],
+      "unitRerolls": {
+        "wounds": "all"
+      },
       "abilities": [
         "3926-4865-e8c7-c5eb",
         "3354-9520-c907-c618",
@@ -2114,6 +2371,183 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m8l90bjwsisskvcl5v8",
+          "name": "Breacher Fire Warrior Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4",
+            "4ddd-4e29-acdd-5e6d",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "abilities": [
+            "7c13-8707-b827-3d35"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b3d4-211a-48f8-266e",
+              "name": "Support turret (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m8l90bjv6lqwhwr1gk8",
+          "name": "Breacher Fire Warriors",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
+        }
       ]
     },
     {
@@ -2137,6 +2571,9 @@
         "4ddd-4e29-acdd-5e6d",
         "cf93-ad4d-2f08-a79d"
       ],
+      "unitRerolls": {
+        "wounds": "all"
+      },
       "abilities": [
         "3926-4865-e8c7-c5eb",
         "3354-9520-c907-c618",
@@ -2222,6 +2659,183 @@
           },
           "count": 1,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m9u74br5awvfvk2orud",
+          "name": "Breacher Fire Warrior Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4",
+            "4ddd-4e29-acdd-5e6d",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "abilities": [
+            "7c13-8707-b827-3d35"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b3d4-211a-48f8-266e",
+              "name": "Support turret (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9u74br26xjukvo2rlv",
+          "name": "Breacher Fire Warriors",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
         }
       ]
     },
@@ -2314,6 +2928,160 @@
           },
           "count": 2,
           "models_with_weapon": 2
+        }
+      ],
+      "models": [
+        {
+          "id": "mac9klmn0wdxatau3gbc",
+          "name": "Long-quill",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "fd20-1f79-27c3-aa2c",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6ec3-91a0-02ff-f5e8",
+              "name": "Kroot pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b890-cd3d-ca51-f655",
+              "name": "Kroot rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "macn73ejxdwoi4vrta",
+          "name": "Kroot Carnivore w/ tanglebomb launcher",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "6c1f-1cf7-ff25-c99e"
+          ],
+          "weapons": [
+            {
+              "id": "fd20-1f79-27c3-aa2c",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "1001-ca5e-5180-a961",
+              "name": "Tanglebomb launcher (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "D3",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Blast"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "mac9klmcj6hg9q6zn9",
+          "name": "Kroot Carnivores",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 17,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "fd20-1f79-27c3-aa2c",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 17,
+              "models_with_weapon": 17
+            },
+            {
+              "id": "b890-cd3d-ca51-f655",
+              "name": "Kroot rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 17,
+              "models_with_weapon": 17
+            }
+          ]
         }
       ]
     },
@@ -2526,6 +3294,322 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "m6f7wu9cmu4nh5o7xk",
+          "name": "Pathfinder Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4111-82e3-9444-e942",
+            "be1e-ac8e-1e2c-3528",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "c05d-f4c3-f091-4938"
+          ],
+          "linked_weapons": {
+            "➤ Semi-automatic grenade launcher": {
+              "standard": "81e6-dde4-c590-9945",
+              "overcharge": null
+            }
+          },
+          "abilities": [
+            "aaac-7647-9ecf-4fd1"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9d00-a7fb-afe6-98f9",
+              "name": "Pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "31a1-c5dd-a259-1d89",
+              "name": "➤ Semi-automatic grenade launcher - EMP (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "81e6-dde4-c590-9945",
+              "name": "➤ Semi-automatic grenade launcher - fusion (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "3",
+                "keywords": "-"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "a2c7-b3a1-dd13-916d",
+              "name": "Drone burst cannon (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "4",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b13wog42ub63",
+          "name": "Pathfinders w/ pulse carbine",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 6,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "a7f7-7c20-1c7f-8207",
+              "name": "Pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b5pl8dd9ytbd",
+          "name": "Pathfinders w/ ion rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 3,
+          "linked_weapons": {
+            "➤ Ion rifle": {
+              "standard": "a20f-90e8-acb9-acdd",
+              "overcharge": "2b06-5a01-9b6b-5a6a"
+            }
+          },
+          "rules": [
+            "8367-374c-f87-c627",
+            "1202-10a8-78e9-4c67",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "a20f-90e8-acb9-acdd",
+              "name": "➤ Ion rifle - standard (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "standard",
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "2b06-5a01-9b6b-5a6a",
+              "name": "➤ Ion rifle - overcharge (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "8",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Hazardous, Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "overcharge",
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
+        }
       ]
     },
     {
@@ -2548,6 +3632,10 @@
         "eeb6-c42-48f7-cc21",
         "7cdb-fb99-44a9-8849"
       ],
+      "unitRerolls": {
+        "hits": "ones",
+        "wounds": "ones"
+      },
       "abilities": [
         "c5b0-2214-2987-d0de",
         "b5b2-f430-5dc1-106b",
@@ -2602,6 +3690,114 @@
           },
           "count": 2,
           "models_with_weapon": 2
+        }
+      ],
+      "models": [
+        {
+          "id": "m6qx1jjglk4sofpaz2",
+          "name": "Stealth Shas'vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "1333-60c8-37d2-1a4d",
+            "274d-797e-a00f-62"
+          ],
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m8rpmds260mj248ele5",
+          "name": "Stealth Shas'ui w/ burst cannon",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7626-73ed-7cf1-8d3b",
+              "name": "Burst cannon (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -2625,6 +3821,10 @@
         "eeb6-c42-48f7-cc21",
         "7cdb-fb99-44a9-8849"
       ],
+      "unitRerolls": {
+        "hits": "ones",
+        "wounds": "ones"
+      },
       "abilities": [
         "c5b0-2214-2987-d0de",
         "b5b2-f430-5dc1-106b",
@@ -2680,6 +3880,114 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "m8zpd3xvbb8mvmb2et",
+          "name": "Stealth Shas'vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "1333-60c8-37d2-1a4d",
+            "274d-797e-a00f-62"
+          ],
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9ecbqlqr4jzbmdhfsh",
+          "name": "Stealth Shas'ui w/ burst cannon",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7626-73ed-7cf1-8d3b",
+              "name": "Burst cannon (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -2702,6 +4010,10 @@
         "eeb6-c42-48f7-cc21",
         "7cdb-fb99-44a9-8849"
       ],
+      "unitRerolls": {
+        "hits": "ones",
+        "wounds": "ones"
+      },
       "abilities": [
         "c5b0-2214-2987-d0de",
         "b5b2-f430-5dc1-106b",
@@ -2756,6 +4068,114 @@
           },
           "count": 2,
           "models_with_weapon": 2
+        }
+      ],
+      "models": [
+        {
+          "id": "m9u6ht3oepwobeuo02",
+          "name": "Stealth Shas'vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "1333-60c8-37d2-1a4d",
+            "274d-797e-a00f-62"
+          ],
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9u6ht4zhv30plf5ill",
+          "name": "Stealth Shas'ui w/ burst cannon",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7626-73ed-7cf1-8d3b",
+              "name": "Burst cannon (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -2881,6 +4301,214 @@
           "count": 2,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m6hun9hoc3hfp96au0d",
+          "name": "Broadside Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "925b-bdfa-4365-68d0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m77e1p1xnbuv3g73i8",
+          "name": "Broadside Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "0f2c-e640-b41e-36a0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -3004,6 +4632,214 @@
           },
           "count": 2,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m8ye4db93xx917zrq1z",
+          "name": "Broadside Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "925b-bdfa-4365-68d0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9ce98ldi7amcfiv2uj",
+          "name": "Broadside Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "0f2c-e640-b41e-36a0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
         }
       ]
     },
@@ -3129,6 +4965,214 @@
           "count": 2,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "mac9azjosb9xr9xezkm",
+          "name": "Broadside Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "925b-bdfa-4365-68d0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mac9azlpv4qumytq8f",
+          "name": "Broadside Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "0f2c-e640-b41e-36a0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -3207,6 +5251,156 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "mac9bh8sg6tgl4ge5sw",
+          "name": "Crisis Starscythe Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "5edf-d619-23e0-9b56",
+            "4640-43e7-30b-215a",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4f5a-58b-5a49-1c96",
+              "name": "T'au flamer (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mac9bh9t4zl1kx5okp9",
+          "name": "Crisis Starscythe Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "5edf-d619-23e0-9b56",
+            "4640-43e7-30b-215a",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4f5a-58b-5a49-1c96",
+              "name": "T'au flamer (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -3230,6 +5424,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
       "abilities": [
         "883e-96af-3014-6550",
         "a892-303e-34b8-116a",
@@ -3283,6 +5481,154 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "m9u6f81c9zf0lj8yu6l",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9u6f820xapfxvtjz0l",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -3307,6 +5653,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
       "abilities": [
         "883e-96af-3014-6550",
         "a892-303e-34b8-116a",
@@ -3361,6 +5711,154 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "mac9b2ftjoso4zxghoc",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mac9b2h6szhl2ff0i2",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -3384,6 +5882,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
       "abilities": [
         "883e-96af-3014-6550",
         "a892-303e-34b8-116a",
@@ -3437,6 +5939,154 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "mac9b2uxp80b7fm7607",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mac9b2wkiybek6c4qvl",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -3689,6 +6339,88 @@
           "count": 2,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m7j92quca76t4iqpcxu",
+          "name": "Piranhas",
+          "type": "Unknown",
+          "stats": {},
+          "points": 60,
+          "count": 1,
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "7cdb-fb99-44a9-8849",
+            "cd26-1611-860a-91e4"
+          ],
+          "weapons": [
+            {
+              "id": "6623-339f-6773-dc3c",
+              "name": "Armoured hull",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "47d1-604d-fa7f-0ec4",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Twin-linked, Assault"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "13bb-2136-6885-d9cf",
+              "name": "Piranha fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -3782,6 +6514,88 @@
           "count": 2,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m85w79vo81256jtwtk",
+          "name": "Piranhas",
+          "type": "Unknown",
+          "stats": {},
+          "points": 60,
+          "count": 1,
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "7cdb-fb99-44a9-8849",
+            "cd26-1611-860a-91e4"
+          ],
+          "weapons": [
+            {
+              "id": "6623-339f-6773-dc3c",
+              "name": "Armoured hull",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "47d1-604d-fa7f-0ec4",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Twin-linked, Assault"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "13bb-2136-6885-d9cf",
+              "name": "Piranha fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -3874,6 +6688,88 @@
           },
           "count": 2,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m8zm9rrbsiaizcue87",
+          "name": "Piranhas",
+          "type": "Unknown",
+          "stats": {},
+          "points": 60,
+          "count": 1,
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "7cdb-fb99-44a9-8849",
+            "cd26-1611-860a-91e4"
+          ],
+          "weapons": [
+            {
+              "id": "6623-339f-6773-dc3c",
+              "name": "Armoured hull",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "47d1-604d-fa7f-0ec4",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Twin-linked, Assault"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "13bb-2136-6885-d9cf",
+              "name": "Piranha fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            }
+          ]
         }
       ]
     },
@@ -4136,6 +7032,10 @@
         "eeb6-c42-48f7-cc21",
         "cf93-ad4d-2f08-a79d"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "abilities": [
         "89bb-91cf-2e76-ae69",
         "4f24-6581-c017-3daa",
@@ -4211,6 +7111,10 @@
         "eeb6-c42-48f7-cc21",
         "cf93-ad4d-2f08-a79d"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "abilities": [
         "89bb-91cf-2e76-ae69",
         "4f24-6581-c017-3daa",
@@ -4287,6 +7191,9 @@
         "c05d-f4c3-f091-4938",
         "c5c8-8b58-b8b6-7786"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "abilities": [
         "b7b7-8ee8-ef19-eefd"
       ],
@@ -4323,6 +7230,53 @@
           "count": 4,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "mac9e945grlj2u3wmn",
+          "name": "Tetra",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "3681-b5fb-e9de-d272",
+              "name": "Close combat weapons",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7b5d-b5b4-88de-9799",
+              "name": "Pulse rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -4345,6 +7299,9 @@
         "c05d-f4c3-f091-4938",
         "c5c8-8b58-b8b6-7786"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "abilities": [
         "b7b7-8ee8-ef19-eefd"
       ],
@@ -4380,6 +7337,53 @@
           },
           "count": 4,
           "models_with_weapon": 2
+        }
+      ],
+      "models": [
+        {
+          "id": "mac9efybnwm5ybsmsgn",
+          "name": "Tetra",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "3681-b5fb-e9de-d272",
+              "name": "Close combat weapons",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7b5d-b5b4-88de-9799",
+              "name": "Pulse rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -4616,6 +7620,64 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m9ts1skacgrmpfrug99",
+          "name": "XV9 Hazard Battlesuit",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "6",
+            "save": "3+",
+            "wounds": "6",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 55,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "abilities": [
+            "3d6e-7d4-ba81-9a8f",
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3b67-c931-b4e6-225a",
+              "name": "Fusion cascade (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -4675,6 +7737,64 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m9u5u3xgw2zh0zekc1",
+          "name": "XV9 Hazard Battlesuit",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "6",
+            "save": "3+",
+            "wounds": "6",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 55,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3b67-c931-b4e6-225a",
+              "name": "Fusion cascade (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -4733,6 +7853,64 @@
           },
           "count": 1,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "mac9dt8cgdj9qzlzpdm",
+          "name": "XV9 Hazard Battlesuit",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "6",
+            "save": "3+",
+            "wounds": "6",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 55,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3b67-c931-b4e6-225a",
+              "name": "Fusion cascade (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 4"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
         }
       ]
     },
@@ -4826,5 +8004,6 @@
         }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }

@@ -3,7 +3,8 @@
  * Converts BattleScribe roster JSON/XML to optimized format
  */
 
-import type { Army, Unit, Weapon, UnitStats } from './types';
+import type { Army, Unit, Weapon, UnitStats, RerollConfig } from './types';
+import { RerollType } from './types';
 import { XMLParser } from 'fast-xml-parser';
 
 // BattleScribe roster input types
@@ -68,6 +69,21 @@ interface WeaponCount {
   count: number;
   models_with_weapon: number;
 }
+
+const REROLL_REGEX = /re-?roll(?: [a-z']+)* (hit|wound|damage) roll(?:s)?(?: of (1s?|ones))?/gi;
+const UNIT_SCOPE_MARKERS = [
+  'leading a unit',
+  'unit contains',
+  'models in that unit',
+  'attached unit',
+  'while this unit',
+  'bodyguard unit'
+];
+const ROLL_KEY_MAP: Record<string, keyof RerollConfig> = {
+  hit: 'hits',
+  wound: 'wounds',
+  damage: 'damage'
+};
 
 /**
  * Parse XML (.roz) file and convert to RosterData JSON format
@@ -274,7 +290,8 @@ export function optimizeWarhammerRoster(data: RosterData): Army {
     pointsTotal: extractPoints(data),
     rules: {},
     abilities: {},
-    units: []
+    units: [],
+    attachments: {}
   };
 
   // Process the forces
@@ -555,6 +572,9 @@ function createUnit(selection: RosterSelection, optimized: Army): Unit {
         if (!unit.abilities.includes(abilityId)) {
           unit.abilities.push(abilityId);
         }
+
+        maybeAddLeaderMetadata(profile, unit);
+        maybeAddRerollMetadata(profile, unit);
       }
     }
   }
@@ -663,6 +683,9 @@ function extractWeaponsAbilitiesRules(selections: RosterSelection[], optimized: 
           if (!unit.abilities.includes(abilityId)) {
             unit.abilities.push(abilityId);
           }
+
+          maybeAddLeaderMetadata(profile, unit);
+          maybeAddRerollMetadata(profile, unit);
         }
       }
     }
@@ -759,23 +782,165 @@ function extractUnits(selections: RosterSelection[], optimized: Army, parent?: U
     if (isUnitOrModel(selection)) {
       const unit = createUnit(selection, optimized);
 
-      // Add the unit to the units list
-      optimized.units.push(unit);
+      if (parent && selection.type === "model") {
+        (parent.models || (parent.models = [])).push(unit);
+      } else {
+        optimized.units.push(unit);
+      }
+
+      if (
+        parent &&
+        !parent.isLeader &&
+        unit.isLeader &&
+        selection.type !== "model"
+      ) {
+        registerDefaultAttachment(optimized, parent, unit);
+      }
 
       // Process subselections for this unit
       if (selection.selections) {
         extractWeaponsAbilitiesRules(selection.selections, optimized, unit);
-
-        // Process sub-models if this is a multi-model unit
-        if (isMultiModelUnit(selection)) {
-          extractUnits(selection.selections, optimized, unit);
-        }
+        extractUnits(selection.selections, optimized, unit);
       }
     } else if (selection.selections) {
       // Process subselections
       extractUnits(selection.selections, optimized, parent);
     }
   }
+}
+
+function maybeAddLeaderMetadata(profile: RosterProfile, unit: Unit): void {
+  if (!profile?.name) return;
+  if (profile.name.trim().toLowerCase() !== "leader") return;
+
+  const description = extractProfileDescription(profile);
+  const options = extractLeaderOptions(description);
+
+  unit.isLeader = true;
+  if (options.length > 0) {
+    const existing = new Set(unit.leaderOptions || []);
+    for (const option of options) {
+      existing.add(option);
+    }
+    unit.leaderOptions = Array.from(existing);
+  }
+}
+
+function extractProfileDescription(profile: RosterProfile): string {
+  if (!profile.characteristics) return "";
+  for (const characteristic of profile.characteristics) {
+    if (characteristic.name === "Description") {
+      return characteristic.$text || "";
+    }
+  }
+  return "";
+}
+
+function extractLeaderOptions(description: string): string[] {
+  if (!description) return [];
+
+  const options: string[] = [];
+  const bulletPrefixes = ["■", "-", "•", "*", "–", "—"];
+
+  description.split(/\r?\n/).forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    let entry = "";
+    if (bulletPrefixes.some(prefix => trimmed.startsWith(prefix))) {
+      entry = trimmed.replace(/^[■\-•*–—\s]+/, "");
+    } else {
+      const match = trimmed.match(/^[\u25A0\u25CF\u25AA\u2022\u2023\-–—]\s*(.+)$/);
+      entry = match ? match[1].trim() : "";
+    }
+
+    if (entry) {
+      options.push(entry);
+    }
+  });
+
+  return options;
+}
+
+function mergeRerollConfig(base: RerollConfig | undefined, addition: Partial<RerollConfig>): RerollConfig {
+  const merged: RerollConfig = { ...(base || {}) };
+  (["hits", "wounds", "damage"] as (keyof RerollConfig)[]).forEach(key => {
+    const value = addition[key];
+    if (value && !merged[key]) {
+      merged[key] = value;
+    }
+  });
+  return merged;
+}
+
+type RerollDetection = {
+  scope: 'unit' | 'self';
+  effects: Partial<RerollConfig>;
+};
+
+function detectRerollConfig(description: string): RerollDetection | null {
+  if (!description) return null;
+
+  const text = description.toLowerCase();
+  if (!text.includes('re-roll')) {
+    return null;
+  }
+
+  const scope: 'unit' | 'self' = UNIT_SCOPE_MARKERS.some(marker => text.includes(marker))
+    ? 'unit'
+    : 'self';
+
+  const effects: Partial<RerollConfig> = {};
+  REROLL_REGEX.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = REROLL_REGEX.exec(text)) !== null) {
+    const type = match[1];
+    const key = ROLL_KEY_MAP[type];
+    if (!key || effects[key]) continue;
+
+    const segment = match[0];
+    let value = RerollType.ALL;
+    if (/failed/.test(segment)) {
+      value = RerollType.FAILED;
+    } else if (/of\s+1s?|of\s+ones|1s|ones/.test(segment)) {
+      value = RerollType.ONES;
+    }
+
+    effects[key] = value;
+  }
+
+  if (Object.keys(effects).length === 0) {
+    return null;
+  }
+
+  return { scope, effects };
+}
+
+function maybeAddRerollMetadata(profile: RosterProfile, unit: Unit): void {
+  const description = extractProfileDescription(profile);
+  const detection = detectRerollConfig(description);
+  if (!detection) return;
+
+  if (detection.scope === 'unit' && unit.isLeader) {
+    unit.leaderAuraRerolls = mergeRerollConfig(unit.leaderAuraRerolls, detection.effects);
+  } else {
+    unit.unitRerolls = mergeRerollConfig(unit.unitRerolls, detection.effects);
+  }
+}
+
+function registerDefaultAttachment(optimized: Army, host: Unit, leader: Unit): void {
+   const attachments = optimized.attachments || (optimized.attachments = {});
+   const hostId = host.id;
+   const leaderId = leader.id;
+   if (!hostId || !leaderId) return;
+ 
+   if (!attachments[hostId]) {
+     attachments[hostId] = [];
+   }
+   if (!attachments[hostId]!.includes(leaderId)) {
+     attachments[hostId]!.push(leaderId);
+   }
+   (leader as any).defaultHostId = hostId;
 }
 
 /**

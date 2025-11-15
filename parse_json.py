@@ -1,6 +1,27 @@
 import json
+import re
 import sys
 import uuid
+
+REROLL_REGEX = re.compile(
+    r"re-?roll(?: [a-z']+)* (?P<type>hit|wound|damage) roll(?:s)?(?: of (?P<ones>1s?|ones))?",
+    re.IGNORECASE
+)
+
+UNIT_SCOPE_MARKERS = [
+    "leading a unit",
+    "unit contains",
+    "models in that unit",
+    "attached unit",
+    "while this unit",
+    "bodyguard unit"
+]
+
+ROLL_KEY_MAP = {
+    "hit": "hits",
+    "wound": "wounds",
+    "damage": "damage"
+}
 
 def optimize_warhammer_roster(input_file, output_file):
     """
@@ -17,24 +38,29 @@ def optimize_warhammer_roster(input_file, output_file):
         "pointsTotal": extract_points(data),
         "rules": {},
         "abilities": {},
-        "units": []
+        "units": [],
+        "attachments": {}
     }
     
     # Process the forces
-    for force in data["roster"]["forces"]:
+    roster = data.get("roster", {})
+    forces = roster.get("forces", [])
+    if not isinstance(forces, list):
+        print("Invalid roster format: 'forces' must be a list")
+        return
+
+    for force in forces:
+        if not isinstance(force, dict):
+            continue
+
         # Extract global rules
-        if "rules" in force:
-            for rule in force["rules"]:
-                rule_id = rule["id"]
-                optimized["rules"][rule_id] = {
-                    "id": rule_id,
-                    "name": rule["name"],
-                    "description": rule.get("description", ""),
-                    "hidden": rule.get("hidden", False)
-                }
+        for rule in force.get("rules", []):
+            add_rule(rule, optimized)
         
         # Extract units
-        extract_units(force["selections"], optimized)
+        selections = force.get("selections", [])
+        if isinstance(selections, list):
+            extract_units(selections, optimized)
     
     # Write the optimized data to the output file with proper encoding
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -71,6 +97,9 @@ def extract_points(data):
 
 def extract_units(selections, optimized, parent=None):
     """Extract units from selections"""
+    if not isinstance(selections, list):
+        return
+
     for selection in selections:
         # Skip configuration entries
         if is_configuration(selection):
@@ -81,24 +110,208 @@ def extract_units(selections, optimized, parent=None):
             unit = create_unit(selection, optimized)
             
             # Add the unit to the units list or to parent's models
-            if parent:
-                if "models" not in parent:
-                    parent["models"] = []
-                parent["models"].append(unit)
+            if parent and selection.get("type") == "model":
+                parent.setdefault("models", []).append(unit)
             else:
                 optimized["units"].append(unit)
+            
+            # Register default attachments when a leader is already embedded in a host unit
+            if (
+                parent
+                and not parent.get("isLeader")
+                and unit.get("isLeader")
+                and selection.get("type") != "model"
+            ):
+                register_default_attachment(optimized, parent, unit)
             
             # Process subselections for this unit
             if "selections" in selection:
                 extract_weapons_abilities_rules(selection["selections"], optimized, unit)
-                
-                # Process sub-models if this is a multi-model unit
-                if is_multi_model_unit(selection):
-                    extract_units(selection["selections"], optimized, unit)
+                extract_units(selection["selections"], optimized, unit)
         
         # Process subselections
         elif "selections" in selection:
             extract_units(selection["selections"], optimized, parent)
+
+def add_rule(rule, optimized):
+    """Add a rule to the optimized structure and return its id."""
+    if not isinstance(rule, dict):
+        return None
+    rule_id = rule.get("id")
+    if not rule_id:
+        return None
+
+    if rule_id not in optimized["rules"]:
+        optimized["rules"][rule_id] = {
+            "id": rule_id,
+            "name": rule.get("name", "Unnamed Rule"),
+            "description": rule.get("description", ""),
+            "hidden": rule.get("hidden", False)
+        }
+    return rule_id
+
+
+def add_ability(profile, optimized):
+    """Add an ability profile to the optimized structure and return its id."""
+    if not isinstance(profile, dict):
+        return None
+    ability_id = profile.get("id")
+    if not ability_id:
+        return None
+
+    if ability_id not in optimized["abilities"]:
+        ability = {
+            "id": ability_id,
+            "name": profile.get("name", "Unnamed Ability"),
+            "description": ""
+        }
+
+        for char in profile.get("characteristics", []):
+            if char.get("name") == "Description":
+                ability["description"] = char.get("$text", "")
+                break
+
+        optimized["abilities"][ability_id] = ability
+
+    return ability_id
+
+
+def maybe_add_leader_metadata(profile, unit):
+    """Set leader metadata on a unit if the profile describes a Leader ability."""
+    if not isinstance(profile, dict) or not isinstance(unit, dict):
+        return
+    
+    name = profile.get("name", "").strip().lower()
+    if name != "leader":
+        return
+    
+    description = extract_profile_description(profile)
+    options = extract_leader_options(description)
+    
+    unit["isLeader"] = True
+    if options:
+        leader_options = unit.setdefault("leaderOptions", [])
+        for option in options:
+            if option not in leader_options:
+                leader_options.append(option)
+
+
+def maybe_add_reroll_metadata(profile, unit):
+    """Detect reroll abilities and store structured metadata on the unit."""
+    if not isinstance(profile, dict) or not isinstance(unit, dict):
+        return
+    
+    description = extract_profile_description(profile)
+    reroll_data = extract_reroll_effects(description)
+    if reroll_data:
+        apply_reroll_effects(unit, reroll_data)
+
+
+def extract_profile_description(profile):
+    """Get the description text from a profile's characteristics."""
+    for char in profile.get("characteristics", []):
+        if char.get("name") == "Description":
+            return char.get("$text", "")
+    return ""
+
+
+def extract_leader_options(description):
+    """Parse the description text to extract eligible bodyguard units."""
+    if not description:
+        return []
+    
+    bullet_prefixes = ("■", "-", "•", "*", "–", "—")
+    options = []
+    
+    for line in description.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        
+        # Look for bullet-prefixed lines
+        if stripped.startswith(bullet_prefixes):
+            option = stripped.lstrip("".join(bullet_prefixes)).strip()
+        else:
+            # Match patterns like "Battleline: Unit Name" or similar if present
+            bullet_match = re.match(r"^[\u25A0\u25CF\u25AA\u2022\u2023\-–—]\s*(.+)$", stripped)
+            option = bullet_match.group(1).strip() if bullet_match else ""
+        
+        if option:
+            options.append(option)
+    
+    return options
+
+
+def extract_reroll_effects(description):
+    """Return reroll metadata extracted from ability text."""
+    if not description:
+        return None
+    
+    normalized = description.lower()
+    if "re-roll" not in normalized:
+        return None
+    
+    scope = "unit" if any(marker in normalized for marker in UNIT_SCOPE_MARKERS) else "self"
+    effects = {}
+    
+    for match in REROLL_REGEX.finditer(normalized):
+        roll_type = match.group("type")
+        key = ROLL_KEY_MAP.get(roll_type)
+        if not key:
+            continue
+        
+        segment = match.group(0)
+        value = "all"
+        if "failed" in segment:
+            value = "failed"
+        elif re.search(r"of\s+1s?|of\s+ones|1s|ones", segment):
+            value = "ones"
+        
+        if key not in effects:
+            effects[key] = value
+    
+    if not effects:
+        return None
+    
+    return {
+        "scope": scope,
+        "effects": effects
+    }
+
+
+def apply_reroll_effects(target, reroll_data):
+    """Merge reroll effects onto a unit or leader."""
+    if not reroll_data:
+        return
+    
+    effects = reroll_data["effects"]
+    scope = reroll_data["scope"]
+    
+    if scope == "unit" and target.get("isLeader"):
+        aura = target.setdefault("leaderAuraRerolls", {})
+        for key, value in effects.items():
+            aura.setdefault(key, value)
+    else:
+        unit_rerolls = target.setdefault("unitRerolls", {})
+        for key, value in effects.items():
+            unit_rerolls.setdefault(key, value)
+
+
+def register_default_attachment(optimized, host, leader):
+    """Record leader attachments present in the original roster."""
+    host_id = host.get("id")
+    leader_id = leader.get("id")
+    if not host_id or not leader_id:
+        return
+    
+    attachments = optimized.setdefault("attachments", {})
+    if host_id not in attachments:
+        attachments[host_id] = []
+    
+    if leader_id not in attachments[host_id]:
+        attachments[host_id].append(leader_id)
+    
+    leader["defaultHostId"] = host_id
 
 def extract_weapons_abilities_rules(selections, optimized, unit):
     """Extract weapons, abilities, and rules from selections"""
@@ -154,49 +367,28 @@ def extract_weapons_abilities_rules(selections, optimized, unit):
                             "models_with_weapon": model_count
                         }
                 elif "typeName" in profile and profile["typeName"] == "Abilities":
-                    ability_id = profile["id"]
+                    ability_id = add_ability(profile, optimized)
                     
-                    # Add ability to the global abilities collection
-                    if ability_id not in optimized["abilities"]:
-                        ability = {
-                            "id": ability_id,
-                            "name": profile["name"],
-                            "description": ""
-                        }
-                        
-                        # Extract description
-                        if "characteristics" in profile:
-                            for char in profile["characteristics"]:
-                                if char["name"] == "Description":
-                                    ability["description"] = char.get("$text", "")
-                        
-                        optimized["abilities"][ability_id] = ability
+                    # Attach leader metadata when applicable
+                    maybe_add_leader_metadata(profile, unit)
+                    maybe_add_reroll_metadata(profile, unit)
                     
                     # Add ability reference to the unit
-                    if "abilities" not in unit:
-                        unit["abilities"] = []
-                    if ability_id not in unit["abilities"]:
-                        unit["abilities"].append(ability_id)
+                    if ability_id:
+                        unit.setdefault("abilities", [])
+                        if ability_id not in unit["abilities"]:
+                            unit["abilities"].append(ability_id)
         
         # Process rules
         if "rules" in selection:
             for rule in selection["rules"]:
-                rule_id = rule["id"]
-                
-                # Add rule to global collection
-                if rule_id not in optimized["rules"]:
-                    optimized["rules"][rule_id] = {
-                        "id": rule_id,
-                        "name": rule["name"],
-                        "description": rule.get("description", ""),
-                        "hidden": rule.get("hidden", False)
-                    }
+                rule_id = add_rule(rule, optimized)
                 
                 # Add rule reference to the unit
-                if "rules" not in unit:
-                    unit["rules"] = []
-                if rule_id not in unit["rules"]:
-                    unit["rules"].append(rule_id)
+                if rule_id:
+                    unit.setdefault("rules", [])
+                    if rule_id not in unit["rules"]:
+                        unit["rules"].append(rule_id)
         
         # Recursively process subselections
         if "selections" in selection:
@@ -253,49 +445,28 @@ def create_unit(selection, optimized):
     
     # Process rules directly attached to the unit
     if "rules" in selection:
-        unit["rules"] = []
         for rule in selection["rules"]:
-            rule_id = rule["id"]
-            
-            # Add rule to global collection
-            if rule_id not in optimized["rules"]:
-                optimized["rules"][rule_id] = {
-                    "id": rule_id,
-                    "name": rule["name"],
-                    "description": rule.get("description", ""),
-                    "hidden": rule.get("hidden", False)
-                }
-            
-            # Add reference to the unit
-            unit["rules"].append(rule_id)
+            rule_id = add_rule(rule, optimized)
+            if rule_id:
+                unit.setdefault("rules", [])
+                if rule_id not in unit["rules"]:
+                    unit["rules"].append(rule_id)
     
     # Process abilities directly attached to the unit
     if "profiles" in selection:
         for profile in selection["profiles"]:
             if "typeName" in profile and profile["typeName"] == "Abilities":
-                ability_id = profile["id"]
+                ability_id = add_ability(profile, optimized)
                 
-                # Add ability to global collection
-                if ability_id not in optimized["abilities"]:
-                    ability = {
-                        "id": ability_id,
-                        "name": profile["name"],
-                        "description": ""
-                    }
-                    
-                    # Extract description
-                    if "characteristics" in profile:
-                        for char in profile["characteristics"]:
-                            if char["name"] == "Description":
-                                ability["description"] = char.get("$text", "")
-                    
-                    optimized["abilities"][ability_id] = ability
+                # Attach leader metadata when applicable
+                maybe_add_leader_metadata(profile, unit)
+                maybe_add_reroll_metadata(profile, unit)
                 
                 # Add reference to the unit
-                if "abilities" not in unit:
-                    unit["abilities"] = []
-                if ability_id not in unit["abilities"]:
-                    unit["abilities"].append(ability_id)
+                if ability_id:
+                    unit.setdefault("abilities", [])
+                    if ability_id not in unit["abilities"]:
+                        unit["abilities"].append(ability_id)
     
     return unit
 
@@ -360,29 +531,6 @@ def extract_unit_stats(selection):
                             elif name == "OC" and not stats["objectiveControl"]:
                                 stats["objectiveControl"] = value
     
-    # If we still don't have all stats, try to find them in the parent selection
-    if all(not v for v in stats.values()) and "parent" in selection:
-        parent = selection["parent"]
-        for profile in parent.get("profiles", []):
-            if "typeName" in profile and profile["typeName"] == "Unit":
-                if "characteristics" in profile:
-                    for char in profile["characteristics"]:
-                        name = char["name"]
-                        value = char.get("$text", "")
-                        
-                        if name == "M" and not stats["move"]:
-                            stats["move"] = value
-                        elif name == "T" and not stats["toughness"]:
-                            stats["toughness"] = value
-                        elif name == "SV" and not stats["save"]:
-                            stats["save"] = value
-                        elif name == "W" and not stats["wounds"]:
-                            stats["wounds"] = value
-                        elif name == "LD" and not stats["leadership"]:
-                            stats["leadership"] = value
-                        elif name == "OC" and not stats["objectiveControl"]:
-                            stats["objectiveControl"] = value
-    
     # Only return stats if we found at least one value
     return stats if any(stats.values()) else {}
 
@@ -427,7 +575,6 @@ def is_multi_model_unit(selection):
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python wh40k_roster_optimizer.py input_file.json output_file.json")
-        #optimize_warhammer_roster("800p army.json", "800popti.json")
-        #sys.exit(1)
+        sys.exit(1)
     else:
         optimize_warhammer_roster(sys.argv[1], sys.argv[2])

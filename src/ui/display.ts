@@ -2,7 +2,7 @@
  * UI display and rendering logic
  */
 
-import type { Army, Unit, Weapon, SortColumn, SortDirection, RerollConfig } from '../types';
+import type { Army, Unit, Weapon, SortColumn, SortDirection, RerollConfig, AttachmentMap } from '../types';
 import { calculateUnitDamage } from '../calculators/damage';
 import { calculateUnitEfficiency } from '../calculators/efficiency';
 import { calculateWeaponDamage } from '../calculators/damage';
@@ -68,6 +68,36 @@ function shouldHideRule(ruleName: string): boolean {
   if (ruleName.toLowerCase().includes('invulnerable save')) return true;
 
   return false;
+}
+
+/**
+ * Normalize unit names for comparison
+ */
+function normalizeUnitName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+/**
+ * Determine if a unit name matches one of the leader's allowed options
+ */
+function matchesLeaderOption(unitName: string, leaderOptions?: string[]): boolean {
+  if (!leaderOptions || leaderOptions.length === 0) return false;
+  const normalizedName = normalizeUnitName(unitName);
+  return leaderOptions.some(option => normalizeUnitName(option) === normalizedName);
+}
+
+/**
+ * Get eligible host units for a leader based on their options and current roster
+ */
+function getEligibleLeaderTargets(leader: Unit, army: Army): Unit[] {
+  if (!leader.isLeader || !leader.leaderOptions || leader.leaderOptions.length === 0) {
+    return [];
+  }
+  return army.units.filter(unit =>
+    unit.id !== leader.id &&
+    !unit.isLeader &&
+    matchesLeaderOption(unit.name, leader.leaderOptions)
+  );
 }
 
 /**
@@ -543,7 +573,9 @@ export function displayAnalysisResults(
   includeOneTimeWeapons: boolean = false,
   optimalRange: boolean = true,
   scenarioRerolls?: RerollConfig,
-  targetFNP?: number
+  targetFNP?: number,
+  hasDefaultAttachments?: boolean,
+  activeAttachments?: AttachmentMap
 ): void {
   const resultsDiv = document.getElementById('analysis-results');
   if (!resultsDiv) return;
@@ -553,8 +585,22 @@ export function displayAnalysisResults(
   // Create a map to store active weapon modes for each unit if not provided
   const weaponModes = activeWeaponModes || new Map<string, Map<string, number>>();
 
+  const hiddenLeaderIds = new Set<string>();
+  if (activeAttachments) {
+    Object.values(activeAttachments).forEach(ids => {
+      if (Array.isArray(ids)) {
+        ids.forEach(id => hiddenLeaderIds.add(id));
+      }
+    });
+  }
+
+  const visibleUnits = army.units.filter(unit => !hiddenLeaderIds.has(unit.id));
+  const armyForDisplay: Army = visibleUnits.length === army.units.length
+    ? army
+    : { ...army, units: visibleUnits };
+
   // Sort units by current sorting criteria
-  const sortedUnits = [...army.units].sort((a, b) => {
+  const sortedUnits = [...visibleUnits].sort((a, b) => {
     let aValue, bValue;
 
     switch (currentSortColumn) {
@@ -617,26 +663,31 @@ export function displayAnalysisResults(
   });
 
   // Create dashboard
-  const dashboard = createDashboard(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  const dashboard = createDashboard(armyForDisplay, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(dashboard);
 
   // Create filter panel
   const filterPanel = createFilterPanel();
   resultsDiv.appendChild(filterPanel);
 
+  if (hasDefaultAttachments) {
+    const attachmentControls = createAttachmentControls();
+    resultsDiv.appendChild(attachmentControls);
+  }
+
   // Create visualization area
-  const visualizationArea = createVisualizationArea(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  const visualizationArea = createVisualizationArea(armyForDisplay, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(visualizationArea);
 
   // Create summary table
-  const summaryTable = createSummaryTable(army, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  const summaryTable = createSummaryTable(armyForDisplay, sortedUnits, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
   resultsDiv.appendChild(summaryTable);
 
   // Create unit cards
   const unitsContainer = document.createElement('div');
   unitsContainer.id = 'units-container';
   for (const unit of sortedUnits) {
-    const unitCard = createUnitCard(unit, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, army, scenarioRerolls, targetFNP);
+    const unitCard = createUnitCard(unit, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, armyForDisplay, scenarioRerolls, targetFNP);
     unitsContainer.appendChild(unitCard);
   }
   resultsDiv.appendChild(unitsContainer);
@@ -645,7 +696,10 @@ export function displayAnalysisResults(
   initializeTooltips();
 
   // Setup filter event handlers
-  setupFilterHandlers(army, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+  setupFilterHandlers(armyForDisplay, targetToughness, useOvercharge, weaponModes, includeOneTimeWeapons, optimalRange, scenarioRerolls, targetFNP);
+
+  // Setup leader attachment handlers
+  setupLeaderAttachmentHandlers();
 }
 
 /**
@@ -720,6 +774,25 @@ function createFilterPanel(): HTMLElement {
     </div>
   `;
   return filterPanel;
+}
+
+function createAttachmentControls(): HTMLElement {
+  const card = document.createElement('div');
+  card.className = 'card mb-4 attachment-controls-card';
+  card.innerHTML = `
+    <div class="card-body d-flex flex-wrap gap-3 align-items-center justify-content-between">
+      <div>
+        <h6 class="mb-1">Leader Attachments</h6>
+        <p class="text-muted mb-0 small">
+          This roster shipped with pre-attached leaders. Detach any unit to make the character visible again, or restore the roster default below.
+        </p>
+      </div>
+      <button id="resetAttachmentsBtn" class="btn btn-outline-secondary btn-sm">
+        Reset to Roster Defaults
+      </button>
+    </div>
+  `;
+  return card;
 }
 
 /**
@@ -839,6 +912,51 @@ function setupFilterHandlers(
 
   // Initial filter application
   applyFilters();
+}
+
+/**
+ * Setup handlers for leader attach/detach controls
+ */
+function setupLeaderAttachmentHandlers(): void {
+  const attachButtons = document.querySelectorAll<HTMLButtonElement>('.attach-leader-btn');
+  attachButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const leaderId = button.dataset.leaderId;
+      const container = button.closest('.leader-attachment-controls');
+      const select = container?.querySelector('.leader-target-select') as HTMLSelectElement | null;
+      const hostUnitId = select?.value;
+
+      if (!leaderId) return;
+      if (!hostUnitId) {
+        alert('Select a unit from the list before attaching this leader.');
+        return;
+      }
+
+      window.dispatchEvent(new CustomEvent('leader-attach', {
+        detail: { leaderId, hostUnitId }
+      }));
+    });
+  });
+
+  const detachButtons = document.querySelectorAll<HTMLButtonElement>('.detach-leader-btn');
+  detachButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const leaderId = button.dataset.leaderId;
+      const hostUnitId = button.dataset.hostUnitId;
+      if (!leaderId) return;
+
+      window.dispatchEvent(new CustomEvent('leader-detach', {
+        detail: { leaderId, hostUnitId }
+      }));
+    });
+  });
+
+  const resetButton = document.getElementById('resetAttachmentsBtn');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      window.dispatchEvent(new CustomEvent('leader-reset-defaults'));
+    });
+  }
 }
 
 /**
@@ -1804,6 +1922,9 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
     }
   }
 
+  const attachedLeadersHTML = buildAttachedLeadersSection(unit, army);
+  const leaderControlsHTML = buildLeaderAttachmentControls(unit, army);
+
   unitCard.innerHTML = `
     <div class="card-body">
       <h5 class="card-title">${unit.name}</h5>
@@ -1891,7 +2012,9 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
           </tbody>
         </table>
       </div>
+      ${attachedLeadersHTML}
       ${abilitiesHTML}
+      ${leaderControlsHTML}
       <div class="weapon-list mt-3">
         <h6>Weapons:</h6>
         ${weaponListHTML}
@@ -1925,6 +2048,95 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
   setupAbilityClickHandlers(unitCard);
 
   return unitCard;
+}
+
+/**
+ * Build the attached leaders section for a unit card
+ */
+function buildAttachedLeadersSection(unit: Unit, army: Army): string {
+  if (!unit.attachedLeaders || unit.attachedLeaders.length === 0) {
+    return '';
+  }
+
+  const leaderCards = unit.attachedLeaders.map(leader => {
+    const ruleNames = (leader.rules || [])
+      .map(ruleId => army.rules?.[ruleId]?.name)
+      .filter(Boolean)
+      .slice(0, 3);
+    const abilityNames = (leader.abilities || [])
+      .map(abilityId => army.abilities?.[abilityId]?.name)
+      .filter(Boolean)
+      .slice(0, 3);
+
+    const metadata = [
+      `${leader.points} pts`,
+      leader.stats?.wounds ? `${leader.stats.wounds} W` : null,
+      leader.stats?.toughness ? `T${leader.stats.toughness}` : null
+    ].filter(Boolean).join(' • ');
+
+    const flavor = [
+      ruleNames.length ? `Rules: ${ruleNames.join(', ')}` : null,
+      abilityNames.length ? `Abilities: ${abilityNames.join(', ')}` : null
+    ].filter(Boolean).join(' • ');
+
+    return `
+      <div class="attached-leader-pill d-flex justify-content-between align-items-center gap-2 mb-2 p-2 bg-white border rounded" data-host-unit-id="${unit.id}" data-leader-id="${leader.id}">
+        <div>
+          <strong>${leader.name}</strong>
+          <div class="text-muted small">${metadata}</div>
+          ${flavor ? `<div class="text-muted small">${flavor}</div>` : ''}
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-danger detach-leader-btn" data-host-unit-id="${unit.id}" data-leader-id="${leader.id}">
+          Detach
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="attached-leaders-section mb-3 p-3 border-start border-warning border-3 bg-light">
+      <h6 class="text-warning mb-2"><i class="bi bi-person-fill-up"></i> Attached Leaders</h6>
+      ${leaderCards}
+    </div>
+  `;
+}
+
+/**
+ * Build leader attachment controls for leader units
+ */
+function buildLeaderAttachmentControls(unit: Unit, army: Army): string {
+  if (!unit.isLeader) return '';
+  const allowedTargets = unit.leaderOptions || [];
+  const eligibleTargets = getEligibleLeaderTargets(unit, army);
+
+  const optionsHTML = eligibleTargets.map(target => `
+    <option value="${target.id}">
+      ${target.name} (${target.points} pts)
+    </option>
+  `).join('');
+
+  const allowedList = allowedTargets.length > 0
+    ? allowedTargets.join(', ')
+    : 'No units detected';
+
+  return `
+    <div class="leader-attachment-controls mb-3 p-3 border-start border-info border-3 bg-light" data-leader-id="${unit.id}">
+      <h6 class="text-info mb-2">
+        <i class="bi bi-person-plus-fill"></i> Leader Attachment
+      </h6>
+      <div class="d-flex gap-2 align-items-center mb-2 flex-wrap">
+        <select class="form-select form-select-sm leader-target-select" data-leader-id="${unit.id}" ${eligibleTargets.length === 0 ? 'disabled' : ''}>
+          <option value="">Select a unit...</option>
+          ${optionsHTML}
+        </select>
+        <button type="button" class="btn btn-sm btn-primary attach-leader-btn" data-leader-id="${unit.id}" ${eligibleTargets.length === 0 ? 'disabled' : ''}>
+          Attach
+        </button>
+      </div>
+      <small class="text-muted d-block">Can lead: ${allowedList}</small>
+      ${eligibleTargets.length === 0 ? '<div class="text-warning small mt-2">No eligible bodyguard units from this roster are currently available.</div>' : ''}
+    </div>
+  `;
 }
 
 /**

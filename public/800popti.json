@@ -335,6 +335,12 @@
         "5b77-29f8-7b77-75e3",
         "a15a-7948-3ddb-ebd4"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
+      ],
       "linked_weapons": {
         "➤ Dawn Blade": {
           "standard": "9673-edd-1e61-2a22",
@@ -426,6 +432,9 @@
         "8bf2-521f-d66-b9c",
         "27f4-7449-a636-ae8c"
       ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
       "weapons": [
         {
           "id": "453-2e3-9561-628b",
@@ -535,6 +544,10 @@
         "784c-ed1d-8f6-7c7b",
         "7872-ee2c-cffa-7dfb"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "PATHFINDER TEAM"
+      ],
       "weapons": [
         {
           "id": "cdb3-583c-f777-493b",
@@ -599,6 +612,10 @@
         "6c1e-179e-a2dc-85d6",
         "fefe-3546-8754-2e26"
       ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
       "weapons": [
         {
           "id": "ec22-219d-9edf-9005",
@@ -675,6 +692,11 @@
         "5fe0-afe2-451c-38d2",
         "7c91-fe45-cd-7abc",
         "e084-9d6c-36d3-d635"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "BREACHER TEAM",
+        "STRIKE TEAM"
       ],
       "weapons": [
         {
@@ -834,6 +856,184 @@
           },
           "count": 1,
           "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m6huoew5gflo39d0o6n",
+          "name": "Fire Warrior Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786",
+            "4ddd-4e29-acdd-5e6d",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "7c13-8707-b827-3d35"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "7b5d-b5b4-88de-9799",
+              "name": "Pulse rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b3d4-211a-48f8-266e",
+              "name": "Support turret",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6huoew5rhkbt43jrp",
+          "name": "Fire Warrior w/ pulse rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "7b5d-b5b4-88de-9799",
+              "name": "Pulse rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
         }
       ]
     },
@@ -1062,6 +1262,392 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m6f7wu9cmu4nh5o7xk",
+          "name": "Pathfinder Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4111-82e3-9444-e942",
+            "be1e-ac8e-1e2c-3528",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "c05d-f4c3-f091-4938"
+          ],
+          "linked_weapons": {
+            "➤ Semi-automatic grenade launcher": {
+              "standard": "81e6-dde4-c590-9945",
+              "overcharge": null
+            }
+          },
+          "abilities": [
+            "aaac-7647-9ecf-4fd1"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9d00-a7fb-afe6-98f9",
+              "name": "Pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "31a1-c5dd-a259-1d89",
+              "name": "➤ Semi-automatic grenade launcher - EMP",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "81e6-dde4-c590-9945",
+              "name": "➤ Semi-automatic grenade launcher - fusion",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "3",
+                "keywords": "-"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "a2c7-b3a1-dd13-916d",
+              "name": "Drone burst cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "4",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b13wog42ub63",
+          "name": "Pathfinders w/ pulse carbine",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 6,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "a7f7-7c20-1c7f-8207",
+              "name": "Pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b5pl8dd9ytbd",
+          "name": "Pathfinders w/ ion rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "linked_weapons": {
+            "➤ Ion rifle": {
+              "standard": "a20f-90e8-acb9-acdd",
+              "overcharge": "2b06-5a01-9b6b-5a6a"
+            }
+          },
+          "rules": [
+            "8367-374c-f87-c627",
+            "1202-10a8-78e9-4c67",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "a20f-90e8-acb9-acdd",
+              "name": "➤ Ion rifle - standard",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "standard",
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "2b06-5a01-9b6b-5a6a",
+              "name": "➤ Ion rifle - overcharge",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "8",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Hazardous, Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "overcharge",
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b87rs215l2b",
+          "name": "Pathfinders w/ rail rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "d043-2eff-12e9-4339",
+              "name": "Rail rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "5+",
+                "s": "10",
+                "ap": "-4",
+                "d": "3",
+                "keywords": "Devastating Wounds, Heavy"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -1086,6 +1672,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "hits": "ones",
+        "wounds": "ones"
+      },
       "abilities": [
         "c5b0-2214-2987-d0de",
         "b5b2-f430-5dc1-106b",
@@ -1155,6 +1745,131 @@
           },
           "count": 2,
           "models_with_weapon": 2
+        }
+      ],
+      "models": [
+        {
+          "id": "m6oui9t6u5xh5bu0fs",
+          "name": "Stealth Shas'vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "abilities": [
+            "b5b2-f430-5dc1-106b",
+            "1333-60c8-37d2-1a4d"
+          ],
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6oui9t89fihjq2rtkf",
+          "name": "Stealth Shas'ui w/ burst cannon",
+          "type": "Unknown",
+          "stats": {
+            "move": "8\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "3d93-d7b-3ae5-7524",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7626-73ed-7cf1-8d3b",
+              "name": "Burst cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
         }
       ]
     },
@@ -1265,6 +1980,112 @@
           "count": 1,
           "models_with_weapon": 1
         }
+      ],
+      "models": [
+        {
+          "id": "m6hun9hoc3hfp96au0d",
+          "name": "Broadside Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d",
+            "4ddd-4e29-acdd-5e6d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "925b-bdfa-4365-68d0",
+              "name": "Missile pod",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "60\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "48\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9dee-43e2-22c6-68ee",
+              "name": "Twin smart missile system",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
       ]
     },
     {
@@ -1288,6 +2109,10 @@
         "cf93-ad4d-2f08-a79d",
         "fc8a-8c24-bae9-cc1c"
       ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
       "abilities": [
         "883e-96af-3014-6550",
         "a892-303e-34b8-116a",
@@ -1343,6 +2168,137 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "m6p6i0m5uh0957luvvc",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849"
+          ],
+          "abilities": [
+            "2026-4469-a453-d24e",
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6p6i0m650co80onfmf",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "20\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -1365,6 +2321,9 @@
         "c05d-f4c3-f091-4938",
         "c5c8-8b58-b8b6-7786"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "abilities": [
         "b7b7-8ee8-ef19-eefd"
       ],
@@ -1401,7 +2360,55 @@
           "count": 4,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "m6npqf3x5csgvg4ab99",
+          "name": "Tetra",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "3681-b5fb-e9de-d272",
+              "name": "Close combat weapons",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "7b5d-b5b4-88de-9799",
+              "name": "Pulse rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 1"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }
