@@ -13,11 +13,12 @@
      - During leader attachment, merge leader-provided rerolls into the host’s `unitRerolls` so calculators pick them up automatically.
      - Future phrases just require adding another pattern entry—no exhaustive ability catalog needed.
 
-2. **Bodyguard Toughness Override** ⏳ *(not started)*
-   - When a leader is attached, enforce the 10th-edition rule that the unit uses the bodyguard’s toughness for incoming attacks.
+2. **Bodyguard Toughness Override** ✅ *(complete)*
+   - When a leader is attached, enforce the 10th-edition rule that the unit uses the bodyguard's toughness for incoming attacks.
    - Surface the effective toughness in the survivability tooltip to make durability gains obvious.
    - Pros: Matches tabletop adjudication and highlights defensive gains from key leaders.
-   - Cons: Needs reliable detection of which model’s toughness should apply; multi-leader edge cases can get tricky.
+   - Cons: Needs reliable detection of which model's toughness should apply; multi-leader edge cases can get tricky.
+   - Implementation: Added `getEffectiveToughness()` helper function that detects attached leaders and returns the bodyguard's toughness. Updated all survivability calculations to use this helper. Added visual indicators (BG badge) and tooltip notes in unit cards and summary table to clarify that the displayed toughness is the bodyguard's toughness per 10th edition rules.
 
 3. **Hazardous / One-Shot Modeling** ⏳ *(not started)*
    - Tag hazardous and one-shot weapons with dedicated booleans.

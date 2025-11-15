@@ -1,0 +1,2818 @@
+{
+  "armyName": "Unknown Army",
+  "faction": "Experimental Prototype Cadre",
+  "pointsTotal": 0,
+  "rules": {
+    "eeb6-c42-48f7-cc21": {
+      "id": "eeb6-c42-48f7-cc21",
+      "name": "For The Greater Good",
+      "description": "If your Army Faction is T’AU EMPIRE, then in your Shooting phase units from your army can work in pairs to help each other target specific enemy units. When they do this, one unit is the Observer unit and the other is their Guided unit. The enemy they are targeting is called their Spotted unit.\n\n\nEach time you select this unit to shoot, if it is not an Observer unit, it can use this ability. If it does, select one other friendly unit with this ability that is also eligible to shoot (excluding FORTIFICATION, Battle-shocked and Observer units). Until the end of the phase, this unit is considered a Guided unit, and that friendly unit is considered an Observer unit. Then select one enemy unit that is visible to both your units to be their Spotted unit.\n\nUntil the end of the phase:\n\n- Each time a model in a Guided unit makes an attack that targets their Spotted unit, improve the Ballistic Skill characteristic of the attack by 1 and, if their Observer unit has the MARKERLIGHT keyword, the attack has the [IGNORES COVER] ability.\n- Each time a model in a Guided unit makes an attack that does not target their Spotted unit, worsen the Ballistic Skill characteristic of the attack by 1.",
+      "hidden": false
+    },
+    "b68a-5ded-65ac-98c": {
+      "id": "b68a-5ded-65ac-98c",
+      "name": "Deadly Demise D3",
+      "description": "Some models have 'Deadly Demise x' listed in their abilities. When such a model is destroyed, roll one D6 before removing it from play (if such a model is a TRANSPORT, roll before any embarked models disembark). On a 6, each unit within 6\" of that model suffers a number of mortal wounds denoted by 'x' (if this is a random number, roll separately for each unit within 6\").",
+      "hidden": false
+    },
+    "d1d1-611e-5191-1095": {
+      "id": "d1d1-611e-5191-1095",
+      "name": "Lethal Hits",
+      "description": "Weapons with [LETHAL HITS] in their profile are known as Lethal Hits weapons. Each time an attack is made with such a weapon, a Critical Hit automatically wounds the target.",
+      "hidden": false
+    },
+    "be1e-ac8e-1e2c-3528": {
+      "id": "be1e-ac8e-1e2c-3528",
+      "name": "Devastating Wounds",
+      "description": "Weapons with [DEVASTATING WOUNDS] in their profile are known as Devastating Wounds weapons. Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of any kind can be made against that attack (including invulnerable saving throws). Such attacks are only allocated to models after all other attacks made by the attacking unit have been allocated and resolved. After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.",
+      "hidden": false
+    },
+    "1202-10a8-78e9-4c67": {
+      "id": "1202-10a8-78e9-4c67",
+      "name": "Heavy",
+      "description": "Weapons with [HEAVY] in their profile are known as Heavy weapons. Each time an attack is made with such a weapon, if the attacking model’s unit Remained Stationary this turn, add 1 to that attack’s Hit roll.",
+      "hidden": false
+    },
+    "cd26-1611-860a-91e4": {
+      "id": "cd26-1611-860a-91e4",
+      "name": "One Shot",
+      "description": "The bearer can only shoot with this weapon once per battle.",
+      "hidden": false
+    },
+    "7cb5-dd6b-dd87-ad3b": {
+      "id": "7cb5-dd6b-dd87-ad3b",
+      "name": "Deep Strike",
+      "description": "During the Declare Battle Formations step, if every model in a unit has this ability, you can set it up in Reserves instead of setting it up on the battlefield. If you do, in the Reinforcements step of one of your Movement phases you can set up this unit anywhere on the battlefield that is more than 9\" horizontally away from all enemy models.\n\nIf a unit with the Deep Strike ability arrives from Strategic Reserves, the controlling player can choose for that unit to be set up either using the rules for Strategic Reserves or using the Deep Strike ability.",
+      "hidden": false
+    },
+    "b4dd-3e1f-41cb-218f": {
+      "id": "b4dd-3e1f-41cb-218f",
+      "name": "Leader",
+      "description": "While a Bodyguard unit contains a Leader, it is known as an Attached unit and, with the exception of rules that are triggered when units are destroyed (pg 12), it is treated as a single unit for all rules purposes. Each time an attack targets an Attached unit, until the attacking unit has resolved all of its attacks, you must use the Toughness characteristic of the Bodyguard models in that unit, even if a Leader in that unit has a different Toughness characteristic. Each time an attack successfully wounds an Attached unit, that attack cannot be allocated to a Character model in that unit, even if that Character model has lost one or more wounds or has already had attacks allocated to it this phase. As soon as the last Bodyguard model in an Attached unit has been destroyed, any attacks made against that unit that have yet to be allocated can then be allocated to Character models in that unit.\n\nEach time the last model in a Bodyguard unit is destroyed, each CHARACTER unit that is part of that Attached unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time the last model in a CHARACTER unit that is attached to a Bodyguard unit is destroyed and there is not another CHARACTER unit attached, that Attached unit’s Bodyguard unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time a unit that is part of an Attached unit is destroyed, it does not have the keywords of any other units that make up that Attached unit (unless it has those keywords on its own datasheet) for the purposes of any rules that would be triggered when that unit is destroyed.",
+      "hidden": false
+    },
+    "fc8a-8c24-bae9-cc1c": {
+      "id": "fc8a-8c24-bae9-cc1c",
+      "name": "Assault",
+      "description": "Weapons with [ASSAULT] in their profile are known as Assault weapons. If a unit that Advanced this turn contains any models equipped with Assault weapons, it is still eligible to shoot in this turn’s Shooting phase. When such a unit is selected to shoot, you can only resolve attacks using Assault weapons its models are equipped with.",
+      "hidden": false
+    },
+    "8367-374c-f87-c627": {
+      "id": "8367-374c-f87-c627",
+      "name": "Hazardous",
+      "description": "Weapons with [HAZARDOUS] in their profile are known as Hazardous weapons. Each time a unit is selected to shoot or fight, after that unit has resolved all of its attacks, for each Hazardous weapon that targets were selected for when resolving those attacks, that unit must take one Hazardous test. To do so, roll one D6: on a 1, that test is failed. For each failed test you must resolve the following sequence (resolve each failed test one at a time): \n\n■ If possible, select one model in that unit that has lost one or more wounds and is equipped with one or more Hazardous weapons. \n■ Otherwise, if possible, select one model in that unit (excluding CHARACTER models) equipped with one or more Hazardous weapons. \n■ Otherwise, select one CHARACTER model in that unit equipped with one or more Hazardous weapons. \n\nIf a model was selected, that unit suffers 3 mortal wounds and when allocating those mortal wounds, they must be allocated to the selected model. \n\nIf a unit from a player’s army is selected as the target of the Fire Overwatch Stratagem in their opponent’s Charge phase, any mortal wounds inflicted by Hazardous tests are allocated after the charging unit has ended its Charge move.",
+      "hidden": false
+    },
+    "7cdb-fb99-44a9-8849": {
+      "id": "7cdb-fb99-44a9-8849",
+      "name": "Melta",
+      "description": "Weapons with [MELTA X] in their profile are known as Melta weapons. Each time an attack made with such a weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "cf93-ad4d-2f08-a79d": {
+      "id": "cf93-ad4d-2f08-a79d",
+      "name": "Twin-linked",
+      "description": "Weapons with [TWIN-LINKED] in their profile are known as Twin-linked weapons. Each time an attack is made with such a weapon, you can re-roll that attack’s Wound roll.",
+      "hidden": false
+    },
+    "bec5-4288-34a6-ccfa": {
+      "id": "bec5-4288-34a6-ccfa",
+      "name": "Stealth",
+      "description": "If every model in a unit has this ability, then each time a ranged attack is made against it, subtract 1 from that attack’s Hit roll.",
+      "hidden": false
+    },
+    "a8a0-8fe7-898-e0f3": {
+      "id": "a8a0-8fe7-898-e0f3",
+      "name": "Lone Operative",
+      "description": "Unless part of an Attached unit, this unit can only be selected as the target of a ranged attack if the attacking model is within 12\".",
+      "hidden": false
+    },
+    "ada6-bac1-ffe0-d6f7": {
+      "id": "ada6-bac1-ffe0-d6f7",
+      "name": "Scouts 7\"",
+      "description": "Some units have ‘Scouts x\"’ listed in their abilities. If every model in a unit has this ability, then at the start of the first battle round, before the first turn begins, it can make a Normal move of up to x\", with the exception that, while making that move, the distance moved by each model in that unit can be greater than that model's Move characteristic, as long as it is not greater than x\". \n\nDEDICATED TRANSPORT models can make use of any Scouts x\" ability listed in their abilities, or a Scouts x\" ability that a unit that starts the battle embarked within that DEDICATED TRANSPORT  model has (provided only models with this ability are embarked within that Dedicated Transport model), regardless of how that embarked unit gained this ability (e.g. listed in their abilities, conferred by an Enhancement or by an attached Character, etc.). \n\nA unit that moves using this ability must end that move more than 9\" horizontally away from all enemy models. If both players have units that can do this, the player who is taking the first turn moves their units first.",
+      "hidden": false
+    },
+    "115b-79dc-f723-d761": {
+      "id": "115b-79dc-f723-d761",
+      "name": "Extra Attacks",
+      "description": "Weapons with [EXTRA ATTACKS] in their profile are known as Extra Attacks weapons. Each time the bearer of one or more Extra Attacks weapons fights, it makes attacks with each of the Extra Attacks melee weapons it is equipped with and it makes attacks with one of the melee weapons it is equipped with that does not have the [EXTRA ATTACKS] ability (if any). The number of attacks made with an Extra Attacks weapon cannot be modified by other rules, unless that weapon’s name is explicitly specified in that rule.",
+      "hidden": false
+    },
+    "6c1f-1cf7-ff25-c99e": {
+      "id": "6c1f-1cf7-ff25-c99e",
+      "name": "Blast",
+      "description": "Weapons with [BLAST] in their profile are known as Blast weapons, and they make a random number of attacks. Each time you determine how many attacks are made with a Blast weapon, add 1 to the result for every five models that were in the target unit when you selected it as the target (rounding down). Blast weapons can never be used to make attacks against a unit that is within Engagement Range of one or more units from the attacking model’s army (including its own unit).",
+      "hidden": false
+    },
+    "2ebc-abdf-8129-6c57": {
+      "id": "2ebc-abdf-8129-6c57",
+      "name": "Lance",
+      "description": "Weapons with [LANCE] in their profile are known as Lance weapons. Each time an attack is made with such a weapon, if the bearer made a Charge move this turn, add 1 to that attack’s Wound roll.",
+      "hidden": false
+    },
+    "8bf7-8812-923d-29e4": {
+      "id": "8bf7-8812-923d-29e4",
+      "name": "Pistol",
+      "description": "Weapons with [PISTOL] in their profile are known as Pistols. If a unit contains any models equipped with Pistols, that unit is eligible to shoot in its controlling player’s Shooting phase even while it is within Engagement Range of one or more enemy units. When such a unit is selected to shoot, it can only resolve attacks using its Pistols and can only target one of the enemy units it is within Engagement Range of. In such circumstances, a Pistol can target an enemy unit even if other friendly units are within Engagement Range of the same enemy unit. \n\nIf a model is equipped with one or more Pistols, unless it is a MONSTER or VEHICLE model, it can either shoot with its Pistols or with all of its other ranged weapons. Declare whether such a model will shoot with its Pistols or its other ranged weapons before selecting targets.",
+      "hidden": false
+    },
+    "4ddd-4e29-acdd-5e6d": {
+      "id": "4ddd-4e29-acdd-5e6d",
+      "name": "Indirect Fire",
+      "description": "Weapons with [INDIRECT FIRE] in their profile are known as Indirect Fire weapons, and attacks can be made with them even if the target is not visible to the attacking model. These attacks can destroy enemy models in a target unit even though none may have been visible to the attacking unit when you selected that target.\n\n\nIf no models in a target unit are visible to the attacking unit when you select that target, then each time a model in the attacking unit makes an attack against that target using an Indirect Fire weapon, subtract 1 from that attack’s Hit roll, an unmodified Hit roll of 1-3 always fails, and the target has the Benefit of Cover against that attack. Weapons with the [TORRENT] ability cannot be fired using the [INDIRECT FIRE] ability.",
+      "hidden": false
+    },
+    "c05d-f4c3-f091-4938": {
+      "id": "c05d-f4c3-f091-4938",
+      "name": "Infiltrators",
+      "description": "During deployment, if every model in a unit has this ability, then when you set it up, it can be set up anywhere on the battlefield that is more than 9\" horizontally away from the enemy deployment zone and all enemy models.",
+      "hidden": false
+    },
+    "4111-82e3-9444-e942": {
+      "id": "4111-82e3-9444-e942",
+      "name": "Anti-",
+      "description": "Weapons with [ANTI-KEYWORD X+] in their profile are known as Anti weapons. Each time an attack is made with such a weapon against a target with the keyword after the word ‘Anti-’, an unmodified Wound roll of ‘x+’ scores a Critical Wound.",
+      "hidden": false
+    },
+    "9bf4-280f-bbe2-6fbb": {
+      "id": "9bf4-280f-bbe2-6fbb",
+      "name": "Feel No Pain",
+      "description": "Some models have 'Feel No Pain x+' listed in their abilities. Each time a model with this ability suffers damage and so would lose a wound (including wounds lost due to mortal wounds), roll one D6: if the result is greater than or equal to the number denoted by 'x: that wound is ignored and is not lost. If a model has more than one Feel No Pain ability, you can only use one of those abilities each time that model suffers damage and so would lose a wound.",
+      "hidden": false
+    },
+    "5edf-d619-23e0-9b56": {
+      "id": "5edf-d619-23e0-9b56",
+      "name": "Torrent",
+      "description": "Weapons with [TORRENT] in their profile are known as Torrent weapons. Each time an attack is made with such a weapon, that attack automatically hits the target.",
+      "hidden": false
+    },
+    "4640-43e7-30b-215a": {
+      "id": "4640-43e7-30b-215a",
+      "name": "Ignores Cover",
+      "description": "Weapons with [IGNORES COVER] in their profile are known as Ignores Cover weapons. Each time an attack is made with such a weapon, the target cannot have the Benefit of Cover against that attack.",
+      "hidden": false
+    }
+  },
+  "abilities": {
+    "db46-1f35-2996-964f": {
+      "id": "db46-1f35-2996-964f",
+      "name": "Armour Hunter",
+      "description": "Each time this model makes an attack that targets a MONSTER or VEHICLE, add 1 to the Hit roll."
+    },
+    "4f24-6581-c017-3daa": {
+      "id": "4f24-6581-c017-3daa",
+      "name": "Damaged: 1-5 Wounds Remaining",
+      "description": "While this model has 1-5 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "6c1e-179e-a2dc-85d6": {
+      "id": "6c1e-179e-a2dc-85d6",
+      "name": "Targeting Array",
+      "description": "Each time this model is selected to shoot, you can re-roll one Hit roll or you can re-roll one Wound roll when resolving those attacks."
+    },
+    "fefe-3546-8754-2e26": {
+      "id": "fefe-3546-8754-2e26",
+      "name": "XV02 Pilot Battlesuit",
+      "description": "In your Command phase, you can select one friendly HAMMERHEAD GUNSHIP unit within 12\". Until the start of your next Command phase, ranged weapons equipped by models in that unit have the [LETHAL HITS] ability."
+    },
+    "1286-6475-344a-bdcb": {
+      "id": "1286-6475-344a-bdcb",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n- CRISIS SUNFORGE BATTLESUITS\n- CRISIS FIREKNIFE BATTLESUITS\n- CRISIS STARSCYTHE BATTLESUITS"
+    },
+    "e09d-50a0-b1a2-f705": {
+      "id": "e09d-50a0-b1a2-f705",
+      "name": "Coldstar Commander",
+      "description": "While this model is leading a unit, models in that unit have a Move characteristic of 12\" and ranged weapons equipped by models in that unit have the [ASSAULT] ability."
+    },
+    "fff7-dbdb-e49e-55ee": {
+      "id": "fff7-dbdb-e49e-55ee",
+      "name": "Fire and Fade",
+      "description": "In your Shooting phase, after this model has shot, if it is not within Engagement Range of one or more enemy units, it can make a Normal move of up to 6\". If it does, until the end of the turn, this model is not eligible to declare a charge."
+    },
+    "711e-6ae9-712a-8365": {
+      "id": "711e-6ae9-712a-8365",
+      "name": "Advanced Scouting",
+      "description": "Each time this model makes a ranged attack that hits an enemy unit, until the end of the turn, each time another KROOT model from your army makes an attack that targets that enemy unit, you can re-roll the Hit roll."
+    },
+    "3926-4865-e8c7-c5eb": {
+      "id": "3926-4865-e8c7-c5eb",
+      "name": "Breach and Clear",
+      "description": "Each time a model in this unit makes a ranged attack that targets an enemy unit within range of an objective marker, you can re-roll the Wound roll."
+    },
+    "3354-9520-c907-c618": {
+      "id": "3354-9520-c907-c618",
+      "name": "DS8 Support Turret",
+      "description": "In your Movement phase, if this unit Remains Stationary, until the start of your next turn, its Shas’ui model is equipped with the support turret weapon.\n\nDesigner’s Note: Place a Support Turret token next to this unit to remind you."
+    },
+    "7c13-8707-b827-3d35": {
+      "id": "7c13-8707-b827-3d35",
+      "name": "Guardian Drone",
+      "description": "Each time a model makes a ranged attack that targets the bearer’s unit, subtract 1 from the Wound roll."
+    },
+    "85b7-6da7-e356-82e5": {
+      "id": "85b7-6da7-e356-82e5",
+      "name": "Target Uploaded",
+      "description": "Once per turn, when using the For the Greater Good ability, you can select this unit to be an Observer unit for a second time. When doing so, you can change which enemy unit is this unit’s Spotted unit."
+    },
+    "aaac-7647-9ecf-4fd1": {
+      "id": "aaac-7647-9ecf-4fd1",
+      "name": "Recon Drone",
+      "description": "The bearer is equipped with 1 drone burst cannon and the bearer’s unit has the Infiltrators ability."
+    },
+    "45a8-1aaa-cff6-938b": {
+      "id": "45a8-1aaa-cff6-938b",
+      "name": "Advanced Armour",
+      "description": "Models in this unit have the Feel No Pain 4+ ability against mortal wounds."
+    },
+    "36a5-3ecd-bc4d-79f": {
+      "id": "36a5-3ecd-bc4d-79f",
+      "name": "Starscythe",
+      "description": "Each time a model in this unit makes a ranged attack (excluding attacks that target MONSTERS and VEHICLES), improve the Armour Penetration characteristic of that attack by 1."
+    },
+    "daca-db7f-18e9-0322": {
+      "id": "daca-db7f-18e9-0322",
+      "name": "Battlesuit Support System",
+      "description": "The unit is eligible to shoot in a turn in which it Fell Back."
+    },
+    "274d-797e-a00f-62": {
+      "id": "274d-797e-a00f-62",
+      "name": "Shield Drone",
+      "description": "Add 1 to the bearer’s Wounds characteristic."
+    },
+    "883e-96af-3014-6550": {
+      "id": "883e-96af-3014-6550",
+      "name": "Sunforge",
+      "description": "Each time a model in this unit makes a ranged attack that targets a MONSTER or VEHICLE unit, you can re-roll the Wound roll and you can re-roll the Damage roll."
+    },
+    "a892-303e-34b8-116a": {
+      "id": "a892-303e-34b8-116a",
+      "name": "Invulnerable Save (4+)",
+      "description": "This unit has a 4+ Invulnerable Save"
+    },
+    "ff15-6f06-1824-ea0b": {
+      "id": "ff15-6f06-1824-ea0b",
+      "name": "Stealth Drones",
+      "description": "Twice per battle, after an attack has been allocated to this model, you can change the Damage characteristic of that attack to 0.\n\nDesigner’s Note: Place two Stealth Drone tokens next to the unit, removing one each time this ability has been used."
+    },
+    "2220-2459-9f07-490e": {
+      "id": "2220-2459-9f07-490e",
+      "name": "Damaged: 1-4 Wounds Remaining",
+      "description": "While this model has 1-4 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll."
+    },
+    "5496-1077-da50-c494": {
+      "id": "5496-1077-da50-c494",
+      "name": "Battlesuit Support System",
+      "description": "The bearer is eligible to shoot in a turn in which it Fell Back but it loses the SMOKE keyword."
+    },
+    "1ee8-8fac-5c19-3b78": {
+      "id": "1ee8-8fac-5c19-3b78",
+      "name": "Ground Strike Fighter",
+      "description": "Each time this model makes a ranged attack that targets an enemy unit that cannot FLY, add 1 to the Hit roll."
+    },
+    "5b77-29f8-7b77-75e3": {
+      "id": "5b77-29f8-7b77-75e3",
+      "name": "Invulnerable Save (4+)",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "b5b2-f430-5dc1-106b": {
+      "id": "b5b2-f430-5dc1-106b",
+      "name": "Battlesuit Support System",
+      "description": "The bearer’s unit is eligible to shoot in a turn in which it Fell Back, but when doing so only models equipped with this wargear can make ranged attacks."
+    },
+    "3d6e-7d4-ba81-9a8f": {
+      "id": "3d6e-7d4-ba81-9a8f",
+      "name": "Weapon Support System",
+      "description": "Each time the bearer makes a ranged attack, you can ignore any or all modifiers to the Hit roll."
+    },
+    "8fb6-aff7-75ac-f206": {
+      "id": "8fb6-aff7-75ac-f206",
+      "name": "Nova Charge",
+      "description": "Once per battle, when this unit is selected to shoot in your Shooting phase, select one ranged weapon equipped by this model. Until the end of the phase, that weapon has the [DEVASTATING WOUNDS] ability."
+    },
+    "89bb-91cf-2e76-ae69": {
+      "id": "89bb-91cf-2e76-ae69",
+      "name": "Velocity Tracker",
+      "description": "Each time this model makes an attack with a ranged weapon that targets a unit that can FLY, you can re-roll the Hit roll."
+    },
+    "5a71-e391-7d55-904f": {
+      "id": "5a71-e391-7d55-904f",
+      "name": "Strafing Run",
+      "description": "In your Shooting phase, after this model has shot, select one enemy unit hit by one or more of those attacks that cannot FLY. That enemy unit must take a Battle-shock test."
+    },
+    "27f4-7449-a636-ae8c": {
+      "id": "27f4-7449-a636-ae8c",
+      "name": "Invulnerable Save (5+)",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "3a1d-540f-ebbf-700e": {
+      "id": "3a1d-540f-ebbf-700e",
+      "name": "Damaged: 1-6 Wounds Remaining",
+      "description": "While this model has 1-6 wounds remaining, each time this model makes an attack, subtract 1 from the Hit roll."
+    }
+  },
+  "units": [
+    {
+      "id": "m6q303zjbxf0qv1p405",
+      "name": "Longstrike [Legends]",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "10\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "3"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "d1d1-611e-5191-1095",
+        "be1e-ac8e-1e2c-3528",
+        "1202-10a8-78e9-4c67",
+        "cd26-1611-860a-91e4"
+      ],
+      "abilities": [
+        "db46-1f35-2996-964f",
+        "4f24-6581-c017-3daa",
+        "6c1e-179e-a2dc-85d6",
+        "fefe-3546-8754-2e26"
+      ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
+      "weapons": [
+        {
+          "id": "ec22-219d-9edf-9005",
+          "name": "Armoured hull",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9345-de29-1d44-d7f6",
+          "name": "Railgun (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "78\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "20",
+            "ap": "-5",
+            "d": "D6+6",
+            "keywords": "Devastating Wounds, Heavy"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3837-b5fb-54d1-adf8",
+          "name": "Seeker missile (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "54\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "One Shot"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "d2d4-6c29-133d-548b",
+          "name": "Accelerator burst cannon (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m9foo7qly6t6ze8t8a",
+      "name": "Commander in Coldstar Battlesuit",
+      "type": "Character",
+      "stats": {
+        "move": "12\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "6",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 95,
+      "count": 1,
+      "rules": [
+        "7cb5-dd6b-dd87-ad3b",
+        "eeb6-c42-48f7-cc21",
+        "b4dd-3e1f-41cb-218f",
+        "fc8a-8c24-bae9-cc1c",
+        "8367-374c-f87-c627",
+        "7cdb-fb99-44a9-8849",
+        "cf93-ad4d-2f08-a79d"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CRISIS SUNFORGE BATTLESUITS",
+        "CRISIS FIREKNIFE BATTLESUITS",
+        "CRISIS STARSCYTHE BATTLESUITS"
+      ],
+      "abilities": [
+        "1286-6475-344a-bdcb",
+        "e09d-50a0-b1a2-f705"
+      ],
+      "linked_weapons": {
+        "➤ Cyclic ion blaster": {
+          "standard": "d55e-419e-e6a0-89a8",
+          "overcharge": "3d00-e134-a1e7-c9bd"
+        }
+      },
+      "weapons": [
+        {
+          "id": "d55e-419e-e6a0-89a8",
+          "name": "➤ Cyclic ion blaster - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Cyclic ion blaster",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3d00-e134-a1e7-c9bd",
+          "name": "➤ Cyclic ion blaster - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Hazardous"
+          },
+          "base_name": "➤ Cyclic ion blaster",
+          "overcharge_mode": "overcharge",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "fec0-d86e-fd85-42a1",
+          "name": "Fusion blaster (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 3,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3519-759a-5a51-2de9",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "maf9dmxc8irrwfs21hx",
+      "name": "Kroot Lone-spear",
+      "type": "Character",
+      "stats": {
+        "move": "12\"",
+        "toughness": "5",
+        "save": "5+",
+        "wounds": "6",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 80,
+      "count": 1,
+      "rules": [
+        "bec5-4288-34a6-ccfa",
+        "a8a0-8fe7-898-e0f3",
+        "ada6-bac1-ffe0-d6f7",
+        "115b-79dc-f723-d761",
+        "fc8a-8c24-bae9-cc1c",
+        "6c1f-1cf7-ff25-c99e",
+        "2ebc-abdf-8129-6c57"
+      ],
+      "abilities": [
+        "fff7-dbdb-e49e-55ee",
+        "711e-6ae9-712a-8365"
+      ],
+      "unitRerolls": {
+        "hits": "all"
+      },
+      "weapons": [
+        {
+          "id": "38dd-91a0-394c-ca49",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "804-c754-e788-5598",
+          "name": "Kalamandra's bite",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "24e6-221e-63ab-8bd9",
+          "name": "Blast javelin (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "D6",
+            "bs": "4+",
+            "s": "10",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Assault, Blast"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "d2f5-718a-809b-b2ff",
+          "name": "Hunting javelin",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "3+",
+            "s": "4",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Lance"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m7hm0te4bkouy27sx9o",
+      "name": "Breacher Team",
+      "type": "Battleline",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 100,
+      "count": 1,
+      "rules": [
+        "eeb6-c42-48f7-cc21",
+        "fc8a-8c24-bae9-cc1c",
+        "8bf7-8812-923d-29e4",
+        "4ddd-4e29-acdd-5e6d",
+        "cf93-ad4d-2f08-a79d"
+      ],
+      "unitRerolls": {
+        "wounds": "all"
+      },
+      "abilities": [
+        "3926-4865-e8c7-c5eb",
+        "3354-9520-c907-c618",
+        "7c13-8707-b827-3d35"
+      ],
+      "weapons": [
+        {
+          "id": "f9f3-a15e-537e-8852",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "5+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "6b87-25ec-8946-7354",
+          "name": "Pulse blaster (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "16\"",
+            "a": "2",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Assault"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "cbad-3604-3016-f719",
+          "name": "Pulse pistol (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "b3d4-211a-48f8-266e",
+          "name": "Support turret (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Indirect Fire, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m7hm0te5j6c3ldriho",
+          "name": "Breacher Fire Warrior Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4",
+            "4ddd-4e29-acdd-5e6d",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "abilities": [
+            "7c13-8707-b827-3d35"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "b3d4-211a-48f8-266e",
+              "name": "Support turret (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Indirect Fire, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m7hm0te4uynfrvhl29h",
+          "name": "Breacher Fire Warriors",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "fc8a-8c24-bae9-cc1c",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "6b87-25ec-8946-7354",
+              "name": "Pulse blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "16\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Assault"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6f7wu9av0igpah4jw9",
+      "name": "Pathfinder Team",
+      "type": "Infantry",
+      "stats": {
+        "move": "7\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 90,
+      "count": 1,
+      "rules": [
+        "ada6-bac1-ffe0-d6f7",
+        "eeb6-c42-48f7-cc21",
+        "c05d-f4c3-f091-4938",
+        "8bf7-8812-923d-29e4",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c",
+        "8367-374c-f87-c627",
+        "1202-10a8-78e9-4c67"
+      ],
+      "abilities": [
+        "85b7-6da7-e356-82e5",
+        "aaac-7647-9ecf-4fd1"
+      ],
+      "linked_weapons": {
+        "➤ Semi-automatic grenade launcher": {
+          "standard": "81e6-dde4-c590-9945",
+          "overcharge": null
+        },
+        "➤ Ion rifle": {
+          "standard": "a20f-90e8-acb9-acdd",
+          "overcharge": "2b06-5a01-9b6b-5a6a"
+        }
+      },
+      "weapons": [
+        {
+          "id": "f9f3-a15e-537e-8852",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "5+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "9d00-a7fb-afe6-98f9",
+          "name": "Pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "cbad-3604-3016-f719",
+          "name": "Pulse pistol (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "31a1-c5dd-a259-1d89",
+          "name": "➤ Semi-automatic grenade launcher - EMP (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+          },
+          "base_name": "➤ Semi-automatic grenade launcher",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "81e6-dde4-c590-9945",
+          "name": "➤ Semi-automatic grenade launcher - fusion (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Semi-automatic grenade launcher",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a2c7-b3a1-dd13-916d",
+          "name": "Drone burst cannon (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "4",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a7f7-7c20-1c7f-8207",
+          "name": "Pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 6,
+          "models_with_weapon": 6
+        },
+        {
+          "id": "a20f-90e8-acb9-acdd",
+          "name": "➤ Ion rifle - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Heavy"
+          },
+          "base_name": "➤ Ion rifle",
+          "overcharge_mode": "standard",
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "2b06-5a01-9b6b-5a6a",
+          "name": "➤ Ion rifle - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "5+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Hazardous, Heavy"
+          },
+          "base_name": "➤ Ion rifle",
+          "overcharge_mode": "overcharge",
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "m6f7wu9cmu4nh5o7xk",
+          "name": "Pathfinder Shas'ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4",
+            "4111-82e3-9444-e942",
+            "be1e-ac8e-1e2c-3528",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c",
+            "c05d-f4c3-f091-4938"
+          ],
+          "linked_weapons": {
+            "➤ Semi-automatic grenade launcher": {
+              "standard": "81e6-dde4-c590-9945",
+              "overcharge": null
+            }
+          },
+          "abilities": [
+            "aaac-7647-9ecf-4fd1"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "9d00-a7fb-afe6-98f9",
+              "name": "Pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "31a1-c5dd-a259-1d89",
+              "name": "➤ Semi-automatic grenade launcher - EMP (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "81e6-dde4-c590-9945",
+              "name": "➤ Semi-automatic grenade launcher - fusion (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "3",
+                "keywords": "-"
+              },
+              "base_name": "➤ Semi-automatic grenade launcher",
+              "overcharge_mode": "standard",
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "a2c7-b3a1-dd13-916d",
+              "name": "Drone burst cannon (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "4",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b13wog42ub63",
+          "name": "Pathfinders w/ pulse carbine",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 6,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "a7f7-7c20-1c7f-8207",
+              "name": "Pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 6,
+              "models_with_weapon": 6
+            }
+          ]
+        },
+        {
+          "id": "m6f7wu9b5pl8dd9ytbd",
+          "name": "Pathfinders w/ ion rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "7\"",
+            "toughness": "3",
+            "save": "4+",
+            "wounds": "1",
+            "leadership": "7+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 3,
+          "linked_weapons": {
+            "➤ Ion rifle": {
+              "standard": "a20f-90e8-acb9-acdd",
+              "overcharge": "2b06-5a01-9b6b-5a6a"
+            }
+          },
+          "rules": [
+            "8367-374c-f87-c627",
+            "1202-10a8-78e9-4c67",
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "f9f3-a15e-537e-8852",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "5+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "a20f-90e8-acb9-acdd",
+              "name": "➤ Ion rifle - standard (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "standard",
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "2b06-5a01-9b6b-5a6a",
+              "name": "➤ Ion rifle - overcharge (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "3",
+                "bs": "5+",
+                "s": "8",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Hazardous, Heavy"
+              },
+              "base_name": "➤ Ion rifle",
+              "overcharge_mode": "overcharge",
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "cbad-3604-3016-f719",
+              "name": "Pulse pistol (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6hun9hncysf5moa48s",
+      "name": "Broadside Battlesuits",
+      "type": "Vehicle",
+      "stats": {
+        "move": "5\"",
+        "toughness": "6",
+        "save": "2+",
+        "wounds": "8",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 180,
+      "count": 1,
+      "rules": [
+        "eeb6-c42-48f7-cc21",
+        "9bf4-280f-bbe2-6fbb",
+        "1202-10a8-78e9-4c67",
+        "be1e-ac8e-1e2c-3528",
+        "cd26-1611-860a-91e4",
+        "cf93-ad4d-2f08-a79d"
+      ],
+      "abilities": [
+        "45a8-1aaa-cff6-938b"
+      ],
+      "weapons": [
+        {
+          "id": "7761-1b77-42a7-af36",
+          "name": "Crushing bulk",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "925b-bdfa-4365-68d0",
+          "name": "Missile pod (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "86cd-e0c6-0001-bd7d",
+          "name": "Heavy rail rifle (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "66\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6+1",
+            "keywords": "Heavy, Devastating Wounds"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "3837-b5fb-54d1-adf8",
+          "name": "Seeker missile (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "54\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "One Shot"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "e18f-f00f-7d58-1ddd",
+          "name": "Twin plasma rifle (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-3",
+            "d": "3",
+            "keywords": "Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "0f2c-e640-b41e-36a0",
+          "name": "Missile pod (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ],
+      "models": [
+        {
+          "id": "m6hun9hoc3hfp96au0d",
+          "name": "Broadside Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "925b-bdfa-4365-68d0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m77e1p1xnbuv3g73i8",
+          "name": "Broadside Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "6",
+            "save": "2+",
+            "wounds": "8",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "1202-10a8-78e9-4c67",
+            "be1e-ac8e-1e2c-3528",
+            "cd26-1611-860a-91e4",
+            "cf93-ad4d-2f08-a79d"
+          ],
+          "weapons": [
+            {
+              "id": "7761-1b77-42a7-af36",
+              "name": "Crushing bulk",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "6",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "0f2c-e640-b41e-36a0",
+              "name": "Missile pod (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "7",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "86cd-e0c6-0001-bd7d",
+              "name": "Heavy rail rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "66\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "12",
+                "ap": "-4",
+                "d": "D6+1",
+                "keywords": "Heavy, Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3837-b5fb-54d1-adf8",
+              "name": "Seeker missile (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "54\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "14",
+                "ap": "-3",
+                "d": "D6+1",
+                "keywords": "One Shot"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e18f-f00f-7d58-1ddd",
+              "name": "Twin plasma rifle (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-3",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mac9bh8ez2gbusygcb",
+      "name": "Crisis Starscythe Battlesuits",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 110,
+      "count": 1,
+      "rules": [
+        "7cb5-dd6b-dd87-ad3b",
+        "eeb6-c42-48f7-cc21",
+        "5edf-d619-23e0-9b56",
+        "4640-43e7-30b-215a",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "abilities": [
+        "36a5-3ecd-bc4d-79f",
+        "daca-db7f-18e9-0322",
+        "274d-797e-a00f-62"
+      ],
+      "weapons": [
+        {
+          "id": "4f5a-58b-5a49-1c96",
+          "name": "T'au flamer (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 6,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "3bb9-f1fb-50ba-17b",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "mac9bh8sg6tgl4ge5sw",
+          "name": "Crisis Starscythe Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "5edf-d619-23e0-9b56",
+            "4640-43e7-30b-215a",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4f5a-58b-5a49-1c96",
+              "name": "T'au flamer (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "mac9bh9t4zl1kx5okp9",
+          "name": "Crisis Starscythe Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "5edf-d619-23e0-9b56",
+            "4640-43e7-30b-215a",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4f5a-58b-5a49-1c96",
+              "name": "T'au flamer (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m9u6f8131btb8m8tupx",
+      "name": "Crisis Sunforge Battlesuits",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "5",
+        "save": "3+",
+        "wounds": "5",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 150,
+      "count": 1,
+      "rules": [
+        "7cb5-dd6b-dd87-ad3b",
+        "eeb6-c42-48f7-cc21",
+        "7cdb-fb99-44a9-8849",
+        "cf93-ad4d-2f08-a79d",
+        "fc8a-8c24-bae9-cc1c"
+      ],
+      "unitRerolls": {
+        "wounds": "all",
+        "damage": "all"
+      },
+      "abilities": [
+        "883e-96af-3014-6550",
+        "a892-303e-34b8-116a",
+        "274d-797e-a00f-62"
+      ],
+      "weapons": [
+        {
+          "id": "4bc9-74b7-1e9c-8619",
+          "name": "Fusion blaster (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 6,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "3bb9-f1fb-50ba-17b",
+          "name": "Battlesuit fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "bca7-e744-1c90-b631",
+          "name": "Twin pulse carbine (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "26\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Assault, Twin-linked"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "m9u6f81c9zf0lj8yu6l",
+          "name": "Crisis Sunforge Shas’vre",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 2,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "m9u6f820xapfxvtjz0l",
+          "name": "Crisis Sunforge Shas’ui",
+          "type": "Unknown",
+          "stats": {
+            "move": "10\"",
+            "toughness": "5",
+            "save": "3+",
+            "wounds": "5",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "7cdb-fb99-44a9-8849",
+            "cf93-ad4d-2f08-a79d",
+            "fc8a-8c24-bae9-cc1c"
+          ],
+          "abilities": [
+            "274d-797e-a00f-62"
+          ],
+          "weapons": [
+            {
+              "id": "3bb9-f1fb-50ba-17b",
+              "name": "Battlesuit fists",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "4bc9-74b7-1e9c-8619",
+              "name": "Fusion blaster (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "9",
+                "ap": "-4",
+                "d": "D6",
+                "keywords": "Melta 2"
+              },
+              "count": 4,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "bca7-e744-1c90-b631",
+              "name": "Twin pulse carbine (Superior Craftmanship)",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "26\"",
+                "a": "2",
+                "bs": "5+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Assault, Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m6s4hh3kl6pxrzcm4u",
+      "name": "Ghostkeel Battlesuit",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "8",
+        "save": "2+",
+        "wounds": "12",
+        "leadership": "7+",
+        "objectiveControl": "3"
+      },
+      "points": 160,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "c05d-f4c3-f091-4938",
+        "a8a0-8fe7-898-e0f3",
+        "bec5-4288-34a6-ccfa",
+        "eeb6-c42-48f7-cc21",
+        "7cdb-fb99-44a9-8849",
+        "cf93-ad4d-2f08-a79d"
+      ],
+      "abilities": [
+        "ff15-6f06-1824-ea0b",
+        "2220-2459-9f07-490e",
+        "5496-1077-da50-c494"
+      ],
+      "weapons": [
+        {
+          "id": "fece-1dd7-9f4e-38c1",
+          "name": "Ghostkeel fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2700-47eb-f3be-eb6e",
+          "name": "Fusion collider (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "12",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "d33c-8505-a08f-6160",
+          "name": "Twin fusion blaster (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "9",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 2, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mab5iwi35o4wv87athd",
+      "name": "Razorshark Strike Fighter",
+      "type": "Vehicle",
+      "stats": {
+        "move": "20+\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "12",
+        "leadership": "7+",
+        "objectiveControl": "0"
+      },
+      "points": 170,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "cf93-ad4d-2f08-a79d",
+        "8367-374c-f87-c627",
+        "cd26-1611-860a-91e4"
+      ],
+      "abilities": [
+        "1ee8-8fac-5c19-3b78",
+        "2220-2459-9f07-490e"
+      ],
+      "linked_weapons": {
+        "➤ Quad ion turret": {
+          "standard": "5f4b-8252-2657-c7fa",
+          "overcharge": "a01e-4195-1c61-29ea"
+        }
+      },
+      "weapons": [
+        {
+          "id": "ec22-219d-9edf-9005",
+          "name": "Armoured hull",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "5f4b-8252-2657-c7fa",
+          "name": "➤ Quad ion turret - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "8",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Twin-linked"
+          },
+          "base_name": "➤ Quad ion turret",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "a01e-4195-1c61-29ea",
+          "name": "➤ Quad ion turret - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "8",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Hazardous, Twin-linked"
+          },
+          "base_name": "➤ Quad ion turret",
+          "overcharge_mode": "overcharge",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3837-b5fb-54d1-adf8",
+          "name": "Seeker missile (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "54\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "One Shot"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3c5c-b69d-6be7-cbca",
+          "name": "Missile pod (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mac9hgd221syncu5a04",
+      "name": "Riptide Battlesuit",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "4"
+      },
+      "points": 190,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "be1e-ac8e-1e2c-3528",
+        "8367-374c-f87-c627",
+        "cf93-ad4d-2f08-a79d",
+        "4ddd-4e29-acdd-5e6d"
+      ],
+      "abilities": [
+        "2220-2459-9f07-490e",
+        "5b77-29f8-7b77-75e3",
+        "b5b2-f430-5dc1-106b",
+        "3d6e-7d4-ba81-9a8f",
+        "8fb6-aff7-75ac-f206"
+      ],
+      "linked_weapons": {
+        "➤ Ion accelerator": {
+          "standard": "8eed-7cba-62e1-dc2e",
+          "overcharge": "994d-2bc4-8b8b-37ba"
+        }
+      },
+      "weapons": [
+        {
+          "id": "925f-89df-81b7-ad2",
+          "name": "Riptide fists",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "6",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "8eed-7cba-62e1-dc2e",
+          "name": "➤ Ion accelerator - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "78\"",
+            "a": "6",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "base_name": "➤ Ion accelerator",
+          "overcharge_mode": "standard",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "994d-2bc4-8b8b-37ba",
+          "name": "➤ Ion accelerator - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "78\"",
+            "a": "6",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-3",
+            "d": "4",
+            "keywords": "Hazardous"
+          },
+          "base_name": "➤ Ion accelerator",
+          "overcharge_mode": "overcharge",
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "925b-bdfa-4365-68d0",
+          "name": "Missile pod (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "5+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3a1d-7714-bdab-43fd",
+          "name": "Twin smart missile system (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Indirect Fire, Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "m9x014tgdz2dhdt1t08",
+      "name": "Sky Ray Gunship",
+      "type": "Vehicle",
+      "stats": {
+        "move": "10\"",
+        "toughness": "10",
+        "save": "3+",
+        "wounds": "14",
+        "leadership": "7+",
+        "objectiveControl": "3"
+      },
+      "points": 140,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "cf93-ad4d-2f08-a79d"
+      ],
+      "unitRerolls": {
+        "hits": "all",
+        "wounds": "all"
+      },
+      "abilities": [
+        "89bb-91cf-2e76-ae69",
+        "4f24-6581-c017-3daa",
+        "6c1e-179e-a2dc-85d6"
+      ],
+      "weapons": [
+        {
+          "id": "ec22-219d-9edf-9005",
+          "name": "Armoured hull",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9475-a50e-aef8-42d9",
+          "name": "Seeker missile rack (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "54\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "Twin-linked"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "d2d4-6c29-133d-548b",
+          "name": "Accelerator burst cannon (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    },
+    {
+      "id": "mafu7fbltj29vqknj6",
+      "name": "Tiger Shark",
+      "type": "Vehicle",
+      "stats": {
+        "move": "20+\"",
+        "toughness": "11",
+        "save": "3+",
+        "wounds": "18",
+        "leadership": "7+",
+        "objectiveControl": "0"
+      },
+      "points": 325,
+      "count": 1,
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "eeb6-c42-48f7-cc21",
+        "8367-374c-f87-c627",
+        "6c1f-1cf7-ff25-c99e",
+        "cd26-1611-860a-91e4",
+        "4111-82e3-9444-e942"
+      ],
+      "abilities": [
+        "5a71-e391-7d55-904f",
+        "27f4-7449-a636-ae8c",
+        "3a1d-540f-ebbf-700e"
+      ],
+      "linked_weapons": {
+        "➤ Cyclic ion blaster": {
+          "standard": "ff94-d2c1-034d-e875",
+          "overcharge": "c30d-6274-c12d-6e16"
+        },
+        "➤ Ion cannon": {
+          "standard": "7c3c-c95c-b1a0-6085",
+          "overcharge": "9da3-6a99-d1b2-5261"
+        }
+      },
+      "weapons": [
+        {
+          "id": "ec22-219d-9edf-9005",
+          "name": "Armoured hull",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "5+",
+            "s": "6",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3c5c-b69d-6be7-cbca",
+          "name": "Missile pod (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "ff94-d2c1-034d-e875",
+          "name": "➤ Cyclic ion blaster - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "-"
+          },
+          "base_name": "➤ Cyclic ion blaster",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "c30d-6274-c12d-6e16",
+          "name": "➤ Cyclic ion blaster - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Hazardous"
+          },
+          "base_name": "➤ Cyclic ion blaster",
+          "overcharge_mode": "overcharge",
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7c3c-c95c-b1a0-6085",
+          "name": "➤ Ion cannon - standard (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "66\"",
+            "a": "D6+3",
+            "bs": "4+",
+            "s": "7",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Blast"
+          },
+          "base_name": "➤ Ion cannon",
+          "overcharge_mode": "standard",
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "9da3-6a99-d1b2-5261",
+          "name": "➤ Ion cannon - overcharge (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "66\"",
+            "a": "D6+3",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Blast, Hazardous"
+          },
+          "base_name": "➤ Ion cannon",
+          "overcharge_mode": "overcharge",
+          "count": 2,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "3837-b5fb-54d1-adf8",
+          "name": "Seeker missile (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "54\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "14",
+            "ap": "-3",
+            "d": "D6+1",
+            "keywords": "One Shot"
+          },
+          "count": 6,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2d02-e91-5f59-9ec3",
+          "name": "Skyspear missile rack (Superior Craftmanship)",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "78\"",
+            "a": "D6+1",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Anti-Fly 3+, Blast"
+          },
+          "count": 2,
+          "models_with_weapon": 1
+        }
+      ]
+    }
+  ],
+  "attachments": {}
+}

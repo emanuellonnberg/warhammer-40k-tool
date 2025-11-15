@@ -285,13 +285,31 @@ function calculateEffectiveWounds(unit: Unit, army: Army): number {
 }
 
 /**
+ * Get the effective toughness for a unit
+ * Per 10th edition rules, when a leader is attached, the unit uses the bodyguard's toughness
+ * This function returns the bodyguard's toughness (host unit's toughness) when leaders are attached
+ */
+function getEffectiveToughness(unit: Unit): { toughness: number; isBodyguardToughness: boolean; leaderNames: string[] } {
+  const toughness = parseInt(unit.stats.toughness) || 1;
+  const hasAttachedLeaders = unit.attachedLeaders && unit.attachedLeaders.length > 0;
+  
+  if (hasAttachedLeaders) {
+    const leaderNames = unit.attachedLeaders!.map(l => l.name);
+    // Per 10th edition: unit uses bodyguard's toughness when leader is attached
+    return { toughness, isBodyguardToughness: true, leaderNames };
+  }
+  
+  return { toughness, isBodyguardToughness: false, leaderNames: [] };
+}
+
+/**
  * Calculate survivability score combining wounds, toughness, save, and FNP
  * Higher score = more durable unit
  * Now includes Feel No Pain which adds significant survivability
  */
 function calculateSurvivabilityScore(unit: Unit, army: Army): number {
   const effectiveWounds = calculateEffectiveWounds(unit, army);
-  const toughness = parseInt(unit.stats.toughness) || 1;
+  const { toughness } = getEffectiveToughness(unit);
 
   // Base survivability = effective wounds × toughness modifier
   // Toughness contributes to survivability (harder to wound)
@@ -1625,7 +1643,7 @@ function createSummaryTable(
 
               // Parse numeric values from stats for sorting
               const moveValue = parseInt(unit.stats.move.replace(/[^0-9]/g, '')) || 0;
-              const toughnessValue = parseInt(unit.stats.toughness) || 0;
+              const { toughness: toughnessValue, isBodyguardToughness, leaderNames } = getEffectiveToughness(unit);
               const saveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 0;
               const woundsValue = parseInt(unit.stats.wounds) || 0;
 
@@ -1645,9 +1663,13 @@ function createSummaryTable(
               );
               const survivability = tacticalSurv.score; // Use tactical for sorting
 
-              const leaderNames = (unit.attachedLeaders || []).map(l => l.name);
               const leaderBadge = leaderNames.length
                 ? `<div class="text-muted small">Leaders: ${leaderNames.join(', ')}</div>`
+                : '';
+
+              // Build toughness tooltip note
+              const toughnessNote = isBodyguardToughness
+                ? `&#10;Note: Uses bodyguard's toughness (T${toughnessValue}) per 10th ed. rules`
                 : '';
 
               return `
@@ -1674,10 +1696,10 @@ function createSummaryTable(
                   </td>
                   <td>${unit.points}</td>
                   <td>${unit.stats.move}</td>
-                  <td>${unit.stats.toughness}</td>
+                  <td class="${isBodyguardToughness ? 'calculation-tooltip' : ''}" ${isBodyguardToughness ? `data-tooltip="Toughness: ${unit.stats.toughness}${toughnessNote}"` : ''}>${unit.stats.toughness}</td>
                   <td>${unit.stats.save}</td>
                   <td>${unit.stats.wounds}</td>
-                  <td class="calculation-tooltip" data-tooltip="Tactical Survivability: ${survivability.toFixed(1)}&#10;Base: ${baseSurvivability.toFixed(1)}&#10;Range: ×${tacticalSurv.breakdown.rangeProtection.toFixed(1)} (${tacticalSurv.breakdown.effectiveRange.toFixed(0)}\")&#10;Move: ×${tacticalSurv.breakdown.movementFactor.toFixed(1)}&#10;Abilities: ×${tacticalSurv.breakdown.abilityFactor.toFixed(2)}">
+                  <td class="calculation-tooltip" data-tooltip="Tactical Survivability: ${survivability.toFixed(1)}&#10;Base: ${baseSurvivability.toFixed(1)}&#10;Range: ×${tacticalSurv.breakdown.rangeProtection.toFixed(1)} (${tacticalSurv.breakdown.effectiveRange.toFixed(0)}\")&#10;Move: ×${tacticalSurv.breakdown.movementFactor.toFixed(1)}&#10;Abilities: ×${tacticalSurv.breakdown.abilityFactor.toFixed(2)}${toughnessNote}">
                     ${survivability.toFixed(1)}
                   </td>
                   <td class="calculation-tooltip ${getEfficiencyClass(efficiency)}" data-tooltip="Total Damage per Point&#10;${damage.total.toFixed(1)} damage ÷ ${unit.points} points = ${efficiency.toFixed(3)}">
@@ -1903,7 +1925,7 @@ function createUnitCard(
     scenarioRerolls,
     targetFNP
   );
-  const toughnessValue = parseInt(unit.stats.toughness) || 1;
+  const { toughness: toughnessValue, isBodyguardToughness, leaderNames } = getEffectiveToughness(unit);
   const armorSaveValue = parseInt(unit.stats.save.replace(/\+/g, '')) || 7;
   const woundsValue = parseInt(unit.stats.wounds) || 1;
 
@@ -1937,9 +1959,15 @@ function createUnitCard(
     tooltipSaveDisplay += ` + FNP${fnpValue}+`;
   }
 
+  // Build toughness display with bodyguard note if applicable
+  let toughnessDisplay = `T${toughnessValue}`;
+  if (isBodyguardToughness) {
+    toughnessDisplay += ` (Bodyguard's T, per 10th ed. rules)`;
+  }
+
   const tacticalTooltip = `Tactical Survivability
-Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} ${tooltipSaveDisplay} T${toughnessValue})
-Range Protection: ${rangeCategory} ${effectiveRange.toFixed(0)}in (weighted avg) → x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
+Base: ${tacticalSurv.breakdown.baseSurvivability.toFixed(1)} (W${woundsValue} ${tooltipSaveDisplay} ${toughnessDisplay})
+${isBodyguardToughness ? `Note: Unit uses bodyguard's toughness (T${toughnessValue}) when leader${leaderNames.length > 1 ? 's' : ''} attached (${leaderNames.join(', ')})` : ''}${isBodyguardToughness ? '\n' : ''}Range Protection: ${rangeCategory} ${effectiveRange.toFixed(0)}in (weighted avg) → x${tacticalSurv.breakdown.rangeProtection.toFixed(1)}
 Movement Bonus: ${tacticalSurv.breakdown.moveValue}in → x${tacticalSurv.breakdown.movementFactor.toFixed(1)}
 Ability Bonus: ${abilityLines} → x${tacticalSurv.breakdown.abilityFactor.toFixed(2)}
 Total: ${tacticalSurv.score.toFixed(1)}`;
@@ -2054,7 +2082,7 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
           <thead>
             <tr>
               <th>M</th>
-              <th>T</th>
+              <th>T${isBodyguardToughness ? ' <span class="badge bg-info" title="Uses bodyguard\'s toughness per 10th ed. rules">BG</span>' : ''}</th>
               <th>${svHeader}</th>
               <th>W</th>
               <th>Ld</th>
@@ -2064,7 +2092,7 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
           <tbody>
             <tr>
               <td>${unit.stats.move}</td>
-              <td>${unit.stats.toughness}</td>
+              <td class="${isBodyguardToughness ? 'calculation-tooltip' : ''}" ${isBodyguardToughness ? `data-tooltip="Toughness: ${unit.stats.toughness}&#10;Note: Uses bodyguard's toughness (T${toughnessValue}) per 10th ed. rules"` : ''}>${unit.stats.toughness}${isBodyguardToughness ? ' <small class="text-muted">(BG)</small>' : ''}</td>
               <td>${saveDisplay}</td>
               <td>${unit.stats.wounds}</td>
               <td>${unit.stats.leadership}</td>
