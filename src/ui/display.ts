@@ -151,7 +151,31 @@ function normalizeUnitName(name: string): string {
 function matchesLeaderOption(unitName: string, leaderOptions?: string[]): boolean {
   if (!leaderOptions || leaderOptions.length === 0) return false;
   const normalizedName = normalizeUnitName(unitName);
-  return leaderOptions.some(option => normalizeUnitName(option) === normalizedName);
+  const unitWords = normalizedName.split(' ').filter(Boolean);
+  const unitWordSet = new Set(unitWords);
+
+  return leaderOptions.some(option => {
+    const normalizedOption = normalizeUnitName(option);
+    if (!normalizedOption) return false;
+    if (normalizedOption === normalizedName) return true;
+
+    if (normalizedOption.length >= 3 && normalizedName.includes(normalizedOption)) {
+      return true;
+    }
+
+    const optionWords = normalizedOption.split(' ').filter(Boolean);
+    if (optionWords.length === 1) {
+      const word = optionWords[0];
+      if (word.length >= 3 && unitWordSet.has(word)) {
+        return true;
+      }
+    } else if (optionWords.length > 1) {
+      const allMatch = optionWords.every(word => unitWordSet.has(word));
+      if (allMatch) return true;
+    }
+
+    return false;
+  });
 }
 
 /**

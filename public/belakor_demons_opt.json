@@ -654,6 +654,10 @@
         "e9c4-2bb8-12ee-cd1b",
         "5edf-d619-23e0-9b56"
       ],
+      "isLeader": true,
+      "leaderOptions": [
+        "FLAMERS"
+      ],
       "abilities": [
         "fd63-575d-f73b-d1f7",
         "8815-f030-d5eb-12c1",
@@ -744,6 +748,10 @@
         "4640-43e7-30b-215a",
         "e9c4-2bb8-12ee-cd1b",
         "5edf-d619-23e0-9b56"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "FLAMERS"
       ],
       "abilities": [
         "fd63-575d-f73b-d1f7",
@@ -1307,6 +1315,66 @@
           "count": 9,
           "models_with_weapon": 9
         }
+      ],
+      "models": [
+        {
+          "id": "zk1ns1c",
+          "name": "Alluress",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "810b-975e-2ae9-9eb8",
+              "name": "Slashing claws",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Devastating Wounds"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "zlhbvs",
+          "name": "Daemonette",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "a8df-2f1f-18c4-9d1e",
+              "name": "Slashing claws",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Devastating Wounds"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
+        }
       ]
     },
     {
@@ -1350,6 +1418,37 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "cedlhoa",
+          "name": "Nurgling Swarm",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "d1d1-611e-5191-1095"
+          ],
+          "weapons": [
+            {
+              "id": "8f10-bd3-845e-72d0",
+              "name": "Diseased claws and teeth",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "5+",
+                "s": "2",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Lethal Hits"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
         }
       ]
     },
@@ -1395,6 +1494,37 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "vzdk7kb",
+          "name": "Nurgling Swarm",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "d1d1-611e-5191-1095"
+          ],
+          "weapons": [
+            {
+              "id": "8f10-bd3-845e-72d0",
+              "name": "Diseased claws and teeth",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "5+",
+                "s": "2",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Lethal Hits"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
+        }
       ]
     },
     {
@@ -1439,6 +1569,37 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "433ck5p",
+          "name": "Nurgling Swarm",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "d1d1-611e-5191-1095"
+          ],
+          "weapons": [
+            {
+              "id": "8f10-bd3-845e-72d0",
+              "name": "Diseased claws and teeth",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "5+",
+                "s": "2",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Lethal Hits"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
+        }
       ]
     },
     {
@@ -1482,6 +1643,37 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "h9wwf5a",
+          "name": "Nurgling Swarm",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "d1d1-611e-5191-1095"
+          ],
+          "weapons": [
+            {
+              "id": "8f10-bd3-845e-72d0",
+              "name": "Diseased claws and teeth",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "5+",
+                "s": "2",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Lethal Hits"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
         }
       ]
     },
@@ -1576,6 +1768,102 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "j259eo",
+          "name": "Pyrocaster",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "e9c4-2bb8-12ee-cd1b",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "8510-95d8-d43d-59f4",
+              "name": "Flamer mouths",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6e6c-e239-2fad-5030",
+              "name": "Flickering Flames",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Psychic, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "j2zrkrl",
+          "name": "Flamer",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "e9c4-2bb8-12ee-cd1b",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "f0f6-bc60-c20f-92c5",
+              "name": "Flamer mouths",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "d23f-b816-5298-c424",
+              "name": "Flickering Flames",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Psychic, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -1669,6 +1957,102 @@
           "count": 2,
           "models_with_weapon": 2
         }
+      ],
+      "models": [
+        {
+          "id": "u8rn21c",
+          "name": "Pyrocaster",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "e9c4-2bb8-12ee-cd1b",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "8510-95d8-d43d-59f4",
+              "name": "Flamer mouths",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "6e6c-e239-2fad-5030",
+              "name": "Flickering Flames",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Psychic, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "u83a4ef",
+          "name": "Flamer",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 2,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "e9c4-2bb8-12ee-cd1b",
+            "5edf-d619-23e0-9b56"
+          ],
+          "weapons": [
+            {
+              "id": "f0f6-bc60-c20f-92c5",
+              "name": "Flamer mouths",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "d23f-b816-5298-c424",
+              "name": "Flickering Flames",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Psychic, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -1712,6 +2096,44 @@
           "count": 3,
           "models_with_weapon": 3
         }
+      ],
+      "models": [
+        {
+          "id": "d3kbub9",
+          "name": "Fiends",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "5",
+            "save": "7+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "fb8b-9462-728b-35e2",
+              "name": "Barbed tail and dissecting claws",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "5",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Devastating Wounds"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
+        }
       ]
     },
     {
@@ -1754,6 +2176,44 @@
           },
           "count": 3,
           "models_with_weapon": 3
+        }
+      ],
+      "models": [
+        {
+          "id": "86omxen",
+          "name": "Fiends",
+          "type": "Unknown",
+          "stats": {
+            "move": "12\"",
+            "toughness": "5",
+            "save": "7+",
+            "wounds": "4",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 3,
+          "rules": [
+            "be1e-ac8e-1e2c-3528"
+          ],
+          "weapons": [
+            {
+              "id": "fb8b-9462-728b-35e2",
+              "name": "Barbed tail and dissecting claws",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "5",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Devastating Wounds"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ]
         }
       ]
     },
@@ -1817,6 +2277,90 @@
           "count": 5,
           "models_with_weapon": 5
         }
+      ],
+      "models": [
+        {
+          "id": "fnu145",
+          "name": "Gore Hound",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56",
+            "9bf4-280f-bbe2-6fbb"
+          ],
+          "abilities": [
+            "a9ac-1fd2-b697-e20a"
+          ],
+          "weapons": [
+            {
+              "id": "e860-361-75ad-2530",
+              "name": "Burning roar",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "42d2-54b9-a737-98a2",
+              "name": "Gore-drenched fangs",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "fn9z5n",
+          "name": "Flesh Hound",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 4,
+          "abilities": [
+            "a9ac-1fd2-b697-e20a"
+          ],
+          "rules": [
+            "9bf4-280f-bbe2-6fbb"
+          ],
+          "weapons": [
+            {
+              "id": "42d2-54b9-a737-98a2",
+              "name": "Gore-drenched fangs",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        }
       ]
     },
     {
@@ -1878,6 +2422,90 @@
           },
           "count": 5,
           "models_with_weapon": 5
+        }
+      ],
+      "models": [
+        {
+          "id": "z2zm9en",
+          "name": "Gore Hound",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56",
+            "9bf4-280f-bbe2-6fbb"
+          ],
+          "abilities": [
+            "a9ac-1fd2-b697-e20a"
+          ],
+          "weapons": [
+            {
+              "id": "e860-361-75ad-2530",
+              "name": "Burning roar",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "42d2-54b9-a737-98a2",
+              "name": "Gore-drenched fangs",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "z25johw",
+          "name": "Flesh Hound",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 4,
+          "abilities": [
+            "a9ac-1fd2-b697-e20a"
+          ],
+          "rules": [
+            "9bf4-280f-bbe2-6fbb"
+          ],
+          "weapons": [
+            {
+              "id": "42d2-54b9-a737-98a2",
+              "name": "Gore-drenched fangs",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
         }
       ]
     },
@@ -2175,7 +2803,6 @@
         "fd69-68cc-5d63-c84d",
         "b4dd-3e1f-41cb-218f",
         "7cb5-dd6b-dd87-ad3b",
-        "7cb5-dd6b-dd87-ad3b",
         "e9c4-2bb8-12ee-cd1b",
         "be1e-ac8e-1e2c-3528",
         "8367-374c-f87-c627",
@@ -2187,6 +2814,10 @@
         "a049-dda2-5463-aa67",
         "bb67-4c61-3acb-3984",
         "d4db-ebd5-8c2f-3616"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "CHAOS TERMINATOR SQUAD"
       ],
       "linked_weapons": {
         "➤ Infernal Gaze": {
@@ -2337,6 +2968,98 @@
           "count": 9,
           "models_with_weapon": 9
         }
+      ],
+      "models": [
+        {
+          "id": "qy0m6je",
+          "name": "Cultist Champion",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "28d-6009-31fe-c625",
+              "name": "Brutal assault weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e9f0-9527-ac4d-bda4",
+              "name": "Autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "qyp8m7",
+          "name": "Cultist w/ autopistol and brutal assault weapon",
+          "type": "Unknown",
+          "stats": {},
+          "points": 0,
+          "count": 9,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "d4fa-2102-3242-b228",
+              "name": "Autopistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "28d-6009-31fe-c625",
+              "name": "Brutal assault weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
+        }
       ]
     },
     {
@@ -2358,6 +3081,9 @@
         "7cb5-dd6b-dd87-ad3b",
         "8bf7-8812-923d-29e4"
       ],
+      "unitRerolls": {
+        "wounds": "ones"
+      },
       "abilities": [
         "f891-237b-ad65-8f4e",
         "d4db-ebd5-8c2f-3616"
@@ -2427,6 +3153,144 @@
           "count": 4,
           "models_with_weapon": 4
         }
+      ],
+      "models": [
+        {
+          "id": "w4zhdr",
+          "name": "Aspiring Champion",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "6+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "aee9-ca1-a640-8f06",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "ed0b-7e33-319d-93e4",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "63e7-7452-2edb-99dc",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "w462s66",
+          "name": "Legionary w/ boltgun",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "4",
+            "save": "3+",
+            "wounds": "2",
+            "leadership": "6+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "8bf7-8812-923d-29e4"
+          ],
+          "weapons": [
+            {
+              "id": "ed0b-7e33-319d-93e4",
+              "name": "Bolt pistol",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "1",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Pistol"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "63e7-7452-2edb-99dc",
+              "name": "Boltgun",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "c1cb-1e20-a75d-6eb2",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "3",
+                "ws": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        }
       ]
     },
     {
@@ -2446,9 +3310,11 @@
       "rules": [
         "fd69-68cc-5d63-c84d",
         "7cb5-dd6b-dd87-ad3b",
-        "7cb5-dd6b-dd87-ad3b",
         "c5c8-8b58-b8b6-7786"
       ],
+      "unitRerolls": {
+        "hits": "all"
+      },
       "abilities": [
         "13a2-57cd-83ff-2127",
         "47b5-bcf1-2658-7a0b",
@@ -2487,7 +3353,114 @@
           "count": 5,
           "models_with_weapon": 5
         }
+      ],
+      "models": [
+        {
+          "id": "4seopj8",
+          "name": "Terminator Champion",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "5",
+            "save": "2+",
+            "wounds": "3",
+            "leadership": "6+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 1,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "79e9-512b-5b1e-d478",
+              "name": "Accursed weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "356a-666c-2ce5-9dcb",
+              "name": "Combi-bolter",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "4rrvptb",
+          "name": "Accursed weapon and combi-bolter",
+          "type": "Unknown",
+          "stats": {
+            "move": "5\"",
+            "toughness": "5",
+            "save": "2+",
+            "wounds": "3",
+            "leadership": "6+",
+            "objectiveControl": "1"
+          },
+          "points": 0,
+          "count": 4,
+          "rules": [
+            "c5c8-8b58-b8b6-7786"
+          ],
+          "weapons": [
+            {
+              "id": "79e9-512b-5b1e-d478",
+              "name": "Accursed weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "3+",
+                "s": "5",
+                "ap": "-2",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "356a-666c-2ce5-9dcb",
+              "name": "Combi-bolter",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "2",
+                "bs": "3+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Rapid Fire 2"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ]
+        }
       ]
     }
-  ]
+  ],
+  "attachments": {}
 }
