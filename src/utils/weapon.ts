@@ -67,3 +67,47 @@ export function isOneTimeWeapon(weapon: Weapon): boolean {
 
   return false;
 }
+
+/**
+ * Check if a weapon has the Hazardous keyword
+ * @param weapon - Weapon object
+ * @returns True if weapon is hazardous
+ */
+export function isHazardousWeapon(weapon: Weapon): boolean {
+  // Check if explicitly marked as hazardous
+  if (weapon.is_hazardous) return true;
+
+  // Check weapon keywords
+  const keywordsAttribute = (weapon.characteristics?.keywords || '').toLowerCase();
+  if (keywordsAttribute.includes('hazardous')) {
+    return true;
+  }
+
+  // Check weapon name (some weapons might have it in the name)
+  const lowerName = weapon.name.toLowerCase().trim();
+  if (lowerName.includes('hazardous')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Calculate expected mortal wounds from Hazardous tests
+ * Per 10th edition rules: After shooting with a Hazardous weapon, roll a D6 for each model that fired it.
+ * On a 1, that model suffers D3 mortal wounds.
+ * Expected value = (1/6) * (average of D3) = (1/6) * 2 = 1/3 per model
+ * @param weapon - Weapon object
+ * @returns Expected mortal wounds the unit will suffer from using this weapon
+ */
+export function calculateHazardousMortalWounds(weapon: Weapon): number {
+  if (!isHazardousWeapon(weapon)) {
+    return 0;
+  }
+
+  // Number of models firing the weapon
+  const modelsFiring = weapon.models_with_weapon || weapon.count || 1;
+  
+  // Expected mortal wounds = models * (1/6 chance) * (average D3 = 2)
+  return modelsFiring * (1 / 6) * 2;
+}

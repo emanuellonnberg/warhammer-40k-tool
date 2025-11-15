@@ -622,6 +622,12 @@ function extractWeaponsAbilitiesRules(selections: RosterSelection[], optimized: 
             models_with_weapon: 1
           };
 
+          // Detect hazardous keyword
+          const keywords = (weapon.characteristics.keywords || '').toLowerCase();
+          if (keywords.includes('hazardous') || profile.name.toLowerCase().includes('hazardous')) {
+            weapon.is_hazardous = true;
+          }
+
           // Check if this is a firing mode weapon (starts with ➤)
           if (profile.name.startsWith("➤")) {
             // Extract the base weapon name by removing the mode

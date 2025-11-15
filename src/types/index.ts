@@ -34,6 +34,7 @@ export interface Weapon {
   base_name?: string;
   overcharge_mode?: string;
   is_one_time?: boolean;
+  is_hazardous?: boolean;  // Whether the weapon has the Hazardous keyword
   rerolls?: RerollConfig;  // Re-roll configuration for this weapon
 }
 
@@ -133,6 +134,7 @@ export interface DamageBreakdown {
   melee: number;
   pistol: number;
   onetime: number;
+  hazardousMortalWounds?: number;  // Expected mortal wounds from Hazardous tests
 }
 
 /**

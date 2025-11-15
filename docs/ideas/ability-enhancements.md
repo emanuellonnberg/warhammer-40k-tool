@@ -20,11 +20,12 @@
    - Cons: Needs reliable detection of which model's toughness should apply; multi-leader edge cases can get tricky.
    - Implementation: Added `getEffectiveToughness()` helper function that detects attached leaders and returns the bodyguard's toughness. Updated all survivability calculations to use this helper. Added visual indicators (BG badge) and tooltip notes in unit cards and summary table to clarify that the displayed toughness is the bodyguard's toughness per 10th edition rules.
 
-3. **Hazardous / One-Shot Modeling** ⏳ *(not started)*
+3. **Hazardous / One-Shot Modeling** ✅ *(complete)*
    - Tag hazardous and one-shot weapons with dedicated booleans.
    - Simulate expected mortal wounds from Hazardous tests and optionally auto-exclude one-use weapons unless a toggle is enabled.
    - Pros: Communicates the true cost of Hazardous guns and keeps one-use wargear from skewing averages.
-   - Cons: Adds UI toggles and explanation overhead; expected mortal wounds math may not match every playgroup’s expectations.
+   - Cons: Adds UI toggles and explanation overhead; expected mortal wounds math may not match every playgroup's expectations.
+   - Implementation: Added `is_hazardous` field to Weapon interface and detection logic in both Python and TypeScript parsers. Created `isHazardousWeapon()` and `calculateHazardousMortalWounds()` utility functions. Expected mortal wounds calculated as (models_firing * 1/6 * 2) per 10th edition rules (D6 test, on 1 suffer D3 MW). Added [Hazardous] badges to weapon displays and shows expected mortal wounds in unit card damage breakdown. One-shot weapons already had toggle support.
 
 4. **Transport + Embarked Buffs** ⏳ *(not started)*
    - Detect Dedicated Transports and the units embarked within them.

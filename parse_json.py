@@ -410,6 +410,11 @@ def extract_weapons_abilities_rules(selections, optimized, unit):
                         "characteristics": extract_characteristics(profile)
                     }
                     
+                    # Detect hazardous keyword
+                    keywords = weapon["characteristics"].get("keywords", "").lower()
+                    if "hazardous" in keywords or "hazardous" in profile["name"].lower():
+                        weapon["is_hazardous"] = True
+                    
                     # Check if this is a firing mode weapon (starts with ➤)
                     if profile["name"].startswith("➤"):
                         # Extract the base weapon name by removing the mode

@@ -4,7 +4,7 @@
 
 import type { Weapon, Unit, DamageBreakdown, RerollConfig, AttackModifiers } from '../types';
 import { parseNumeric, parseDamage } from '../utils/numeric';
-import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
+import { getWeaponType, isOneTimeWeapon, isHazardousWeapon, calculateHazardousMortalWounds } from '../utils/weapon';
 import { applySpecialRules } from '../rules/special-weapons';
 import { calculateHitChanceWithReroll, calculateWoundChanceWithReroll } from './rerolls';
 
@@ -201,7 +201,8 @@ export function calculateUnitDamage(
     ranged: 0,
     melee: 0,
     pistol: 0,
-    onetime: 0
+    onetime: 0,
+    hazardousMortalWounds: 0
   };
 
   // Group weapons by base name to handle standard/overcharge variants
@@ -263,6 +264,11 @@ export function calculateUnitDamage(
         damages.onetime += damage;
       }
 
+      // Track hazardous mortal wounds
+      if (isHazardousWeapon(activeWeapon)) {
+        damages.hazardousMortalWounds = (damages.hazardousMortalWounds || 0) + calculateHazardousMortalWounds(activeWeapon);
+      }
+
       damages[weaponType] += damage;
       damages.total += damage;
     }
@@ -297,6 +303,11 @@ export function calculateUnitDamage(
         damages.onetime += damage;
       }
 
+      // Track hazardous mortal wounds
+      if (isHazardousWeapon(activeWeapon)) {
+        damages.hazardousMortalWounds = (damages.hazardousMortalWounds || 0) + calculateHazardousMortalWounds(activeWeapon);
+      }
+
       damages[weaponType] += damage;
       damages.total += damage;
     }
@@ -327,6 +338,11 @@ export function calculateUnitDamage(
       // Track one-time weapon damage separately
       if (isOneTimeWeapon(weapon) && includeOneTimeWeapons) {
         damages.onetime += damage;
+      }
+
+      // Track hazardous mortal wounds
+      if (isHazardousWeapon(weapon)) {
+        damages.hazardousMortalWounds = (damages.hazardousMortalWounds || 0) + calculateHazardousMortalWounds(weapon);
       }
 
       damages[weaponType] += damage;

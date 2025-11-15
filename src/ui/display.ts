@@ -74,7 +74,7 @@ import type { Army, Unit, Weapon, SortColumn, SortDirection, RerollConfig, Attac
 import { calculateUnitDamage } from '../calculators/damage';
 import { calculateUnitEfficiency } from '../calculators/efficiency';
 import { calculateWeaponDamage } from '../calculators/damage';
-import { getWeaponType, isOneTimeWeapon } from '../utils/weapon';
+import { getWeaponType, isOneTimeWeapon, isHazardousWeapon } from '../utils/weapon';
 import { getEfficiencyClass } from '../utils/styling';
 import { generateCalculationTooltip, initializeTooltips } from './tooltip';
 import { Chart, registerables } from 'chart.js';
@@ -2049,6 +2049,7 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
           Melee: ${unitDamage.melee.toFixed(1)} |
           Pistol: ${unitDamage.pistol.toFixed(1)}
           ${includeOneTimeWeapons && unitDamage.onetime > 0 ? `| One-Time: ${unitDamage.onetime.toFixed(1)}` : ''}
+          ${unitDamage.hazardousMortalWounds && unitDamage.hazardousMortalWounds > 0 ? `<br><span class="text-warning">⚠ Expected Hazardous MW: ${unitDamage.hazardousMortalWounds.toFixed(2)}</span>` : ''}
         </small>
       </p>
       <div class="survivability-section mb-3 p-2 border-start border-success border-2 bg-light">
@@ -2288,13 +2289,15 @@ function buildWeaponHTML(
     const overchargeDamage = calculateWeaponDamage(overchargeWeapon, targetToughness, true, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(standardWeapon);
     const isOneTime = isOneTimeWeapon(standardWeapon);
+    const isHazardous = isHazardousWeapon(standardWeapon) || isHazardousWeapon(overchargeWeapon);
 
     return `
       <div class="weapon-entry" data-weapon-type="overcharge" data-base-name="${baseName}">
         <p class="mb-1">
           ${baseName} (${standardWeapon.count})
           <span class="weapon-type ${weaponType}">[${weaponType}]</span>
-          ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
+          ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}
+          ${isHazardous ? '<span class="badge bg-warning text-dark">[Hazardous]</span>' : ''}:
           <br>
           <span class="${!useOvercharge ? 'active-mode' : 'inactive-mode'}">
             Standard:
@@ -2323,6 +2326,7 @@ function buildWeaponHTML(
     const weaponType = getWeaponType(weapons[0]);
     const activeMode = unitModes?.get(baseName) || 0;
     const isOneTime = isOneTimeWeapon(weapons[0]);
+    const isHazardous = weapons.some(w => isHazardousWeapon(w));
     const weaponId = `weapon-${unit.id}-${index}`;
 
     const modesHTML = weapons.map((weapon, modeIndex) => {
@@ -2347,7 +2351,8 @@ function buildWeaponHTML(
         <p class="mb-1">
           ${baseName} (${weapons[0].count})
           <span class="weapon-type ${weaponType}">[${weaponType}]</span>
-          ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
+          ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}
+          ${isHazardous ? '<span class="badge bg-warning text-dark">[Hazardous]</span>' : ''}:
           <div class="form-check form-switch">
             <input class="form-check-input weapon-mode-toggle" type="checkbox"
                    id="${weaponId}" data-unit-id="${unit.id}" data-weapon-index="${index}"
@@ -2366,12 +2371,14 @@ function buildWeaponHTML(
     const damage = calculateWeaponDamage(weapon, targetToughness, false, includeOneTimeWeapons, optimalRange, [], 1, false, null, unit.unitModifiers, unit.unitRerolls, scenarioRerolls, targetFNP);
     const weaponType = getWeaponType(weapon);
     const isOneTime = isOneTimeWeapon(weapon);
+    const isHazardous = isHazardousWeapon(weapon);
 
     return `
       <p class="mb-1">
         ${baseName} (${weapon.count})
         <span class="weapon-type ${weaponType}">[${weaponType}]</span>
-        ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}:
+        ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}
+        ${isHazardous ? '<span class="badge bg-warning text-dark">[Hazardous]</span>' : ''}:
         <span class="calculation-tooltip efficiency-value ${getEfficiencyClass(damage)}" data-tooltip="${generateCalculationTooltip(weapon, targetToughness, false, optimalRange, unit.unitRerolls, scenarioRerolls, targetFNP)}">
           ${damage.toFixed(3)}
         </span>
@@ -2405,6 +2412,7 @@ function buildWeaponStatsHTML(baseName: string, weapons: Weapon[], includeOneTim
           ${weapon.count > 1 ? ` (${weapon.count})` : ''}
           <span class="weapon-type ${weaponType}">[${weaponType}]</span>
           ${isOneTime ? '<span class="one-time-weapon">[One-Time]</span>' : ''}
+          ${isHazardousWeapon(weapon) ? '<span class="badge bg-warning text-dark">[Hazardous]</span>' : ''}
         </td>
         <td>${chars.range || '-'}</td>
         <td>${chars.a || '-'}</td>
