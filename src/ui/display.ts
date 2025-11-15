@@ -1,3 +1,71 @@
+function buildAbilitiesSection(unit: Unit, army: Army): string {
+  const leaderRuleIdSet = new Set<string>();
+  (unit.attachedLeaders || []).forEach(leader => {
+    (leader.rules || []).forEach(id => leaderRuleIdSet.add(id));
+    (leader.abilities || []).forEach(id => leaderRuleIdSet.add(id));
+  });
+
+  const baseRuleIds = [...(unit.rules || []), ...(unit.abilities || [])]
+    .filter(id => !leaderRuleIdSet.has(id));
+  const baseRules = renderRuleList(baseRuleIds, army);
+
+  const leaderSections = (unit.attachedLeaders || [])
+    .map(leader => {
+      const leaderRuleIds = [...(leader.rules || []), ...(leader.abilities || [])];
+      const leaderRulesHTML = renderRuleList(leaderRuleIds, army);
+      if (!leaderRulesHTML) return '';
+      return `
+        <div class="mt-2 ps-3 border-start border-warning border-2">
+          <div class="text-warning small fw-semibold mb-1">${leader.name}</div>
+          ${leaderRulesHTML}
+        </div>
+      `;
+    })
+    .filter(Boolean)
+    .join('');
+
+  if (!baseRules && !leaderSections) {
+    return '';
+  }
+
+  return `
+    <div class="unit-abilities mb-3 p-3 border-start border-primary border-3 bg-light">
+      <h6 class="text-primary mb-2">
+        <i class="bi bi-lightning-charge-fill"></i> Abilities & Rules
+      </h6>
+      ${baseRules || '<div class="text-muted small">No native abilities listed.</div>'}
+      ${leaderSections}
+    </div>
+  `;
+}
+
+function renderRuleList(ruleIds: string[], army: Army): string {
+  if (!ruleIds || ruleIds.length === 0) return '';
+  const rulesHTML = ruleIds
+    .map(ruleId => {
+      const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
+      if (!rule || rule.hidden) return '';
+      if (shouldHideRule(rule.name)) return '';
+
+      const isTruncated = rule.description.length > 150;
+      const truncatedText = truncateText(rule.description, 150);
+
+      return `
+        <div class="ability-item mb-2 ${isTruncated ? 'expandable' : ''}" data-expanded="false">
+          <strong>${rule.name}:</strong>
+          <span class="ability-description text-muted small">
+            <span class="truncated-text">${truncatedText}</span>
+            ${isTruncated ? `<span class="full-text" style="display: none;">${rule.description}</span>` : ''}
+          </span>
+          ${isTruncated ? '<span class="expand-icon ms-1">▼</span>' : ''}
+        </div>
+      `;
+    })
+    .filter(Boolean)
+    .join('');
+
+  return rulesHTML;
+}
 /**
  * UI display and rendering logic
  */
@@ -1552,6 +1620,11 @@ function createSummaryTable(
               );
               const survivability = tacticalSurv.score; // Use tactical for sorting
 
+              const leaderNames = (unit.attachedLeaders || []).map(l => l.name);
+              const leaderBadge = leaderNames.length
+                ? `<div class="text-muted small">Leaders: ${leaderNames.join(', ')}</div>`
+                : '';
+
               return `
                 <tr class="unit-row-clickable"
                     data-unit-id="${unit.id}"
@@ -1570,7 +1643,10 @@ function createSummaryTable(
                     data-melee="${damage.melee}"
                     data-pistol="${damage.pistol}"
                     ${includeOneTimeWeapons ? `data-onetime="${damage.onetime}"` : ''}>
-                  <td><a href="#unit-${unit.id}" class="unit-link">${unit.name}</a></td>
+                  <td>
+                    <a href="#unit-${unit.id}" class="unit-link">${unit.name}</a>
+                    ${leaderBadge}
+                  </td>
                   <td>${unit.points}</td>
                   <td>${unit.stats.move}</td>
                   <td>${unit.stats.toughness}</td>
@@ -1880,47 +1956,7 @@ Total: ${tacticalSurv.score.toFixed(1)}`;
     : unit.stats.save;
   const svHeader = invulnSave ? 'Sv/Inv.Sv' : 'Sv';
 
-  // Build abilities and rules HTML (EXCLUDE weapon rules AND invulnerable save)
-  let abilitiesHTML = '';
-  if ((unit.rules && unit.rules.length > 0) || (unit.abilities && unit.abilities.length > 0)) {
-    const allRuleIds = [...(unit.rules || []), ...(unit.abilities || [])];
-    const rulesHTML = allRuleIds
-      .map(ruleId => {
-        // Get rule/ability from army.rules or army.abilities object
-        const rule = army.rules?.[ruleId] || army.abilities?.[ruleId];
-        if (!rule || rule.hidden) return '';
-
-        // Filter out weapon-specific rules AND invulnerable save
-        if (shouldHideRule(rule.name)) return '';
-
-        const isTruncated = rule.description.length > 150;
-        const truncatedText = truncateText(rule.description, 150);
-
-        return `
-          <div class="ability-item mb-2 ${isTruncated ? 'expandable' : ''}" data-expanded="false">
-            <strong>${rule.name}:</strong>
-            <span class="ability-description text-muted small">
-              <span class="truncated-text">${truncatedText}</span>
-              ${isTruncated ? `<span class="full-text" style="display: none;">${rule.description}</span>` : ''}
-            </span>
-            ${isTruncated ? '<span class="expand-icon ms-1">▼</span>' : ''}
-          </div>
-        `;
-      })
-      .filter(html => html !== '')
-      .join('');
-
-    if (rulesHTML) {
-      abilitiesHTML = `
-        <div class="unit-abilities mb-3 p-3 border-start border-primary border-3 bg-light">
-          <h6 class="text-primary mb-2">
-            <i class="bi bi-lightning-charge-fill"></i> Abilities & Rules
-          </h6>
-          ${rulesHTML}
-        </div>
-      `;
-    }
-  }
+  const abilitiesHTML = buildAbilitiesSection(unit, army);
 
   const attachedLeadersHTML = buildAttachedLeadersSection(unit, army);
   const leaderControlsHTML = buildLeaderAttachmentControls(unit, army);
