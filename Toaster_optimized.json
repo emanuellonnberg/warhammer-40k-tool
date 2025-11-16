@@ -1,0 +1,2732 @@
+{
+  "armyName": "Toaster",
+  "faction": "Cohort Cybernetica",
+  "pointsTotal": 2455,
+  "rules": {
+    "7a21-a958-e47d-5c0d": {
+      "id": "7a21-a958-e47d-5c0d",
+      "name": "Doctrina Imperatives",
+      "description": "At the start of the battle round, you can select one of the Doctrina Imperatives below. Until the end of the battle round, that Doctrina Imperative is active for your army, and all units from your army that have the Doctrina Imperatives ability gain the relevant abilities shown below.\n\nPROTECTOR IMPERATIVE\n■ Ranged weapons equipped by models in this unit have the [HEAVY] ability.\n■ Improve the Ballistic Skill characteristic of ranged weapons equipped by models in this unit by 1.\n■ Each time a melee attack targets this unit, if this unit has the Battleline keyword and/or it is within 6\" of one or more friendly Adeptus Mechanicus Battleline units, subtract 1 from the Hit roll.\n\nCONQUEROR IMPERATIVE\n■ Ranged weapons equipped by models in this unit have the [ASSAULT] ability.\n■ Improve the Weapon Skill characteristic of melee weapons equipped by models in this unit by 1.\n■ Each time a model in this unit makes an attack, if this unit has the Battleline keyword and/or it is within 6\" of one or more friendly Adeptus Mechanicus Battleline units, improve the Armour Penetration characteristic of that attack by 1.",
+      "hidden": false
+    },
+    "4111-82e3-9444-e942": {
+      "id": "4111-82e3-9444-e942",
+      "name": "Anti-",
+      "description": "Weapons with **[ANTI-KEYWORD X+]** in their profile are known as Anti weapons. Each time an attack is made with such a weapon against a target with the keyword after the word ‘Anti-’, an unmodified Wound roll of ‘x+’ scores a Critical Wound.",
+      "hidden": false
+    },
+    "be1e-ac8e-1e2c-3528": {
+      "id": "be1e-ac8e-1e2c-3528",
+      "name": "Devastating Wounds",
+      "description": "Weapons with **[DEVASTATING WOUNDS]** in their profile are known as Devastating Wounds weapons. Each time an attack is made with such a weapon, if that attack scores a Critical Wound, no saving throw of any kind can be made against that attack (including invulnerable saving throws). Such attacks are only allocated to models after all other attacks made by the attacking unit have been allocated and resolved. After that attack is allocated and after any modifiers are applied, it inflicts a number of mortal wounds on the target equal to the Damage characteristic of that attack, instead of inflicting damage normally.",
+      "hidden": false
+    },
+    "115b-79dc-f723-d761": {
+      "id": "115b-79dc-f723-d761",
+      "name": "Extra Attacks",
+      "description": "Weapons with **[EXTRA ATTACKS]** in their profile are known as Extra Attacks weapons. Each time the bearer of one or more Extra Attacks weapons fights, it makes attacks with each of the Extra Attacks melee weapons it is equipped with and it makes attacks with one of the melee weapons it is equipped with that does not have the [EXTRA ATTACKS] ability (if any). The number of attacks made with an Extra Attacks weapon cannot be modified by other rules, unless that weapon’s name is explicitly specified in that rule.",
+      "hidden": false
+    },
+    "6c1f-1cf7-ff25-c99e": {
+      "id": "6c1f-1cf7-ff25-c99e",
+      "name": "Blast",
+      "description": "Weapons with **[BLAST]** in their profile are known as Blast weapons, and they make a random number of attacks. Each time you determine how many attacks are made with a Blast weapon, add 1 to the result for every five models that were in the target unit when you selected it as the target (rounding down). Blast weapons can never be used to make attacks against a unit that is within Engagement Range of one or more units from the attacking model’s army (including its own unit).",
+      "hidden": false
+    },
+    "7cdb-fb99-44a9-8849": {
+      "id": "7cdb-fb99-44a9-8849",
+      "name": "Melta",
+      "description": "Weapons with **[MELTA X]** in their profile are known as Melta weapons. Each time an attack made with such a weapon targets a unit within half that weapon’s range, that attack’s Damage characteristic is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "b4dd-3e1f-41cb-218f": {
+      "id": "b4dd-3e1f-41cb-218f",
+      "name": "Leader",
+      "description": "While a Bodyguard unit contains a Leader, it is known as an Attached unit and, with the exception of rules that are triggered when units are destroyed (pg 12), it is treated as a single unit for all rules purposes. Each time an attack targets an Attached unit, until the attacking unit has resolved all of its attacks, you must use the Toughness characteristic of the Bodyguard models in that unit, even if a Leader in that unit has a different Toughness characteristic. Each time an attack successfully wounds an Attached unit, that attack cannot be allocated to a Character model in that unit, even if that Character model has lost one or more wounds or has already had attacks allocated to it this phase. As soon as the last Bodyguard model in an Attached unit has been destroyed, any attacks made against that unit that have yet to be allocated can then be allocated to Character models in that unit.\n\nEach time the last model in a Bodyguard unit is destroyed, each CHARACTER unit that is part of that Attached unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time the last model in a CHARACTER unit that is attached to a Bodyguard unit is destroyed and there is not another CHARACTER unit attached, that Attached unit’s Bodyguard unit becomes a separate unit, with its original Starting Strength. If this happens as the result of an attack, they become separate units after the attacking unit has resolved all of its attacks. \n\nEach time a unit that is part of an Attached unit is destroyed, it does not have the keywords of any other units that make up that Attached unit (unless it has those keywords on its own datasheet) for the purposes of any rules that would be triggered when that unit is destroyed.",
+      "hidden": false
+    },
+    "8bf7-8812-923d-29e4": {
+      "id": "8bf7-8812-923d-29e4",
+      "name": "Pistol",
+      "description": "Weapons with **[PISTOL]** in their profile are known as Pistols. If a unit contains any models equipped with Pistols, that unit is eligible to shoot in its controlling player’s Shooting phase even while it is within Engagement Range of one or more enemy units. When such a unit is selected to shoot, it can only resolve attacks using its Pistols and can only target one of the enemy units it is within Engagement Range of. In such circumstances, a Pistol can target an enemy unit even if other friendly units are within Engagement Range of the same enemy unit. \n\nIf a model is equipped with one or more Pistols, unless it is a **^^Monster^^** or **^^Vehicle^^** model, it can either shoot with its Pistols or with all of its other ranged weapons. Declare whether such a model will shoot with its Pistols or its other ranged weapons before selecting targets.",
+      "hidden": false
+    },
+    "1202-10a8-78e9-4c67": {
+      "id": "1202-10a8-78e9-4c67",
+      "name": "Heavy",
+      "description": "Weapons with **[HEAVY]** in their profile are known as Heavy weapons. Each time an attack is made with such a weapon, if the attacking model’s unit Remained Stationary this turn, add 1 to that attack’s Hit roll.",
+      "hidden": false
+    },
+    "ada6-bac1-ffe0-d6f7": {
+      "id": "ada6-bac1-ffe0-d6f7",
+      "name": "Scouts 6\"",
+      "description": "Some units have ‘Scouts x\"’ listed in their abilities. If every model in a unit has this ability, then at the start of the first battle round, before the first turn begins, it can make a Normal move of up to x\", with the exception that, while making that move, the distance moved by each model in that unit can be greater than that model's Move characteristic, as long as it is not greater than x\". \n\nDEDICATED TRANSPORT models can make use of any Scouts x\" ability listed in their abilities, or a Scouts x\" ability that a unit that starts the battle embarked within that DEDICATED TRANSPORT  model has (provided only models with this ability are embarked within that Dedicated Transport model), regardless of how that embarked unit gained this ability (e.g. listed in their abilities, conferred by an Enhancement or by an attached Character, etc.). \n\nA unit that moves using this ability must end that move more than 9\" horizontally away from all enemy models. If both players have units that can do this, the player who is taking the first turn moves their units first.",
+      "hidden": false
+    },
+    "c5c8-8b58-b8b6-7786": {
+      "id": "c5c8-8b58-b8b6-7786",
+      "name": "Rapid Fire",
+      "description": "Weapons with **[RAPID FIRE X]** in their profile are known as Rapid Fire weapons. Each time such a weapon targets a unit within half that weapon’s range, the Attacks characteristic of that weapon is increased by the amount denoted by ‘x’.",
+      "hidden": false
+    },
+    "4640-43e7-30b-215a": {
+      "id": "4640-43e7-30b-215a",
+      "name": "Ignores Cover",
+      "description": "Weapons with **[IGNORES COVER]** in their profile are known as Ignores Cover weapons. Each time an attack is made with such a weapon, the target cannot have the Benefit of Cover against that attack.",
+      "hidden": false
+    },
+    "b68a-5ded-65ac-98c": {
+      "id": "b68a-5ded-65ac-98c",
+      "name": "Deadly Demise 1",
+      "description": "Some models have 'Deadly Demise x' listed in their abilities. When such a model is destroyed, roll one D6 before removing it from play (if such a model is a TRANSPORT, roll before any embarked models disembark). On a 6, each unit within 6\" of that model suffers a number of mortal wounds denoted by 'x' (if this is a random number, roll separately for each unit within 6\").",
+      "hidden": false
+    },
+    "cf93-ad4d-2f08-a79d": {
+      "id": "cf93-ad4d-2f08-a79d",
+      "name": "Twin-linked",
+      "description": "Weapons with **[TWIN-LINKED]** in their profile are known as Twin-linked weapons. Each time an attack is made with such a weapon, you can re-roll that attack’s Wound roll.",
+      "hidden": false
+    },
+    "5edf-d619-23e0-9b56": {
+      "id": "5edf-d619-23e0-9b56",
+      "name": "Torrent",
+      "description": "Weapons with **[TORRENT]** in their profile are known as Torrent weapons. Each time an attack is made with such a weapon, that attack automatically hits the target.",
+      "hidden": false
+    }
+  },
+  "abilities": {
+    "9e99-0aa1-2c11-33ca": {
+      "id": "9e99-0aa1-2c11-33ca",
+      "name": "Canticles of the Omnissiah",
+      "description": "At the start of your Command phase, select one of the abilities in the Canticles of the Omnissiah section. Until the start of your next Command phase, this model has that ability.\n\nInvocation of Machine Vengeance (Aura): At the start of your Command phase, select one unit from your opponent’s army. Until the start of your next Command phase, that enemy unit is your Machine Vengeance target. Each time a model in a friendly Adeptus Mechanicus unit makes an attack that targets your Machine Vengeance target, you can re‑roll the Hit roll.\n\nMantra of Discipline:  This model has the Battleline keyword and has the following ability:\nBinharic Courage (Aura): While a friendly Adeptus Mechanicus unit is within 6\" of this model, add 1 to the Objective Control characteristic of models in that unit and each time you take a Battle-shock or Leadership test for that unit, add 1 to that test.’\n\nShroudpsalm (Aura): While a friendly Adeptus Mechanicus unit is within 6\" of this model, that unit has the Stealth ability."
+    },
+    "f172-384f-e1fa-d656": {
+      "id": "f172-384f-e1fa-d656",
+      "name": "Mechanicus Bodyguard",
+      "description": "While this model is within 3\" of one or more other friendly ADEPTUS MECHANICUS units, this model has the Lone Operative ability."
+    },
+    "26a7-711f-28f6-7044": {
+      "id": "26a7-711f-28f6-7044",
+      "name": "Self-repair Mechanisms",
+      "description": "At the start of your Command phase, this model regains up to D3 lost wounds."
+    },
+    "e1b2-f5c3-ae98-8b11": {
+      "id": "e1b2-f5c3-ae98-8b11",
+      "name": "Invulnerable Save",
+      "description": "This model has a 4+ invulnerable save."
+    },
+    "dba5-946a-cd1c-0845": {
+      "id": "dba5-946a-cd1c-0845",
+      "name": "Leader",
+      "description": "This model must be attached to the following unit:\n■ Kastelan Robots\n\nYou must attach this model to a Kastelan Robots unit, even if one or more other Cybernetica Datasmith models havealready been attached to it. In such cases, if that bodyguard unit is destroyed, the Leader units attached to it become separate units with their original Starting Strengths. If you cannot attach this model to a Kastelan Robots unit, this model cannot be deployed and counts as having been destroyed during the first battle round. While attached to a Kastelan Robots unit, this model loses the INFANTRY keyword."
+    },
+    "4016-04e6-9751-89e3": {
+      "id": "4016-04e6-9751-89e3",
+      "name": "Battle Protocols",
+      "description": "At the start of the battle, if this model is leading a Kastelan Robots unit, that unit enters Aegis Protocols (see below). In your Command phase, if this model is leading a Kastelan Robots unit, you can select one protocol from those listed below for that unit to enter. Once a unit enters a protocol, it remains in that protocol until it enters a different one\n■ Protector Protocol: Add 2 to the Attacks characteristic of ranged weapons equipped by Kastelan Robot models in that unit.\n■ Conqueror Protocol: Add 2 to the Attacks characteristic of melee weapons equipped by Kastelan Robot models in that unit.\n■ Aegis Protocol: Add 1 to the Toughness characteristic of Kastelan Robot models in that unit."
+    },
+    "36a4-bcd8-eb27-5481": {
+      "id": "36a4-bcd8-eb27-5481",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "4fe6-68c7-06d7-e127": {
+      "id": "4fe6-68c7-06d7-e127",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n■ Corpuscarii Electro-Priests\n■ Fulgurite Electro-Priests\n■ Kataphron Breachers\n■ Kataphron Destroyers\n■ Skitarii Rangers\n■ Skitarii Vanguard"
+    },
+    "822f-619f-808a-972d": {
+      "id": "822f-619f-808a-972d",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "2d2c-3eb8-963e-c75a": {
+      "id": "2d2c-3eb8-963e-c75a",
+      "name": "Lord of the Machine Cult",
+      "description": "While this model is leading a unit, models in that unit have the Feel No Pain 5+ ability. If that unit has the Electro-Priests keyword, models in that unit have the Feel No Pain 4+ ability instead"
+    },
+    "01b2-8ea8-4fc1-dbe7": {
+      "id": "01b2-8ea8-4fc1-dbe7",
+      "name": "Data-spike",
+      "description": "At the start of the Fight phase, you can select one enemy Vehicle unit within Engagement Range of this model’s unit and roll one D6: on a 4+, that enemy unit suffers D6 mortal wounds and, until the end of the phase, the Weapon Skill characteristic of melee weapons equipped by that enemy unit is worsened by 1."
+    },
+    "3325-e5c9-4448-7650": {
+      "id": "3325-e5c9-4448-7650",
+      "name": "Enginseer",
+      "description": "While this model is within 3\" of one or more friendly Adeptus Mechanicus Vehicle units, unless it is leading a unit, this model has the Lone Operative ability."
+    },
+    "0b5b-a6e8-c618-7ea8": {
+      "id": "0b5b-a6e8-c618-7ea8",
+      "name": "Omnissiah's Blessing",
+      "description": "In your Command phase, select one friendly Adeptus Mechanicus model within 3\" of this model. That model regains up to D3 lost wounds and, if it is a Vehicle model, until the start of your next Command phase, that model has the Feel No Pain 5+ ability. Each model can only be selected for this ability once per Command phase"
+    },
+    "2aab-7d64-4e7c-6899": {
+      "id": "2aab-7d64-4e7c-6899",
+      "name": "Vengeance for the Omnissiah",
+      "description": "If a friendly Adeptus Mechanicus Vehicle model is destroyed within 12\" of this model, until the end of the battle, this model’s Omnissian axe has an Attacks characteristic of 6."
+    },
+    "e575-a2a0-3c80-d030": {
+      "id": "e575-a2a0-3c80-d030",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "caa6-2932-0474-188f": {
+      "id": "caa6-2932-0474-188f",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n■ Corpuscarii Electro-Priests\n■ Fulgurite Electro-Priests\n■ Kataphron Breachers\n■ Kataphron Destroyers\n■ Servitors\n■ Skitarii Rangers\n■ Skitarii Vanguard"
+    },
+    "8d0a-5057-6456-bc0f": {
+      "id": "8d0a-5057-6456-bc0f",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "259a-6380-dd29-8ae0": {
+      "id": "259a-6380-dd29-8ae0",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n■ Corpuscarii Electro-Priests\n■ Fulgurite Electro-Priests\n■ Kataphron Breachers\n■ Kataphron Destroyers\n■ Skitarii Rangers\n■ Skitarii Vanguard"
+    },
+    "0572-a04a-1973-cbab": {
+      "id": "0572-a04a-1973-cbab",
+      "name": "Galvanic Field",
+      "description": "While this model is leading a unit, weapons equipped by models in that unit have the [Lethal Hits] ability."
+    },
+    "fda2-046d-2f2f-a407": {
+      "id": "fda2-046d-2f2f-a407",
+      "name": "Defend the Divine Work",
+      "description": "Once per battle, at the start of any phase, this model can use this ability. If it does, until the  end of the phase, all models in this model’s unit have a 4+ invulnerable save."
+    },
+    "3563-43ab-8fce-31a4": {
+      "id": "3563-43ab-8fce-31a4",
+      "name": "Invulnerable Save",
+      "description": "This model has a 5+ invulnerable save."
+    },
+    "c6a9-d89f-8266-8300": {
+      "id": "c6a9-d89f-8266-8300",
+      "name": "Seekers of Divine Arcana",
+      "description": "While this model is leading a unit, add 1 to the Objective Control characteristic of models in that unit."
+    },
+    "a7f5-2184-53d9-7724": {
+      "id": "a7f5-2184-53d9-7724",
+      "name": "Cogitative Instincts",
+      "description": "Enemy units that are set up on the battlefield as Reinforcements cannot be set up within 12\" horizontally of this model."
+    },
+    "637e-1885-2f50-3afc": {
+      "id": "637e-1885-2f50-3afc",
+      "name": "Leader",
+      "description": "This model can be attached to the following units:\n■ Corpuscarii Electro-Priests\n■ Fulgurite Electro-Priests\n■ Kataphron Breachers\n■ Kataphron Destroyers\n■ Skitarii Rangers\n■ Skitarii Vanguard"
+    },
+    "3d74-3888-b3ba-d044": {
+      "id": "3d74-3888-b3ba-d044",
+      "name": "Objective Scouted",
+      "description": "At the end of your Command phase, if this unit is within range of an objective marker you control, that objective marker remains under your control, even if you have no models within range of it, until your opponent controls it at the start or end of any turn."
+    },
+    "8c24-fbe9-b191-175f": {
+      "id": "8c24-fbe9-b191-175f",
+      "name": "Invulnerable Save",
+      "description": "Models in this unit have a 5+ invulnerable save."
+    },
+    "a266-2033-d72e-eddd": {
+      "id": "a266-2033-d72e-eddd",
+      "name": "Rad-saturation (Aura)",
+      "description": "While an enemy unit (excluding Vehicle units) is within 3\" of this unit, subtract 1 from the Objective Control characteristic of models in that unit."
+    },
+    "2621-1ced-08ff-1612": {
+      "id": "2621-1ced-08ff-1612",
+      "name": "Breaching Command",
+      "description": "Each time a model in this unit makes an attack, re-roll a Hit roll of 1. While this unit is within 6” of one or more friendly Adeptus Mechanicus Battleline units, you can re-roll the Hit  roll instead."
+    },
+    "a69c-5871-1d48-08ca": {
+      "id": "a69c-5871-1d48-08ca",
+      "name": "Invulnerable Save",
+      "description": "Models in this unit have a 6+ invulnerable save."
+    },
+    "c5be-9cdf-008d-3b05": {
+      "id": "c5be-9cdf-008d-3b05",
+      "name": "Sentinel Directive",
+      "description": "Each time you target this unit with the Fire Overwatch Stratagem, hits are scored on unmodified Hit rolls of 5+ when resolving that Stratagem."
+    },
+    "fc60-9298-b124-f453": {
+      "id": "fc60-9298-b124-f453",
+      "name": "Invulnerable Save",
+      "description": "Models in this unit have a 6+ invulnerable save."
+    },
+    "6482-3035-fed5-27d0": {
+      "id": "6482-3035-fed5-27d0",
+      "name": "Robotic Bodyguard",
+      "description": "While a Cybernetica Datasmith model is leading this unit, that model has the Feel No Pain 4+ ability."
+    },
+    "e6fd-24cc-9af1-16b6": {
+      "id": "e6fd-24cc-9af1-16b6",
+      "name": "Repulsor Grid",
+      "description": "Each time a ranged attack is allocated to a Kastelan Robot model in this unit, on an unmodified saving throw of 6, the attacking unit suffers 1 mortal wound after it has finished making its attacks."
+    }
+  },
+  "units": [
+    {
+      "id": "5m50zpr",
+      "name": "Belisarius Cawl",
+      "type": "Epic Hero",
+      "stats": {
+        "move": "8\"",
+        "toughness": "8",
+        "save": "2+",
+        "wounds": "10",
+        "leadership": "6+",
+        "objectiveControl": "3"
+      },
+      "points": 175,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "e4be-19e1-54b-d219",
+          "name": "Arc Scourge",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "2+",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+, Devastating Wounds, Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f04a-c6ee-6971-f7da",
+          "name": "Cawl's Omnissian axe",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "2+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "7a81-a490-ee0-ffdd",
+          "name": "Mechadendrite hive",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2D6",
+            "ws": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2fd0-1925-e091-75ef",
+          "name": "Solar atomiser",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "2+",
+            "s": "14",
+            "ap": "-4",
+            "d": "D6",
+            "keywords": "Melta 3"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "be1e-ac8e-1e2c-3528",
+        "115b-79dc-f723-d761",
+        "6c1f-1cf7-ff25-c99e",
+        "7cdb-fb99-44a9-8849"
+      ],
+      "abilities": [
+        "9e99-0aa1-2c11-33ca",
+        "f172-384f-e1fa-d656",
+        "26a7-711f-28f6-7044",
+        "e1b2-f5c3-ae98-8b11"
+      ]
+    },
+    {
+      "id": "vy52wmu",
+      "name": "Cybernetica Datasmith",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "2+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 35,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "43ca-9255-d4f5-3962",
+          "name": "Mechanicus pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Devastating Wounds, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "86b1-36b9-ac98-eee4",
+          "name": "Power fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "be1e-ac8e-1e2c-3528",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "dba5-946a-cd1c-0845",
+        "4016-04e6-9751-89e3",
+        "36a4-bcd8-eb27-5481"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Kastelan Robots"
+      ]
+    },
+    {
+      "id": "710gxod",
+      "name": "Cybernetica Datasmith",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "2+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 35,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "43ca-9255-d4f5-3962",
+          "name": "Mechanicus pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Devastating Wounds, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "86b1-36b9-ac98-eee4",
+          "name": "Power fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "be1e-ac8e-1e2c-3528",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "dba5-946a-cd1c-0845",
+        "4016-04e6-9751-89e3",
+        "36a4-bcd8-eb27-5481"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Kastelan Robots"
+      ]
+    },
+    {
+      "id": "jea4k0e",
+      "name": "Cybernetica Datasmith",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "2+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 35,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "43ca-9255-d4f5-3962",
+          "name": "Mechanicus pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Devastating Wounds, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "86b1-36b9-ac98-eee4",
+          "name": "Power fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "3+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "be1e-ac8e-1e2c-3528",
+        "8bf7-8812-923d-29e4"
+      ],
+      "abilities": [
+        "dba5-946a-cd1c-0845",
+        "4016-04e6-9751-89e3",
+        "36a4-bcd8-eb27-5481"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Kastelan Robots"
+      ]
+    },
+    {
+      "id": "8k0lcas",
+      "name": "Tech-Priest Dominus",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "2+",
+        "wounds": "4",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 65,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "3dc8-2740-24c0-d7a4",
+          "name": "Omnissian axe",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b263-d554-9189-e6c4",
+          "name": "Macrostubber",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "5",
+            "bs": "3+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "2537-6387-ba31-8ad2",
+          "name": "Volkite blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "3",
+            "bs": "3+",
+            "s": "5",
+            "ap": "0",
+            "d": "2",
+            "keywords": "Devastating Wounds"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "8bf7-8812-923d-29e4",
+        "be1e-ac8e-1e2c-3528"
+      ],
+      "abilities": [
+        "4fe6-68c7-06d7-e127",
+        "822f-619f-808a-972d",
+        "2d2c-3eb8-963e-c75a",
+        "01b2-8ea8-4fc1-dbe7"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Corpuscarii Electro-Priests",
+        "Fulgurite Electro-Priests",
+        "Kataphron Breachers",
+        "Kataphron Destroyers",
+        "Skitarii Rangers",
+        "Skitarii Vanguard"
+      ]
+    },
+    {
+      "id": "u4onf34",
+      "name": "Tech-Priest Enginseer",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 55,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "43ca-9255-d4f5-3962",
+          "name": "Mechanicus pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Devastating Wounds, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "bc1e-a354-d8ac-f13b",
+          "name": "Omnissian axe",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "6",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "f5e3-4584-7337-1424",
+          "name": "Servo arm",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "4+",
+            "s": "6",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Extra Attacks"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "be1e-ac8e-1e2c-3528",
+        "8bf7-8812-923d-29e4",
+        "115b-79dc-f723-d761"
+      ],
+      "abilities": [
+        "3325-e5c9-4448-7650",
+        "0b5b-a6e8-c618-7ea8",
+        "2aab-7d64-4e7c-6899",
+        "e575-a2a0-3c80-d030",
+        "caa6-2932-0474-188f"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Corpuscarii Electro-Priests",
+        "Fulgurite Electro-Priests",
+        "Kataphron Breachers",
+        "Kataphron Destroyers",
+        "Servitors",
+        "Skitarii Rangers",
+        "Skitarii Vanguard"
+      ]
+    },
+    {
+      "id": "dzfg2f",
+      "name": "Tech-Priest Manipulus",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "2+",
+        "wounds": "4",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 60,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "512d-4eee-4920-f919",
+          "name": "Omnissian staff",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "57ef-daee-9ff1-3799",
+          "name": "Magnarail lance",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "7",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Heavy"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "1202-10a8-78e9-4c67"
+      ],
+      "abilities": [
+        "8d0a-5057-6456-bc0f",
+        "259a-6380-dd29-8ae0",
+        "0572-a04a-1973-cbab",
+        "fda2-046d-2f2f-a407"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Corpuscarii Electro-Priests",
+        "Fulgurite Electro-Priests",
+        "Kataphron Breachers",
+        "Kataphron Destroyers",
+        "Skitarii Rangers",
+        "Skitarii Vanguard"
+      ]
+    },
+    {
+      "id": "1fyqkmnj",
+      "name": "Technoarcheologist",
+      "type": "Character",
+      "stats": {
+        "move": "6\"",
+        "toughness": "4",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 45,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "43ca-9255-d4f5-3962",
+          "name": "Mechanicus pistol",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "1",
+            "bs": "3+",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Devastating Wounds, Pistol"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "4b3d-3803-42d2-a628",
+          "name": "Servo-arc claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "3",
+            "ws": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Anti-Vehicle 4+, Devastating Wounds"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        }
+      ],
+      "rules": [
+        "b4dd-3e1f-41cb-218f",
+        "7a21-a958-e47d-5c0d",
+        "be1e-ac8e-1e2c-3528",
+        "8bf7-8812-923d-29e4",
+        "4111-82e3-9444-e942"
+      ],
+      "abilities": [
+        "3563-43ab-8fce-31a4",
+        "c6a9-d89f-8266-8300",
+        "a7f5-2184-53d9-7724",
+        "637e-1885-2f50-3afc"
+      ],
+      "isLeader": true,
+      "leaderOptions": [
+        "Corpuscarii Electro-Priests",
+        "Fulgurite Electro-Priests",
+        "Kataphron Breachers",
+        "Kataphron Destroyers",
+        "Skitarii Rangers",
+        "Skitarii Vanguard"
+      ]
+    },
+    {
+      "id": "b3g2k8d",
+      "name": "Skitarii Rangers",
+      "type": "Battleline",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 85,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d317-6ae2-d64a-5831",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "641d-a705-abc0-b4ff",
+          "name": "Galvanic rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "db1c-cc92-e358-9c80",
+          "name": "Galvanic rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "4",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 9,
+          "models_with_weapon": 9
+        }
+      ],
+      "rules": [
+        "ada6-bac1-ffe0-d6f7",
+        "7a21-a958-e47d-5c0d"
+      ],
+      "abilities": [
+        "3d74-3888-b3ba-d044",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "b7jb8t",
+          "name": "Skitarii Ranger Alpha",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "641d-a705-abc0-b4ff",
+              "name": "Galvanic rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ]
+        },
+        {
+          "id": "b91yu6o",
+          "name": "Skitarii Ranger w/ galvanic rifle",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 9,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "db1c-cc92-e358-9c80",
+              "name": "Galvanic rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "4",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3ruf9z",
+      "name": "Skitarii Vanguard",
+      "type": "Battleline",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 95,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d317-6ae2-d64a-5831",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "c990-c32-898f-760f",
+          "name": "Radium carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Infantry 4+"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b4c5-eb75-b38d-7ce9",
+          "name": "Radium carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Infantry 4+"
+          },
+          "count": 9,
+          "models_with_weapon": 9
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942"
+      ],
+      "abilities": [
+        "a266-2033-d72e-eddd",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "3tlysbt",
+          "name": "Skitarii Vanguard Alpha",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c990-c32-898f-760f",
+              "name": "Radium carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "3",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Infantry 4+"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942"
+          ]
+        },
+        {
+          "id": "3t151i",
+          "name": "Skitarii Vanguard w/ radium carbine",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 9,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "b4c5-eb75-b38d-7ce9",
+              "name": "Radium carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "3",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Infantry 4+"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yc8w3pa",
+      "name": "Skitarii Vanguard",
+      "type": "Battleline",
+      "stats": {
+        "move": "6\"",
+        "toughness": "3",
+        "save": "4+",
+        "wounds": "1",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 95,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d317-6ae2-d64a-5831",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "1",
+            "ws": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 10,
+          "models_with_weapon": 10
+        },
+        {
+          "id": "c990-c32-898f-760f",
+          "name": "Radium carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Infantry 4+"
+          },
+          "count": 1,
+          "models_with_weapon": 1
+        },
+        {
+          "id": "b4c5-eb75-b38d-7ce9",
+          "name": "Radium carbine",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "18\"",
+            "a": "3",
+            "bs": "4+",
+            "s": "3",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Anti-Infantry 4+"
+          },
+          "count": 9,
+          "models_with_weapon": 9
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942"
+      ],
+      "abilities": [
+        "a266-2033-d72e-eddd",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "yge7xf",
+          "name": "Skitarii Vanguard Alpha",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "c990-c32-898f-760f",
+              "name": "Radium carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "3",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Infantry 4+"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942"
+          ]
+        },
+        {
+          "id": "yjhqwab",
+          "name": "Skitarii Vanguard w/ radium carbine",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 9,
+          "weapons": [
+            {
+              "id": "d317-6ae2-d64a-5831",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "1",
+                "ws": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            },
+            {
+              "id": "b4c5-eb75-b38d-7ce9",
+              "name": "Radium carbine",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "18\"",
+                "a": "3",
+                "bs": "4+",
+                "s": "3",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Anti-Infantry 4+"
+              },
+              "count": 9,
+              "models_with_weapon": 9
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ngc3hsd",
+      "name": "Kataphron Breachers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "7",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 320,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "948a-a4a9-21a4-f157",
+          "name": "Arc claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "9a2-c43-5b3-4d4",
+          "name": "Heavy arc rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "e0e5-a0c2-975d-227a",
+          "name": "Hydraulic claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "-"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "f4a5-9d1d-2718-62e5",
+          "name": "Torsion cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "36\"",
+            "a": "D3",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-2",
+            "d": "2",
+            "keywords": "Anti-Infantry 2+, Blast"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "c5c8-8b58-b8b6-7786",
+        "6c1f-1cf7-ff25-c99e"
+      ],
+      "abilities": [
+        "2621-1ced-08ff-1612",
+        "a69c-5871-1d48-08ca"
+      ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
+      "models": [
+        {
+          "id": "njlznzv",
+          "name": "Kataphron Breacher (Heavy arc rifle & arc claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "948a-a4a9-21a4-f157",
+              "name": "Arc claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "9a2-c43-5b3-4d4",
+              "name": "Heavy arc rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        },
+        {
+          "id": "76agn3e",
+          "name": "Kataphron Breacher (Heavy arc rifle & hydraulic claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "9a2-c43-5b3-4d4",
+              "name": "Heavy arc rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "e0e5-a0c2-975d-227a",
+              "name": "Hydraulic claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ],
+          "rules": [
+            "c5c8-8b58-b8b6-7786",
+            "4111-82e3-9444-e942"
+          ]
+        },
+        {
+          "id": "vovsxya",
+          "name": "Kataphron Breacher (Torsion cannon & arc claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "948a-a4a9-21a4-f157",
+              "name": "Arc claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "f4a5-9d1d-2718-62e5",
+              "name": "Torsion cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "D3",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Anti-Infantry 2+, Blast"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "6c1f-1cf7-ff25-c99e"
+          ]
+        },
+        {
+          "id": "z1478uj",
+          "name": "Kataphron Breacher (Torsion cannon & hydraulic claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 1,
+          "weapons": [
+            {
+              "id": "e0e5-a0c2-975d-227a",
+              "name": "Hydraulic claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "-"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            },
+            {
+              "id": "f4a5-9d1d-2718-62e5",
+              "name": "Torsion cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "36\"",
+                "a": "D3",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-2",
+                "d": "2",
+                "keywords": "Anti-Infantry 2+, Blast"
+              },
+              "count": 1,
+              "models_with_weapon": 1
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "6c1f-1cf7-ff25-c99e"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nqkpx8a",
+      "name": "Kataphron Breachers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "7",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 160,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "948a-a4a9-21a4-f157",
+          "name": "Arc claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "9a2-c43-5b3-4d4",
+          "name": "Heavy arc rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "2621-1ced-08ff-1612",
+        "a69c-5871-1d48-08ca"
+      ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
+      "models": [
+        {
+          "id": "o23for3",
+          "name": "Kataphron Breacher (Heavy arc rifle & arc claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "948a-a4a9-21a4-f157",
+              "name": "Arc claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "9a2-c43-5b3-4d4",
+              "name": "Heavy arc rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f42x5g",
+      "name": "Kataphron Breachers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "7",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 160,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "948a-a4a9-21a4-f157",
+          "name": "Arc claw",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "5",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Anti-Vehicle 4+"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "9a2-c43-5b3-4d4",
+          "name": "Heavy arc rifle",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "2",
+            "bs": "4+",
+            "s": "8",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "2621-1ced-08ff-1612",
+        "a69c-5871-1d48-08ca"
+      ],
+      "unitRerolls": {
+        "hits": "ones"
+      },
+      "models": [
+        {
+          "id": "f8p7p1",
+          "name": "Kataphron Breacher (Heavy arc rifle & arc claw)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "948a-a4a9-21a4-f157",
+              "name": "Arc claw",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "5",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Anti-Vehicle 4+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "9a2-c43-5b3-4d4",
+              "name": "Heavy arc rifle",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "2",
+                "bs": "4+",
+                "s": "8",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Anti-Vehicle 4+, Rapid Fire 2"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "a9wyfa",
+      "name": "Kataphron Destroyers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "6",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 105,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "ac8d-b2fc-bc36-7f44",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "8e99-ee8c-b37f-68c9",
+          "name": "Heavy grav-cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Anti-Vehicle 2+"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "b68a-a1fc-da45-a62a",
+          "name": "Phosphor blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Ignores Cover, Rapid Fire 1"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "4640-43e7-30b-215a",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "c5be-9cdf-008d-3b05",
+        "fc60-9298-b124-f453"
+      ],
+      "models": [
+        {
+          "id": "acpnyuk",
+          "name": "Kataphron Destroyer (Heavy grav-cannon & phosphor blaster)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "ac8d-b2fc-bc36-7f44",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "8e99-ee8c-b37f-68c9",
+              "name": "Heavy grav-cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "Anti-Vehicle 2+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "b68a-a1fc-da45-a62a",
+              "name": "Phosphor blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Rapid Fire 1"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "4640-43e7-30b-215a",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "19x1u3g",
+      "name": "Kataphron Destroyers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "6",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 105,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "ac8d-b2fc-bc36-7f44",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "8e99-ee8c-b37f-68c9",
+          "name": "Heavy grav-cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Anti-Vehicle 2+"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "b68a-a1fc-da45-a62a",
+          "name": "Phosphor blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Ignores Cover, Rapid Fire 1"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "4640-43e7-30b-215a",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "c5be-9cdf-008d-3b05",
+        "fc60-9298-b124-f453"
+      ],
+      "models": [
+        {
+          "id": "1k2j61",
+          "name": "Kataphron Destroyer (Heavy grav-cannon & phosphor blaster)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "ac8d-b2fc-bc36-7f44",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "8e99-ee8c-b37f-68c9",
+              "name": "Heavy grav-cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "Anti-Vehicle 2+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "b68a-a1fc-da45-a62a",
+              "name": "Phosphor blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Rapid Fire 1"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "4640-43e7-30b-215a",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "y2lhgok",
+      "name": "Kataphron Destroyers",
+      "type": "Infantry",
+      "stats": {
+        "move": "5\"",
+        "toughness": "6",
+        "save": "3+",
+        "wounds": "3",
+        "leadership": "7+",
+        "objectiveControl": "1"
+      },
+      "points": 105,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "ac8d-b2fc-bc36-7f44",
+          "name": "Close combat weapon",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "2",
+            "ws": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "-"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "8e99-ee8c-b37f-68c9",
+          "name": "Heavy grav-cannon",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "30\"",
+            "a": "4",
+            "bs": "4+",
+            "s": "6",
+            "ap": "-1",
+            "d": "2",
+            "keywords": "Anti-Vehicle 2+"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        },
+        {
+          "id": "b68a-a1fc-da45-a62a",
+          "name": "Phosphor blaster",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "24\"",
+            "a": "1",
+            "bs": "4+",
+            "s": "5",
+            "ap": "0",
+            "d": "1",
+            "keywords": "Ignores Cover, Rapid Fire 1"
+          },
+          "count": 3,
+          "models_with_weapon": 3
+        }
+      ],
+      "rules": [
+        "7a21-a958-e47d-5c0d",
+        "4111-82e3-9444-e942",
+        "4640-43e7-30b-215a",
+        "c5c8-8b58-b8b6-7786"
+      ],
+      "abilities": [
+        "c5be-9cdf-008d-3b05",
+        "fc60-9298-b124-f453"
+      ],
+      "models": [
+        {
+          "id": "y6roe5",
+          "name": "Kataphron Destroyer (Heavy grav-cannon & phosphor blaster)",
+          "type": "Unknown",
+          "stats": {
+            "move": "",
+            "toughness": "",
+            "save": "",
+            "wounds": "",
+            "leadership": "",
+            "objectiveControl": ""
+          },
+          "points": 0,
+          "count": 3,
+          "weapons": [
+            {
+              "id": "ac8d-b2fc-bc36-7f44",
+              "name": "Close combat weapon",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "2",
+                "ws": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "-"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "8e99-ee8c-b37f-68c9",
+              "name": "Heavy grav-cannon",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "30\"",
+                "a": "4",
+                "bs": "4+",
+                "s": "6",
+                "ap": "-1",
+                "d": "2",
+                "keywords": "Anti-Vehicle 2+"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            },
+            {
+              "id": "b68a-a1fc-da45-a62a",
+              "name": "Phosphor blaster",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "24\"",
+                "a": "1",
+                "bs": "4+",
+                "s": "5",
+                "ap": "0",
+                "d": "1",
+                "keywords": "Ignores Cover, Rapid Fire 1"
+              },
+              "count": 3,
+              "models_with_weapon": 3
+            }
+          ],
+          "rules": [
+            "4111-82e3-9444-e942",
+            "4640-43e7-30b-215a",
+            "c5c8-8b58-b8b6-7786"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6a1r96a",
+      "name": "Kastelan Robots",
+      "type": "Vehicle",
+      "stats": {
+        "move": "6\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "7",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 360,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d6de-8435-ad2c-340b",
+          "name": "Twin Kastelan fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "12",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Twin-linked"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        },
+        {
+          "id": "966d-b280-9a0b-f66e",
+          "name": "Incendine combustor",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 4,
+          "models_with_weapon": 4
+        }
+      ],
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7a21-a958-e47d-5c0d",
+        "cf93-ad4d-2f08-a79d",
+        "4640-43e7-30b-215a",
+        "5edf-d619-23e0-9b56"
+      ],
+      "abilities": [
+        "6482-3035-fed5-27d0",
+        "e6fd-24cc-9af1-16b6",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "6dzuc4k",
+          "name": "Kastelan Robot",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "9",
+            "save": "2+",
+            "wounds": "7",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 4,
+          "weapons": [
+            {
+              "id": "d6de-8435-ad2c-340b",
+              "name": "Twin Kastelan fist",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "12",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            },
+            {
+              "id": "966d-b280-9a0b-f66e",
+              "name": "Incendine combustor",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 4,
+              "models_with_weapon": 4
+            }
+          ],
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "esnmlqa",
+      "name": "Kastelan Robots",
+      "type": "Vehicle",
+      "stats": {
+        "move": "6\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "7",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 180,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d6de-8435-ad2c-340b",
+          "name": "Twin Kastelan fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "12",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "966d-b280-9a0b-f66e",
+          "name": "Incendine combustor",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ],
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7a21-a958-e47d-5c0d",
+        "cf93-ad4d-2f08-a79d",
+        "4640-43e7-30b-215a",
+        "5edf-d619-23e0-9b56"
+      ],
+      "abilities": [
+        "6482-3035-fed5-27d0",
+        "e6fd-24cc-9af1-16b6",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "ev6mba7f",
+          "name": "Kastelan Robot",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "9",
+            "save": "2+",
+            "wounds": "7",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "d6de-8435-ad2c-340b",
+              "name": "Twin Kastelan fist",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "12",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "966d-b280-9a0b-f66e",
+              "name": "Incendine combustor",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ],
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pps3pq",
+      "name": "Kastelan Robots",
+      "type": "Vehicle",
+      "stats": {
+        "move": "6\"",
+        "toughness": "9",
+        "save": "2+",
+        "wounds": "7",
+        "leadership": "7+",
+        "objectiveControl": "2"
+      },
+      "points": 180,
+      "count": 1,
+      "weapons": [
+        {
+          "id": "d6de-8435-ad2c-340b",
+          "name": "Twin Kastelan fist",
+          "type": "Melee Weapons",
+          "characteristics": {
+            "range": "Melee",
+            "a": "4",
+            "ws": "4+",
+            "s": "12",
+            "ap": "-2",
+            "d": "3",
+            "keywords": "Twin-linked"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        },
+        {
+          "id": "966d-b280-9a0b-f66e",
+          "name": "Incendine combustor",
+          "type": "Ranged Weapons",
+          "characteristics": {
+            "range": "12\"",
+            "a": "D6",
+            "bs": "N/A",
+            "s": "6",
+            "ap": "-1",
+            "d": "1",
+            "keywords": "Ignores Cover, Torrent"
+          },
+          "count": 2,
+          "models_with_weapon": 2
+        }
+      ],
+      "rules": [
+        "b68a-5ded-65ac-98c",
+        "7a21-a958-e47d-5c0d",
+        "cf93-ad4d-2f08-a79d",
+        "4640-43e7-30b-215a",
+        "5edf-d619-23e0-9b56"
+      ],
+      "abilities": [
+        "6482-3035-fed5-27d0",
+        "e6fd-24cc-9af1-16b6",
+        "8c24-fbe9-b191-175f"
+      ],
+      "models": [
+        {
+          "id": "prvju36",
+          "name": "Kastelan Robot",
+          "type": "Unknown",
+          "stats": {
+            "move": "6\"",
+            "toughness": "9",
+            "save": "2+",
+            "wounds": "7",
+            "leadership": "7+",
+            "objectiveControl": "2"
+          },
+          "points": 0,
+          "count": 2,
+          "weapons": [
+            {
+              "id": "d6de-8435-ad2c-340b",
+              "name": "Twin Kastelan fist",
+              "type": "Melee Weapons",
+              "characteristics": {
+                "range": "Melee",
+                "a": "4",
+                "ws": "4+",
+                "s": "12",
+                "ap": "-2",
+                "d": "3",
+                "keywords": "Twin-linked"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            },
+            {
+              "id": "966d-b280-9a0b-f66e",
+              "name": "Incendine combustor",
+              "type": "Ranged Weapons",
+              "characteristics": {
+                "range": "12\"",
+                "a": "D6",
+                "bs": "N/A",
+                "s": "6",
+                "ap": "-1",
+                "d": "1",
+                "keywords": "Ignores Cover, Torrent"
+              },
+              "count": 2,
+              "models_with_weapon": 2
+            }
+          ],
+          "rules": [
+            "cf93-ad4d-2f08-a79d",
+            "4640-43e7-30b-215a",
+            "5edf-d619-23e0-9b56"
+          ]
+        }
+      ]
+    }
+  ],
+  "attachments": {}
+}

@@ -1054,7 +1054,8 @@ export function calculateStats(original: RosterData, optimized: Army): {
   };
 }
 
-// UI Event Handlers
+// UI Event Handlers (browser-only)
+if (typeof document !== 'undefined') {
 document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('dropZone') as HTMLDivElement;
   const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -1244,3 +1245,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+}
