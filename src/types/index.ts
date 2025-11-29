@@ -52,6 +52,18 @@ export interface AttachedLeaderInfo {
   abilities?: string[];
 }
 
+export interface UnitModelProfile {
+  id: string;
+  name: string;
+  type: string;
+  stats: UnitStats;
+  points: number;
+  count: number;
+  rules?: string[];
+  abilities?: string[];
+  weapons?: Weapon[];
+}
+
 export interface AttackModifiers {
   hit?: number;
   wound?: number;
@@ -80,6 +92,7 @@ export interface Unit {
   points: number;
   count: number;
   weapons: Weapon[];
+  models?: UnitModelProfile[];
   linked_weapons?: {
     [key: string]: {
       standard: string | null;

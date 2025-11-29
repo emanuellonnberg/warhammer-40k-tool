@@ -721,10 +721,18 @@
 <body>
     <div class="container mt-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0">40K Unit Efficiency Analysis <small class="text-muted">v2.0</small></h1>
-            <a href="converter.html" class="btn btn-outline-primary">
-                <i class="bi bi-file-earmark-arrow-up"></i> Convert Roster
-            </a>
+            <div>
+                <h1 class="mb-0">40K Unit Efficiency Analysis <small class="text-muted">v2.0</small></h1>
+                <small class="text-muted">Analyzing: <strong id="currentArmyName">Loading...</strong></small>
+            </div>
+            <div class="btn-group" role="group">
+                <a href="battle-sim.html" class="btn btn-primary" id="battleSimBtn">
+                    <i class="bi bi-controller"></i> Battle Simulator
+                </a>
+                <a href="converter.html" class="btn btn-outline-primary">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Converter
+                </a>
+            </div>
         </div>
 
         <!-- Collapsible Control Panel -->
@@ -853,6 +861,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 

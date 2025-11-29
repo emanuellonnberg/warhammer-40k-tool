@@ -9,7 +9,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
-        converter: './converter.html'
+        converter: './converter.html',
+        battleSim: './battle-sim.html'
       }
     }
   },

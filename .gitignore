@@ -31,3 +31,9 @@ yarn-error.log*
 *.swo
 *.swn
 .DS_Store 
+
+# Local rule references
+rules/*.pdf
+
+# Downloaded node binaries
+node-v*/

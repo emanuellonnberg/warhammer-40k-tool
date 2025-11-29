@@ -6,6 +6,11 @@ import type { Army, AttachmentMap, RerollConfig, Unit } from './types';
 import { RerollType } from './types';
 import { displayAnalysisResults, setupWeaponModeToggles } from './ui';
 import { applyLeaderAttachments } from './utils/leader';
+import {
+  saveCurrentArmy,
+  savePreferences,
+  openBattleSimulator
+} from './utils/app-state';
 
 /**
  * Setup accordion state persistence
@@ -56,7 +61,8 @@ function saveAccordionState() {
   const state: { [key: string]: boolean } = {
     combatScenarioCollapse: document.getElementById('combatScenarioCollapse')?.classList.contains('show') || false,
     weaponOptionsCollapse: document.getElementById('weaponOptionsCollapse')?.classList.contains('show') || false,
-    armySelectionCollapse: document.getElementById('armySelectionCollapse')?.classList.contains('show') || false
+    armySelectionCollapse: document.getElementById('armySelectionCollapse')?.classList.contains('show') || false,
+    battleSimCollapse: document.getElementById('battleSimCollapse')?.classList.contains('show') || false
   };
   localStorage.setItem('accordionState', JSON.stringify(state));
 }
@@ -80,6 +86,7 @@ async function main() {
     const armyFileSelect = document.getElementById('armyFile') as HTMLSelectElement;
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const battleSimBtn = document.getElementById('battleSimBtn');
 
     if (!toughnessSelect || !overchargeToggle || !oneTimeWeaponsToggle || !optimalRangeToggle ||
         !rerollHitsSelect || !rerollWoundsSelect || !targetFNPSelect ||
@@ -385,8 +392,10 @@ async function main() {
       try {
         currentArmy = await loadArmyData(armyFileSelect.value);
         leaderAttachments = resolveInitialAttachments(currentArmy);
+        saveCurrentArmy(currentArmy, leaderAttachments);
         persistAttachmentState();
         updateDisplay(true); // Reset weapon modes when loading new army
+        updateArmyNameDisplay();
       } catch (error) {
         console.error('Error loading army file:', error);
         alert('Error loading army file. Please check the console for details.');
@@ -414,8 +423,10 @@ async function main() {
           try {
             currentArmy = await loadArmyData(file);
             leaderAttachments = resolveInitialAttachments(currentArmy);
+            saveCurrentArmy(currentArmy, leaderAttachments);
             persistAttachmentState();
             updateDisplay(true); // Reset weapon modes when loading new army
+            updateArmyNameDisplay();
           } catch (error) {
             console.error('Error loading dropped file:', error);
             alert('Error loading file. Please check the console for details.');
@@ -437,8 +448,10 @@ async function main() {
         try {
           currentArmy = await loadArmyData(files[0]);
           leaderAttachments = resolveInitialAttachments(currentArmy);
+          saveCurrentArmy(currentArmy, leaderAttachments);
           persistAttachmentState();
           updateDisplay(true); // Reset weapon modes when loading new army
+          updateArmyNameDisplay();
         } catch (error) {
           console.error('Error loading selected file:', error);
           alert('Error loading file. Please check the console for details.');
@@ -446,14 +459,58 @@ async function main() {
       }
     });
 
+    // Helper function to update army name display
+    function updateArmyNameDisplay() {
+      const nameEl = document.getElementById('currentArmyName');
+      if (nameEl && currentArmy) {
+        const armyName = currentArmy.armyName || 'Unknown Army';
+        const points = currentArmy.pointsTotal || 0;
+        nameEl.textContent = `${armyName} (${points} pts)`;
+      }
+    }
+
     // Add event listeners for analysis parameters
-    toughnessSelect.addEventListener('change', updateDisplay);
-    overchargeToggle.addEventListener('change', updateDisplay);
-    oneTimeWeaponsToggle.addEventListener('change', updateDisplay);
-    optimalRangeToggle.addEventListener('change', updateDisplay);
-    rerollHitsSelect.addEventListener('change', updateDisplay);
-    rerollWoundsSelect.addEventListener('change', updateDisplay);
-    targetFNPSelect.addEventListener('change', updateDisplay);
+    toughnessSelect.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ targetToughness: parseInt(toughnessSelect.value) });
+    });
+    overchargeToggle.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ useOvercharge: overchargeToggle.checked });
+    });
+    oneTimeWeaponsToggle.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ includeOneTimeWeapons: oneTimeWeaponsToggle.checked });
+    });
+    optimalRangeToggle.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ optimalRange: optimalRangeToggle.checked });
+    });
+    rerollHitsSelect.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ rerollHits: rerollHitsSelect.value as RerollType });
+    });
+    rerollWoundsSelect.addEventListener('change', () => {
+      updateDisplay();
+      savePreferences({ rerollWounds: rerollWoundsSelect.value as RerollType });
+    });
+    targetFNPSelect.addEventListener('change', () => {
+      updateDisplay();
+      const fnpValue = targetFNPSelect.value ? parseInt(targetFNPSelect.value) : undefined;
+      savePreferences({ targetFNP: fnpValue });
+    });
+
+    // Battle Simulator button
+    battleSimBtn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (!currentArmy) {
+        alert('Please load an army first!');
+        return;
+      }
+      // Use current army for both sides (TypeScript knows currentArmy is not null here)
+      const army = currentArmy;
+      openBattleSimulator(army, army, leaderAttachments, leaderAttachments);
+    });
 
     // Load initial army data
     try {
@@ -465,6 +522,7 @@ async function main() {
         // Load the converted army from localStorage
         currentArmy = JSON.parse(convertedArmyData);
         leaderAttachments = resolveInitialAttachments(currentArmy);
+        saveCurrentArmy(currentArmy, leaderAttachments);
         persistAttachmentState();
 
         // Clear the localStorage after loading
@@ -487,10 +545,12 @@ async function main() {
         // Load default army from dropdown
         currentArmy = await loadArmyData(armyFileSelect.value);
         leaderAttachments = resolveInitialAttachments(currentArmy);
+        saveCurrentArmy(currentArmy, leaderAttachments);
         persistAttachmentState();
       }
 
       updateDisplay(true); // Reset weapon modes on initial load
+      updateArmyNameDisplay();
     } catch (error) {
       console.error('Error loading initial army data:', error);
       const resultsDiv = document.getElementById('analysis-results');

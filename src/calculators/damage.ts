@@ -64,6 +64,7 @@ function combineIdenticalWeapons(weapons: Weapon[]): Weapon[] {
  * @param unitRerolls - Unit-wide re-roll abilities
  * @param scenarioRerolls - Scenario-based re-rolls (from buffs, stratagems, etc.)
  * @param targetFNP - Target's Feel No Pain value (e.g., 5 for 5+, 6 for 6+)
+ * @param unitModifiers - Unit-wide hit/wound modifiers
  * @returns Expected damage value
  */
 export function calculateWeaponDamage(
@@ -76,10 +77,10 @@ export function calculateWeaponDamage(
   targetUnitSize: number = 1,
   isCharging: boolean = false,
   targetSave: string | null = null,
-  unitModifiers?: AttackModifiers,
   unitRerolls?: RerollConfig,
   scenarioRerolls?: RerollConfig,
-  targetFNP?: number
+  targetFNP?: number,
+  unitModifiers?: AttackModifiers
 ): number {
   // Skip one-time weapons if not included
   if (isOneTimeWeapon(weapon) && !includeOneTimeWeapons) {
@@ -253,10 +254,10 @@ export function calculateUnitDamage(
         targetUnitSize,
         isCharging,
         targetSave,
-        unit.unitModifiers,
         unit.unitRerolls,
         scenarioRerolls,
-        targetFNP
+        targetFNP,
+        unit.unitModifiers
       );
 
       // Track one-time weapon damage separately
@@ -292,10 +293,10 @@ export function calculateUnitDamage(
         targetUnitSize,
         isCharging,
         targetSave,
-        unit.unitModifiers,
         unit.unitRerolls,
         scenarioRerolls,
-        targetFNP
+        targetFNP,
+        unit.unitModifiers
       );
 
       // Track one-time weapon damage separately
@@ -329,10 +330,10 @@ export function calculateUnitDamage(
         targetUnitSize,
         isCharging,
         targetSave,
-        unit.unitModifiers,
         unit.unitRerolls,
         scenarioRerolls,
-        targetFNP
+        targetFNP,
+        unit.unitModifiers
       );
 
       // Track one-time weapon damage separately

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Simulator - 40K Unit Efficiency</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        /* Enhanced Color Palette - CSS Variables */
+        :root {
+            /* Primary Colors */
+            --primary-blue: #1e88e5;
+            --primary-dark: #0d47a1;
+            --primary-light: #e3f2fd;
+
+            /* Efficiency Colors */
+            --high-efficiency: #43a047;
+            --medium-efficiency: #fb8c00;
+            --low-efficiency: #e53935;
+
+            /* Neutral Colors */
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --text-disabled: #bdbdbd;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --divider: #e0e0e0;
+
+            /* Army Colors */
+            --army-a-color: #1f77b4;
+            --army-b-color: #d62728;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 16px rgba(0,0,0,0.2);
+
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-normal: 200ms ease;
+            --transition-slow: 300ms ease;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+        }
+
+        body {
+            background-color: var(--background);
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .page-header small {
+            opacity: 0.9;
+        }
+
+        .army-selector-card {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .army-selector-card.army-a {
+            border-left-color: var(--army-a-color);
+        }
+
+        .army-selector-card.army-b {
+            border-left-color: var(--army-b-color);
+        }
+
+        .army-info {
+            background: var(--primary-light);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .army-info h5 {
+            color: var(--primary-dark);
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .army-info .stat {
+            display: inline-block;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .config-panel {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .battlefield-container {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #battlefieldSvg {
+            width: 100%;
+            height: auto;
+            border: 1px solid var(--divider);
+            border-radius: 4px;
+        }
+
+        .timeline-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .phase-indicator {
+            padding: 0.5rem 1rem;
+            background: var(--primary-light);
+            border-radius: 6px;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .results-panel {
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+        }
+
+        .sim-log {
+            max-height: 400px;
+            overflow-y: auto;
+            background: var(--background);
+            border-radius: 4px;
+            padding: 1rem;
+        }
+
+        .sim-log ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sim-log li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--divider);
+        }
+
+        .sim-log li:last-child {
+            border-bottom: none;
+        }
+
+        .sim-move-entry, .sim-action-entry {
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: var(--transition-fast);
+            display: inline-block;
+        }
+
+        .sim-move-entry:hover, .sim-action-entry:hover {
+            background: var(--primary-light);
+        }
+
+        .sim-move-entry.active, .sim-action-entry.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .summary-card {
+            background: var(--primary-light);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .summary-card.winner {
+            background: #c8e6c9;
+            border: 2px solid var(--high-efficiency);
+        }
+
+        .summary-card.loser {
+            background: #ffcdd2;
+            border: 2px solid var(--low-efficiency);
+        }
+
+        .unit-table {
+            font-size: 0.9rem;
+        }
+
+        .unit-table th {
+            background: var(--background);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #6c757d;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            margin-top: 0.75rem;
+        }
+
+        .drop-zone:hover {
+            border-color: #0d6efd;
+            background-color: #e9ecef;
+        }
+
+        .drop-zone.dragover {
+            border-color: #198754;
+            background-color: #d1e7dd;
+        }
+
+        .drop-zone-content i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Sticky header for results */
+        .sticky-controls {
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 100;
+            padding: 1rem 0;
+            margin: -1.5rem -1.5rem 1rem -1.5rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 2px solid var(--divider);
+        }
+
+        .alert-info {
+            background-color: var(--primary-light);
+            border-color: var(--primary-blue);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .text-primary {
+            color: var(--primary-blue) !important;
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        h5 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1rem 0;
+            }
+
+            .battlefield-container {
+                padding: 1rem;
+            }
+
+            .timeline-controls {
+                flex-direction: column;
+            }
+
+            .phase-indicator {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1>⚔️ Battle Simulator <small class="text-white-50">v2.0 Alpha</small></h1>
+                    <small id="battleMatchup">Load armies to begin</small>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="index.html" class="btn btn-light">
+                        <i class="bi bi-graph-up"></i> Analyzer
+                    </a>
+                    <a href="converter.html" class="btn btn-outline-light">
+                        <i class="bi bi-file-earmark-arrow-up"></i> Converter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Army Selection Row -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="army-selector-card army-a">
+                    <h3><i class="bi bi-shield-fill"></i> Army A</h3>
+                    <select id="armyASelect" class="form-select mb-2">
+                        <option value="">Select Army A...</option>
+                        <option value="800popti.json">T'au - 800 Points Optimized</option>
+                        <option value="all_models_opt.json">T'au - All Models Optimized</option>
+                        <option value="sunforges_opt.json">T'au - Sunforges Optimized</option>
+                        <option value="800p army.json">T'au - 800 Points Army</option>
+                        <option value="knights_optimized.json">Imperial Knights - Optimized</option>
+                        <option value="knights.json">Imperial Knights</option>
+                        <option value="belakor_demons_opt.json">Chaos Demons - Be'lakor Optimized</option>
+                        <option value="emperors_children.json">Emperor's Children</option>
+                        <option value="sisters_opt.json">Adepta Sororitas - Optimized</option>
+                        <option value="Toaster_optimized.json">Adeptus Mechanicus - Toaster Optimized</option>
+                    </select>
+                    <div id="armyAInfo" class="army-info" style="display: none;"></div>
+                    <div id="dropZoneA" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <i class="bi bi-cloud-upload"></i>
+                            <p>Or drag & drop custom army JSON</p>
+                            <input type="file" id="fileInputA" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="army-selector-card army-b">
+                    <h3><i class="bi bi-shield-fill"></i> Army B (Opponent)</h3>
+                    <select id="armyBSelect" class="form-select mb-2">
+                        <option value="">Select Army B...</option>
+                        <option value="800popti.json">T'au - 800 Points Optimized</option>
+                        <option value="all_models_opt.json">T'au - All Models Optimized</option>
+                        <option value="sunforges_opt.json">T'au - Sunforges Optimized</option>
+                        <option value="800p army.json">T'au - 800 Points Army</option>
+                        <option value="knights_optimized.json">Imperial Knights - Optimized</option>
+                        <option value="knights.json">Imperial Knights</option>
+                        <option value="belakor_demons_opt.json">Chaos Demons - Be'lakor Optimized</option>
+                        <option value="emperors_children.json">Emperor's Children</option>
+                        <option value="sisters_opt.json">Adepta Sororitas - Optimized</option>
+                        <option value="Toaster_optimized.json">Adeptus Mechanicus - Toaster Optimized</option>
+                    </select>
+                    <div id="armyBInfo" class="army-info" style="display: none;"></div>
+                    <div id="dropZoneB" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <i class="bi bi-cloud-upload"></i>
+                            <p>Or drag & drop custom army JSON</p>
+                            <input type="file" id="fileInputB" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Panel -->
+        <div class="row">
+            <div class="col-12">
+                <div class="config-panel">
+                    <h3><i class="bi bi-gear-fill"></i> Battle Configuration</h3>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="startingDistance" class="form-label">Starting Distance ("):</label>
+                            <input type="number" id="startingDistance" class="form-control" min="6" step="1" placeholder="Auto">
+                            <small class="text-muted" id="autoDistanceText">Auto: calculated from army size</small>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="initiative" class="form-label">Initiative:</label>
+                            <select id="initiative" class="form-select">
+                                <option value="armyA">Army A goes first</option>
+                                <option value="armyB">Army B goes first</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="maxRounds" class="form-label">Max Battle Rounds:</label>
+                            <input type="number" id="maxRounds" class="form-control" min="1" max="5" value="3">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label d-block">&nbsp;</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="includeOneTimeWeapons">
+                                <label class="form-check-label" for="includeOneTimeWeapons">
+                                    Include one-time weapons
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="allowAdvance" checked>
+                                <label class="form-check-label" for="allowAdvance">
+                                    Allow Advance (no shooting unless Assault)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="randomCharge">
+                                <label class="form-check-label" for="randomCharge">
+                                    Random charge rolls (2D6 instead of fixed 7")
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-primary btn-lg" id="runSimButton">
+                                <i class="bi bi-play-fill"></i> Run Battle Simulation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section (initially hidden) -->
+        <div id="resultsSection" style="display: none;">
+            <!-- Battlefield Visualization -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="battlefield-container">
+                        <div class="sticky-controls">
+                            <div class="timeline-controls">
+                                <button class="btn btn-sm btn-outline-secondary" id="prevPhaseBtn">
+                                    <i class="bi bi-chevron-left"></i> Previous
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" id="nextPhaseBtn">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" id="showAllBtn">
+                                    <i class="bi bi-list"></i> Show All
+                                </button>
+                                <div class="phase-indicator" id="phaseIndicator">
+                                    Battle Round 1
+                                </div>
+                                <button class="btn btn-sm btn-success" id="rerunSimBtn">
+                                    <i class="bi bi-arrow-repeat"></i> Re-run
+                                </button>
+                            </div>
+                        </div>
+                        <div id="battlefieldVisualization"></div>
+                        <div id="unitStatesTable" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results and Logs -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="results-panel">
+                        <h3><i class="bi bi-journal-text"></i> Battle Log</h3>
+                        <div class="sim-log" id="battleLog"></div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="results-panel">
+                        <h3><i class="bi bi-trophy-fill"></i> Battle Summary</h3>
+                        <div id="battleSummary"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/src/battle-sim.ts"></script>
+</body>
+</html>
