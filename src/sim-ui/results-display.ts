@@ -81,7 +81,23 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
       const tooltipText = tooltipParts.join(' | ');
       const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
 
-      const label = `${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg`;
+      // Build casualty information for display
+      const casualtyParts: string[] = [];
+      if (action.modelsKilled !== undefined && action.modelsKilled > 0) {
+        casualtyParts.push(`<span class="text-danger">💀 ${action.modelsKilled} killed</span>`);
+      }
+      if (action.damagePerModel !== undefined) {
+        casualtyParts.push(`${action.damagePerModel.toFixed(1)} dmg/model`);
+      }
+      if (action.remainingWounds !== undefined && action.remainingWounds > 0) {
+        casualtyParts.push(`<span class="text-warning">⚠️ ${action.remainingWounds.toFixed(1)}W remaining on damaged model</span>`);
+      }
+      if (action.totalModelsInUnit !== undefined) {
+        casualtyParts.push(`(${action.totalModelsInUnit} models left)`);
+      }
+      const casualtyText = casualtyParts.length > 0 ? ` — ${casualtyParts.join(', ')}` : '';
+
+      const label = `${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg${casualtyText}`;
       return `<li class="sim-action-item"><span class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${label}</span></li>`;
     }).join('');
     return `<ul class="sim-attack-list mb-1 ps-3">${items}</ul>`;
@@ -167,7 +183,23 @@ export function renderActionLog(result: SimulationResult, phaseIndex: number, ar
         const tooltipText = tooltipParts.join(' | ');
         const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
 
-        return `<div class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg</div>`;
+        // Build casualty information for display
+        const casualtyParts: string[] = [];
+        if (action.modelsKilled !== undefined && action.modelsKilled > 0) {
+          casualtyParts.push(`<span class="text-danger">💀 ${action.modelsKilled} killed</span>`);
+        }
+        if (action.damagePerModel !== undefined) {
+          casualtyParts.push(`${action.damagePerModel.toFixed(1)} dmg/model`);
+        }
+        if (action.remainingWounds !== undefined && action.remainingWounds > 0) {
+          casualtyParts.push(`<span class="text-warning">⚠️ ${action.remainingWounds.toFixed(1)}W remaining</span>`);
+        }
+        if (action.totalModelsInUnit !== undefined) {
+          casualtyParts.push(`(${action.totalModelsInUnit} models left)`);
+        }
+        const casualtyText = casualtyParts.length > 0 ? ` — ${casualtyParts.join(', ')}` : '';
+
+        return `<div class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg${casualtyText}</div>`;
       }).join('');
       return `<li><strong>${header}</strong>${actionHtml}</li>`;
     }).join('');

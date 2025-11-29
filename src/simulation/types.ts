@@ -54,6 +54,11 @@ export interface ActionLog {
   failedSaves?: number;
   mortalWounds?: number;
   distance?: number;
+  // Casualty details from this specific attack
+  modelsKilled?: number;
+  damagePerModel?: number;
+  remainingWounds?: number;  // Wounds left on a partially damaged model
+  totalModelsInUnit?: number; // Total models in defender unit after attack
 }
 
 export interface MovementDetail {
