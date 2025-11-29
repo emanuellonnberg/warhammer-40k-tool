@@ -161,7 +161,12 @@ function expectedShootingDamage(attacker: UnitState, defenderToughness: number, 
   ).total;
 }
 
-function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog[]): void {
+function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog[]): {
+  modelsKilled: number;
+  damagePerModel: number;
+  remainingWoundsOnDamagedModel: number;
+  totalModelsInUnit: number;
+} {
   const woundsPerModel = parseInt(target.unit.stats.wounds || '1', 10);
   const beforeModels = target.remainingModels;
   let woundsRemaining = target.remainingWounds - damage;
@@ -172,13 +177,24 @@ function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog
   target.remainingModels = Math.max(0, modelsRemaining);
   updateModelLife(target);
 
-  if (casualties && beforeModels > target.remainingModels) {
+  const modelsKilled = beforeModels - target.remainingModels;
+  const damagePerModel = beforeModels > 0 ? damage / beforeModels : 0;
+  const remainingWoundsOnDamagedModel = woundsRemaining % woundsPerModel;
+
+  if (casualties && modelsKilled > 0) {
     casualties.push({
       unitId: target.unit.id,
       unitName: target.unit.name,
-      modelsLost: beforeModels - target.remainingModels
+      modelsLost: modelsKilled
     });
   }
+
+  return {
+    modelsKilled,
+    damagePerModel,
+    remainingWoundsOnDamagedModel,
+    totalModelsInUnit: target.remainingModels
+  };
 }
 
 /**
@@ -548,7 +564,7 @@ function expectedShootingDamageBatch(
 
       if (!candidates.length) return;
       const best = candidates[0];
-      applyDamage(best.def, best.dmg, casualties);
+      const casualtyDetails = applyDamage(best.def, best.dmg, casualties);
       total += best.dmg;
       actions?.push({
         attackerId: attacker.unit.id,
@@ -556,7 +572,13 @@ function expectedShootingDamageBatch(
         defenderId: best.def.unit.id,
         defenderName: best.def.unit.name,
         damage: best.dmg,
-        phase: 'shooting'
+        phase: 'shooting',
+        weaponName: weapon.name,
+        distance: best.dist,
+        modelsKilled: casualtyDetails.modelsKilled,
+        damagePerModel: casualtyDetails.damagePerModel,
+        remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
+        totalModelsInUnit: casualtyDetails.totalModelsInUnit
       });
 
       // remove defender if dead
@@ -586,10 +608,11 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
       }))
       .sort((a, b) => b.dmg - a.dmg)[0];
 
-    const inRange = distanceBetween(attacker, best.def) <= 1.1 || attacker.engaged;
+    const dist = distanceBetween(attacker, best.def);
+    const inRange = dist <= 1.1 || attacker.engaged;
 
     if (best && best.dmg > 0 && inRange) {
-      applyDamage(best.def, best.dmg, casualties);
+      const casualtyDetails = applyDamage(best.def, best.dmg, casualties);
       total += best.dmg;
       actions?.push({
         attackerId: attacker.unit.id,
@@ -597,7 +620,13 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
         defenderId: best.def.unit.id,
         defenderName: best.def.unit.name,
         damage: best.dmg,
-        phase: 'melee'
+        phase: 'melee',
+        weaponName: 'Melee',
+        distance: dist,
+        modelsKilled: casualtyDetails.modelsKilled,
+        damagePerModel: casualtyDetails.damagePerModel,
+        remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
+        totalModelsInUnit: casualtyDetails.totalModelsInUnit
       });
 
       if (best.def.remainingModels <= 0) {
