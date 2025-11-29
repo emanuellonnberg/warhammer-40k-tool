@@ -470,41 +470,53 @@
 
         <!-- Results Section (initially hidden) -->
         <div id="resultsSection" style="display: none;">
-            <!-- Battlefield Visualization -->
-            <div class="row">
+            <!-- Controls -->
+            <div class="row mb-3">
                 <div class="col-12">
-                    <div class="battlefield-container">
-                        <div class="sticky-controls">
-                            <div class="timeline-controls">
-                                <button class="btn btn-sm btn-outline-secondary" id="prevPhaseBtn">
-                                    <i class="bi bi-chevron-left"></i> Previous
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="nextPhaseBtn">
-                                    Next <i class="bi bi-chevron-right"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="showAllBtn">
-                                    <i class="bi bi-list"></i> Show All
-                                </button>
-                                <div class="phase-indicator" id="phaseIndicator">
-                                    Battle Round 1
-                                </div>
-                                <button class="btn btn-sm btn-success" id="rerunSimBtn">
-                                    <i class="bi bi-arrow-repeat"></i> Re-run
-                                </button>
+                    <div class="sticky-controls">
+                        <div class="timeline-controls">
+                            <button class="btn btn-sm btn-outline-secondary" id="prevPhaseBtn">
+                                <i class="bi bi-chevron-left"></i> Previous
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="nextPhaseBtn">
+                                Next <i class="bi bi-chevron-right"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" id="showAllBtn">
+                                <i class="bi bi-list"></i> Show All
+                            </button>
+                            <div class="phase-indicator" id="phaseIndicator">
+                                Battle Round 1
                             </div>
+                            <button class="btn btn-sm btn-success" id="rerunSimBtn">
+                                <i class="bi bi-arrow-repeat"></i> Re-run
+                            </button>
                         </div>
-                        <div id="battlefieldVisualization"></div>
-                        <div id="unitStatesTable" class="mt-3"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Results and Logs -->
+            <!-- Side-by-side: Battlefield and Battle Log -->
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="results-panel">
+                <div class="col-lg-6">
+                    <div class="battlefield-container">
+                        <h3><i class="bi bi-map"></i> Battlefield</h3>
+                        <div id="battlefieldVisualization"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="results-panel" style="height: 600px; display: flex; flex-direction: column;">
                         <h3><i class="bi bi-journal-text"></i> Battle Log</h3>
-                        <div class="sim-log" id="battleLog"></div>
+                        <div class="sim-log" id="battleLog" style="flex: 1; max-height: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit States and Summary below -->
+            <div class="row mt-3">
+                <div class="col-lg-8">
+                    <div class="battlefield-container">
+                        <h4><i class="bi bi-clipboard-data"></i> Unit States</h4>
+                        <div id="unitStatesTable"></div>
                     </div>
                 </div>
                 <div class="col-lg-4">

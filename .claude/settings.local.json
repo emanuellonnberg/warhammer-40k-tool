@@ -5,7 +5,17 @@
       "Bash(python:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npx vite build)",
+      "Bash(npm run dev:*)",
+      "Bash(npx vite)",
+      "Bash(./node_modules/.bin/vite)",
+      "Bash(cat:*)",
+      "Bash(npm install:*)",
+      "Bash(git reset:*)",
+      "Bash(git push)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

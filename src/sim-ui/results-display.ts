@@ -32,6 +32,61 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };
 
+  // Helper to get unit positions and armies for attacks
+  const timelineByPhase = new Map<number, any>();
+  result.positionsTimeline?.forEach(entry => {
+    timelineByPhase.set(entry.phaseIndex, entry);
+  });
+
+  const armyByUnitId = new Map<string, 'armyA' | 'armyB'>();
+  result.armyAState.units.forEach(u => armyByUnitId.set(u.unit.id, 'armyA'));
+  result.armyBState.units.forEach(u => armyByUnitId.set(u.unit.id, 'armyB'));
+
+  const findUnitPosition = (phaseIndexValue: number, unitId: string, armyHint?: 'armyA' | 'armyB') => {
+    const snapshot = timelineByPhase.get(phaseIndexValue);
+    if (!snapshot) return null;
+    const search = (list: typeof snapshot.armyA, army: 'armyA' | 'armyB') => {
+      const unit = list.find((u: any) => u.unitId === unitId);
+      return unit ? { x: unit.x, y: unit.y, remaining: unit.remaining, army } : null;
+    };
+    if (armyHint) {
+      const candidate = armyHint === 'armyA' ? search(snapshot.armyA, 'armyA') : search(snapshot.armyB, 'armyB');
+      if (candidate) return candidate;
+    }
+    return search(snapshot.armyA, 'armyA') || search(snapshot.armyB, 'armyB');
+  };
+
+  const renderAttackDetails = (actions: typeof entry.log.actions, phaseIndex: number) => {
+    if (!actions || !actions.length) return '';
+    const items = actions.map(action => {
+      const attackerArmy = armyByUnitId.get(action.attackerId);
+      const defenderArmy = armyByUnitId.get(action.defenderId);
+      const attackerPos = findUnitPosition(phaseIndex, action.attackerId, attackerArmy);
+      const defenderPos = findUnitPosition(phaseIndex, action.defenderId, defenderArmy);
+
+      const attr = (pos: ReturnType<typeof findUnitPosition>, prefix: 'attacker' | 'defender') => {
+        if (!pos) return '';
+        return `data-${prefix}-x="${pos.x.toFixed(2)}" data-${prefix}-y="${pos.y.toFixed(2)}" data-${prefix}-army="${pos.army}"`;
+      };
+      const dataAttrs = `${attr(attackerPos, 'attacker')} ${attr(defenderPos, 'defender')}`.trim();
+
+      // Build tooltip with damage breakdown
+      const tooltipParts: string[] = [];
+      if (action.weaponName) tooltipParts.push(`Weapon: ${action.weaponName}`);
+      if (action.distance !== undefined) tooltipParts.push(`Range: ${action.distance.toFixed(1)}"`);
+      if (action.hits !== undefined) tooltipParts.push(`Hits: ${action.hits.toFixed(1)}`);
+      if (action.wounds !== undefined) tooltipParts.push(`Wounds: ${action.wounds.toFixed(1)}`);
+      if (action.failedSaves !== undefined) tooltipParts.push(`Failed Saves: ${action.failedSaves.toFixed(1)}`);
+      if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipParts.push(`Mortal Wounds: ${action.mortalWounds.toFixed(1)}`);
+      const tooltipText = tooltipParts.join(' | ');
+      const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
+
+      const label = `${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg`;
+      return `<li class="sim-action-item"><span class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${label}</span></li>`;
+    }).join('');
+    return `<ul class="sim-attack-list mb-1 ps-3">${items}</ul>`;
+  };
+
   const sequentialLogs = visibleEntries.map(entry => {
     const log = entry.log;
     const stats: string[] = [];
@@ -43,7 +98,8 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
       ? `<br><em>Casualties:</em> ${log.casualties.map(c => `${c.unitName} -${c.modelsLost}`).join(', ')}`
       : '';
     const movementList = log.phase === 'movement' ? renderMovementDetails(log.movementDetails) : '';
-    return `<li><strong>${formatPhaseHeader(log)}</strong>: ${log.description}${statsText}${casualtiesText}${movementList}</li>`;
+    const attackList = (log.phase === 'shooting' || log.phase === 'melee') ? renderAttackDetails(log.actions, entry.index) : '';
+    return `<li><strong>${formatPhaseHeader(log)}</strong>: ${log.description}${statsText}${casualtiesText}${movementList}${attackList}</li>`;
   }).join('');
 
   return `<ul>${sequentialLogs}</ul>`;
@@ -99,7 +155,19 @@ export function renderActionLog(result: SimulationResult, phaseIndex: number, ar
           return `data-${prefix}-x="${pos.x.toFixed(2)}" data-${prefix}-y="${pos.y.toFixed(2)}" data-${prefix}-army="${pos.army}"`;
         };
         const dataAttrs = `${attr(attackerPos, 'attacker')} ${attr(defenderPos, 'defender')}`.trim();
-        return `<div class="sim-action-entry" role="button" tabindex="0" ${dataAttrs}>${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg</div>`;
+
+        // Build detailed tooltip with damage breakdown
+        const tooltipParts: string[] = [];
+        if (action.weaponName) tooltipParts.push(`Weapon: ${action.weaponName}`);
+        if (action.distance !== undefined) tooltipParts.push(`Range: ${action.distance.toFixed(1)}"`);
+        if (action.hits !== undefined) tooltipParts.push(`Hits: ${action.hits.toFixed(1)}`);
+        if (action.wounds !== undefined) tooltipParts.push(`Wounds: ${action.wounds.toFixed(1)}`);
+        if (action.failedSaves !== undefined) tooltipParts.push(`Failed Saves: ${action.failedSaves.toFixed(1)}`);
+        if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipParts.push(`Mortal Wounds: ${action.mortalWounds.toFixed(1)}`);
+        const tooltipText = tooltipParts.join(' | ');
+        const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
+
+        return `<div class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg</div>`;
       }).join('');
       return `<li><strong>${header}</strong>${actionHtml}</li>`;
     }).join('');

@@ -47,6 +47,13 @@ export interface ActionLog {
   defenderName: string;
   damage: number;
   phase: PhaseType;
+  // Optional detailed breakdown for tooltips
+  weaponName?: string;
+  hits?: number;
+  wounds?: number;
+  failedSaves?: number;
+  mortalWounds?: number;
+  distance?: number;
 }
 
 export interface MovementDetail {
