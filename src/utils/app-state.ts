@@ -61,7 +61,7 @@ function getDefaultBattleSimConfig(): BattleSimConfig {
     initiative: 'armyA',
     allowAdvance: true,
     randomCharge: false,
-    maxRounds: 3
+    maxRounds: 5
   };
 }
 
