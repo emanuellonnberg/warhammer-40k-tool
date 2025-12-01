@@ -30,6 +30,10 @@ export interface UnitState {
   advanced?: boolean;
   fellBack?: boolean;
   roleLabel?: string;
+  // Reserves tracking
+  inReserves?: boolean;
+  reserveType?: 'deep-strike' | 'strategic-reserves';
+  arrivedTurn?: number; // Track which turn the unit arrived from reserves
 }
 
 export interface ArmyState {
@@ -54,11 +58,24 @@ export interface ActionLog {
   failedSaves?: number;
   mortalWounds?: number;
   distance?: number;
+  // Weapon characteristics for detailed tooltip
+  attacks?: number;
+  skill?: string;
+  strength?: number;
+  ap?: number;
+  damageCharacteristic?: string;
+  // Target stats
+  targetToughness?: number;
+  targetSave?: string;
   // Casualty details from this specific attack
   modelsKilled?: number;
   damagePerModel?: number;
   remainingWounds?: number;  // Wounds left on a partially damaged model
   totalModelsInUnit?: number; // Total models in defender unit after attack
+  // Weapon ability results
+  lethalHits?: number;
+  sustainedHits?: number;
+  devastatingWounds?: number;
 }
 
 export interface MovementDetail {
@@ -90,6 +107,15 @@ export interface PhaseLog {
   movementDetails?: MovementDetail[];
 }
 
+export interface ObjectiveMarker {
+  id: string;
+  x: number;
+  y: number;
+  controlledBy: 'armyA' | 'armyB' | 'contested';
+  levelOfControlA: number; // Sum of OC for armyA models in range
+  levelOfControlB: number; // Sum of OC for armyB models in range
+}
+
 export interface SimulationConfig {
   startingDistance?: number;
   includeOneTimeWeapons?: boolean;
@@ -97,6 +123,7 @@ export interface SimulationConfig {
   maxRounds?: number;
   allowAdvance?: boolean;
   randomCharge?: boolean;
+  useDiceRolls?: boolean;  // If true, use actual dice rolls; if false, use expected values
 }
 
 export interface SimulationResult {
@@ -110,6 +137,7 @@ export interface SimulationResult {
     height: number;
     deployDepth: number;
   };
+  objectives?: ObjectiveMarker[];
 
   positions: {
     start: {

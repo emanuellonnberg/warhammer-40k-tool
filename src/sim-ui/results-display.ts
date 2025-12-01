@@ -70,35 +70,80 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
       };
       const dataAttrs = `${attr(attackerPos, 'attacker')} ${attr(defenderPos, 'defender')}`.trim();
 
-      // Build tooltip with damage breakdown
-      const tooltipParts: string[] = [];
-      if (action.weaponName) tooltipParts.push(`Weapon: ${action.weaponName}`);
-      if (action.distance !== undefined) tooltipParts.push(`Range: ${action.distance.toFixed(1)}"`);
-      if (action.hits !== undefined) tooltipParts.push(`Hits: ${action.hits.toFixed(1)}`);
-      if (action.wounds !== undefined) tooltipParts.push(`Wounds: ${action.wounds.toFixed(1)}`);
-      if (action.failedSaves !== undefined) tooltipParts.push(`Failed Saves: ${action.failedSaves.toFixed(1)}`);
-      if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipParts.push(`Mortal Wounds: ${action.mortalWounds.toFixed(1)}`);
-      const tooltipText = tooltipParts.join(' | ');
-      const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
+      // Build comprehensive tooltip with damage breakdown
+      const formatNum = (n: number) => Number.isInteger(n) ? n.toString() : n.toFixed(1);
+      const tooltipLines: string[] = [];
+
+      // Weapon info
+      if (action.weaponName) {
+        let weaponLine = `<strong>${action.weaponName}</strong>`;
+        if (action.distance !== undefined) weaponLine += ` @ ${action.distance.toFixed(1)}"`;
+        tooltipLines.push(weaponLine);
+      }
+
+      // Weapon characteristics
+      const charParts: string[] = [];
+      if (action.attacks !== undefined) charParts.push(`A:${formatNum(action.attacks)}`);
+      if (action.skill) charParts.push(`Skill:${action.skill}`);
+      if (action.strength) charParts.push(`S:${action.strength}`);
+      if (action.ap) charParts.push(`AP:${action.ap}`);
+      if (action.damageCharacteristic) charParts.push(`D:${action.damageCharacteristic}`);
+      if (charParts.length > 0) tooltipLines.push(charParts.join(' '));
+
+      // Target stats
+      const targetParts: string[] = [];
+      if (action.targetToughness) targetParts.push(`T:${action.targetToughness}`);
+      if (action.targetSave) targetParts.push(`Sv:${action.targetSave}`);
+      if (targetParts.length > 0) tooltipLines.push(`<strong>Target:</strong> ${targetParts.join(' ')}`);
+
+      // Attack sequence results
+      const resultParts: string[] = [];
+      if (action.attacks !== undefined) resultParts.push(`${formatNum(action.attacks)} Attacks`);
+      if (action.hits !== undefined) resultParts.push(`${formatNum(action.hits)} Hits`);
+      if (action.wounds !== undefined) resultParts.push(`${formatNum(action.wounds)} Wounds`);
+      if (action.failedSaves !== undefined) resultParts.push(`${formatNum(action.failedSaves)} Failed Saves`);
+      if (resultParts.length > 0) tooltipLines.push(resultParts.join(' → '));
+
+      // Weapon ability results
+      const abilityParts: string[] = [];
+      if (action.lethalHits !== undefined && action.lethalHits > 0) {
+        abilityParts.push(`⚔️ ${formatNum(action.lethalHits)} Lethal Hits`);
+      }
+      if (action.sustainedHits !== undefined && action.sustainedHits > 0) {
+        abilityParts.push(`➕ ${formatNum(action.sustainedHits)} Sustained Hits`);
+      }
+      if (action.devastatingWounds !== undefined && action.devastatingWounds > 0) {
+        abilityParts.push(`💥 ${formatNum(action.devastatingWounds)} Devastating Wounds`);
+      }
+      if (abilityParts.length > 0) tooltipLines.push(abilityParts.join(', '));
+
+      if (action.damage !== undefined) tooltipLines.push(`<strong>${formatNum(action.damage)} Total Damage</strong>`);
+      if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipLines.push(`💀 ${formatNum(action.mortalWounds)} Mortal Wounds`);
+
+      const tooltipHtml = tooltipLines.length > 0
+        ? `<span class="tooltip-content multiline">${tooltipLines.join('<br>')}</span>`
+        : '';
 
       // Build casualty information for display
       const casualtyParts: string[] = [];
       if (action.modelsKilled !== undefined && action.modelsKilled > 0) {
         casualtyParts.push(`<span class="text-danger">💀 ${action.modelsKilled} killed</span>`);
       }
-      if (action.damagePerModel !== undefined) {
-        casualtyParts.push(`${action.damagePerModel.toFixed(1)} dmg/model`);
+      // Only show damage per model if models were killed (otherwise it's confusing for partial damage)
+      if (action.damagePerModel !== undefined && action.modelsKilled && action.modelsKilled > 0) {
+        casualtyParts.push(`${formatNum(action.damagePerModel)} dmg/model`);
       }
       if (action.remainingWounds !== undefined && action.remainingWounds > 0) {
-        casualtyParts.push(`<span class="text-warning">⚠️ ${action.remainingWounds.toFixed(1)}W remaining on damaged model</span>`);
+        casualtyParts.push(`<span class="text-warning">⚠️ ${formatNum(action.remainingWounds)}W remaining on damaged model</span>`);
       }
       if (action.totalModelsInUnit !== undefined) {
         casualtyParts.push(`(${action.totalModelsInUnit} models left)`);
       }
       const casualtyText = casualtyParts.length > 0 ? ` — ${casualtyParts.join(', ')}` : '';
 
-      const label = `${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg${casualtyText}`;
-      return `<li class="sim-action-item"><span class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${label}</span></li>`;
+      const label = `${action.attackerName} → ${action.defenderName}: ${formatNum(action.damage)} dmg${casualtyText}`;
+      const wrapperClass = tooltipHtml ? 'has-tooltip' : '';
+      return `<li class="sim-action-item"><span class="sim-action-entry ${wrapperClass}" role="button" tabindex="0" ${dataAttrs}>${label}${tooltipHtml}</span></li>`;
     }).join('');
     return `<ul class="sim-attack-list mb-1 ps-3">${items}</ul>`;
   };
@@ -172,34 +217,79 @@ export function renderActionLog(result: SimulationResult, phaseIndex: number, ar
         };
         const dataAttrs = `${attr(attackerPos, 'attacker')} ${attr(defenderPos, 'defender')}`.trim();
 
-        // Build detailed tooltip with damage breakdown
-        const tooltipParts: string[] = [];
-        if (action.weaponName) tooltipParts.push(`Weapon: ${action.weaponName}`);
-        if (action.distance !== undefined) tooltipParts.push(`Range: ${action.distance.toFixed(1)}"`);
-        if (action.hits !== undefined) tooltipParts.push(`Hits: ${action.hits.toFixed(1)}`);
-        if (action.wounds !== undefined) tooltipParts.push(`Wounds: ${action.wounds.toFixed(1)}`);
-        if (action.failedSaves !== undefined) tooltipParts.push(`Failed Saves: ${action.failedSaves.toFixed(1)}`);
-        if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipParts.push(`Mortal Wounds: ${action.mortalWounds.toFixed(1)}`);
-        const tooltipText = tooltipParts.join(' | ');
-        const tooltipAttr = tooltipText ? `title="${tooltipText}"` : '';
+        // Build comprehensive tooltip with damage breakdown
+        const formatNum = (n: number) => Number.isInteger(n) ? n.toString() : n.toFixed(1);
+        const tooltipLines: string[] = [];
+
+        // Weapon info
+        if (action.weaponName) {
+          let weaponLine = `<strong>${action.weaponName}</strong>`;
+          if (action.distance !== undefined) weaponLine += ` @ ${action.distance.toFixed(1)}"`;
+          tooltipLines.push(weaponLine);
+        }
+
+        // Weapon characteristics
+        const charParts: string[] = [];
+        if (action.attacks !== undefined) charParts.push(`A:${formatNum(action.attacks)}`);
+        if (action.skill) charParts.push(`Skill:${action.skill}`);
+        if (action.strength) charParts.push(`S:${action.strength}`);
+        if (action.ap) charParts.push(`AP:${action.ap}`);
+        if (action.damageCharacteristic) charParts.push(`D:${action.damageCharacteristic}`);
+        if (charParts.length > 0) tooltipLines.push(charParts.join(' '));
+
+        // Target stats
+        const targetParts: string[] = [];
+        if (action.targetToughness) targetParts.push(`T:${action.targetToughness}`);
+        if (action.targetSave) targetParts.push(`Sv:${action.targetSave}`);
+        if (targetParts.length > 0) tooltipLines.push(`<strong>Target:</strong> ${targetParts.join(' ')}`);
+
+        // Attack sequence results
+        const resultParts: string[] = [];
+        if (action.attacks !== undefined) resultParts.push(`${formatNum(action.attacks)} Attacks`);
+        if (action.hits !== undefined) resultParts.push(`${formatNum(action.hits)} Hits`);
+        if (action.wounds !== undefined) resultParts.push(`${formatNum(action.wounds)} Wounds`);
+        if (action.failedSaves !== undefined) resultParts.push(`${formatNum(action.failedSaves)} Failed Saves`);
+        if (resultParts.length > 0) tooltipLines.push(resultParts.join(' → '));
+
+        // Weapon ability results
+        const abilityParts: string[] = [];
+        if (action.lethalHits !== undefined && action.lethalHits > 0) {
+          abilityParts.push(`⚔️ ${formatNum(action.lethalHits)} Lethal Hits`);
+        }
+        if (action.sustainedHits !== undefined && action.sustainedHits > 0) {
+          abilityParts.push(`➕ ${formatNum(action.sustainedHits)} Sustained Hits`);
+        }
+        if (action.devastatingWounds !== undefined && action.devastatingWounds > 0) {
+          abilityParts.push(`💥 ${formatNum(action.devastatingWounds)} Devastating Wounds`);
+        }
+        if (abilityParts.length > 0) tooltipLines.push(abilityParts.join(', '));
+
+        if (action.damage !== undefined) tooltipLines.push(`<strong>${formatNum(action.damage)} Total Damage</strong>`);
+        if (action.mortalWounds !== undefined && action.mortalWounds > 0) tooltipLines.push(`💀 ${formatNum(action.mortalWounds)} Mortal Wounds`);
+
+        const tooltipHtml = tooltipLines.length > 0
+          ? `<span class="tooltip-content multiline">${tooltipLines.join('<br>')}</span>`
+          : '';
 
         // Build casualty information for display
         const casualtyParts: string[] = [];
         if (action.modelsKilled !== undefined && action.modelsKilled > 0) {
           casualtyParts.push(`<span class="text-danger">💀 ${action.modelsKilled} killed</span>`);
         }
-        if (action.damagePerModel !== undefined) {
-          casualtyParts.push(`${action.damagePerModel.toFixed(1)} dmg/model`);
+        // Only show damage per model if models were killed (otherwise it's confusing for partial damage)
+        if (action.damagePerModel !== undefined && action.modelsKilled && action.modelsKilled > 0) {
+          casualtyParts.push(`${formatNum(action.damagePerModel)} dmg/model`);
         }
         if (action.remainingWounds !== undefined && action.remainingWounds > 0) {
-          casualtyParts.push(`<span class="text-warning">⚠️ ${action.remainingWounds.toFixed(1)}W remaining</span>`);
+          casualtyParts.push(`<span class="text-warning">⚠️ ${formatNum(action.remainingWounds)}W remaining</span>`);
         }
         if (action.totalModelsInUnit !== undefined) {
           casualtyParts.push(`(${action.totalModelsInUnit} models left)`);
         }
         const casualtyText = casualtyParts.length > 0 ? ` — ${casualtyParts.join(', ')}` : '';
 
-        return `<div class="sim-action-entry" role="button" tabindex="0" ${dataAttrs} ${tooltipAttr}>${action.attackerName} → ${action.defenderName}: ${action.damage.toFixed(1)} dmg${casualtyText}</div>`;
+        const wrapperClass = tooltipHtml ? 'has-tooltip' : '';
+        return `<div class="sim-action-entry ${wrapperClass}" role="button" tabindex="0" ${dataAttrs}>${action.attackerName} → ${action.defenderName}: ${formatNum(action.damage)} dmg${casualtyText}${tooltipHtml}</div>`;
       }).join('');
       return `<li><strong>${header}</strong>${actionHtml}</li>`;
     }).join('');
@@ -216,11 +306,49 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
     ? `🏆 <strong>${winnerLabel}</strong> prevails!`
     : '🤝 The battle ends in a draw.';
 
-  const formatArmyState = (summary: { survivors: number; totalUnits: number; damageDealt: number; damageTaken: number }) => {
+  // Calculate reserves info from initial deployment
+  const calculateReservesInfo = (armyState: typeof result.armyAState) => {
+    const allUnits = armyState.units;
+    const reservesUnits = allUnits.filter(u => u.inReserves || u.arrivedTurn);
+    const deepStrikeUnits = reservesUnits.filter(u => u.reserveType === 'deep-strike');
+    const strategicReservesUnits = reservesUnits.filter(u => u.reserveType === 'strategic-reserves');
+
+    const totalPoints = armyState.army.pointsTotal || armyState.units.reduce((sum, u) => sum + (u.unit.points || 0), 0);
+    const reservesPoints = reservesUnits.reduce((sum, u) => sum + (u.unit.points || 0), 0);
+    const srPoints = strategicReservesUnits.reduce((sum, u) => sum + (u.unit.points || 0), 0);
+
+    return {
+      hasReserves: reservesUnits.length > 0,
+      deepStrike: deepStrikeUnits.length,
+      strategicReserves: strategicReservesUnits.length,
+      totalReservesPoints: reservesPoints,
+      srPoints: srPoints,
+      totalPoints: totalPoints,
+      reservesPercent: totalPoints > 0 ? (reservesPoints / totalPoints * 100) : 0,
+      srPercent: totalPoints > 0 ? (srPoints / totalPoints * 100) : 0
+    };
+  };
+
+  const reservesA = calculateReservesInfo(result.armyAState);
+  const reservesB = calculateReservesInfo(result.armyBState);
+
+  const formatArmyState = (
+    summary: { survivors: number; totalUnits: number; damageDealt: number; damageTaken: number },
+    reserves: ReturnType<typeof calculateReservesInfo>
+  ) => {
+    const reservesInfo = reserves.hasReserves
+      ? `<div class="stat text-muted small">
+          <strong>Reserves:</strong> ${reserves.deepStrike} Deep Strike, ${reserves.strategicReserves} Strategic Reserves
+          (${reserves.totalReservesPoints.toFixed(0)} pts / ${reserves.reservesPercent.toFixed(1)}%)
+          ${reserves.strategicReserves > 0 ? `<br/><span class="ms-3">SR: ${reserves.srPoints.toFixed(0)} pts / ${reserves.srPercent.toFixed(1)}% (max 25%)</span>` : ''}
+        </div>`
+      : '';
+
     return `
       <div class="stat"><strong>Survivors:</strong> ${summary.survivors}/${summary.totalUnits} units</div>
       <div class="stat"><strong>Damage Dealt:</strong> ${summary.damageDealt.toFixed(1)}</div>
       <div class="stat"><strong>Damage Taken:</strong> ${summary.damageTaken.toFixed(1)}</div>
+      ${reservesInfo}
     `;
   };
 
@@ -230,11 +358,11 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
   return `
     <div class="summary-card ${armyAClass} mb-3">
       <h5 class="mb-2">${armyALabel}</h5>
-      ${formatArmyState(result.summary.armyA)}
+      ${formatArmyState(result.summary.armyA, reservesA)}
     </div>
     <div class="summary-card ${armyBClass} mb-3">
       <h5 class="mb-2">${armyBLabel}</h5>
-      ${formatArmyState(result.summary.armyB)}
+      ${formatArmyState(result.summary.armyB, reservesB)}
     </div>
     <div class="alert alert-info mb-0">
       <h6 class="mb-2">${outcomeText}</h6>
@@ -258,7 +386,7 @@ export function renderUnitStatesTable(result: SimulationResult, phaseIndex: numb
 
   const armyTable = (
     label: string,
-    list: { name: string; remaining: number; engaged: boolean; role?: string; remainingWounds?: number; totalWounds?: number }[] = [],
+    list: { name: string; remaining: number; engaged: boolean; role?: string; remainingWounds?: number; totalWounds?: number; inReserves?: boolean; reserveType?: string; arrivedTurn?: number }[] = [],
     accent: 'primary' | 'danger'
   ) => `
     <div class="col-md-6">
@@ -266,7 +394,7 @@ export function renderUnitStatesTable(result: SimulationResult, phaseIndex: numb
       <div class="table-responsive">
         <table class="table table-sm table-${accent} table-striped mb-0 unit-table">
           <thead>
-            <tr><th>Unit</th><th>Role</th><th>Models</th><th>Wounds</th><th>Engaged</th></tr>
+            <tr><th>Unit</th><th>Role</th><th>Models</th><th>Wounds</th><th>Status</th></tr>
           </thead>
           <tbody>
             ${list.map(u => {
@@ -275,7 +403,26 @@ export function renderUnitStatesTable(result: SimulationResult, phaseIndex: numb
               const woundsText = typeof u.remainingWounds === 'number' && typeof u.totalWounds === 'number'
                 ? `${Math.max(0, u.remainingWounds)}/${u.totalWounds}`
                 : '—';
-              return `<tr ${rowClass}><td>${u.name || 'Unknown'}</td><td>${u.role || ''}</td><td>${u.remaining}</td><td>${woundsText}</td><td>${u.engaged ? 'Yes' : 'No'}</td></tr>`;
+
+              // Determine status
+              let statusText = '';
+              let statusClass = '';
+              if (u.inReserves) {
+                const reserveLabel = u.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves';
+                statusText = `<span class="badge bg-warning text-dark" title="In Reserves">${reserveLabel}</span>`;
+                statusClass = 'class="table-warning"';
+              } else if (u.arrivedTurn !== undefined && u.arrivedTurn > 0) {
+                const reserveLabel = u.reserveType === 'deep-strike' ? 'DS' : 'SR';
+                statusText = `<span class="badge bg-info text-dark" title="Arrived from reserves turn ${u.arrivedTurn}">${reserveLabel} T${u.arrivedTurn}</span>`;
+              } else if (u.engaged) {
+                statusText = '<span class="badge bg-danger">Engaged</span>';
+              } else {
+                statusText = '<span class="text-success">Active</span>';
+              }
+
+              const finalRowClass = u.inReserves ? statusClass : rowClass;
+
+              return `<tr ${finalRowClass}><td>${u.name || 'Unknown'}</td><td>${u.role || ''}</td><td>${u.remaining}</td><td>${woundsText}</td><td>${statusText}</td></tr>`;
             }).join('')}
           </tbody>
         </table>

@@ -6,7 +6,10 @@ import type {
   SimulationResult,
   PhaseLog,
   ActionLog,
-  MovementDetail
+  CasualtyLog,
+  MovementDetail,
+  ObjectiveMarker,
+  UnitRoleInfo
 } from './types';
 import { classifyArmyRoles } from './role-classifier';
 import { pickStartingDistance } from './distance';
@@ -14,10 +17,12 @@ import { calculateUnitDamage, calculateWeaponDamage } from '../calculators';
 import type { Weapon, Unit } from '../types';
 import { getWeaponType } from '../utils/weapon';
 import { lookupBaseSizeMM } from '../data/base-sizes';
+import { calculateUnitDamageWithDice, calculateWeaponDamageWithDice } from './dice-damage';
+import { rollMultipleD6 } from './dice';
+import { parseNumeric } from '../utils/numeric';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
 const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
-const SCOUT_PUSH = 6; // forward push for Scout/Infiltrate style units (within deployment)
 const DEFAULT_MODEL_SPACING = 1.25;
 const INCHES_PER_MM = 1 / 25.4;
 const MODEL_PER_ROW = 5;
@@ -42,6 +47,12 @@ function getUnitModelCount(unit: Unit): number {
   return Math.max(1, unit.count || 1);
 }
 
+/**
+ * Create model formation following unit coherency rules:
+ * - All models within 2" horizontal (and 5" vertical) of at least one other model
+ * - Units with 7+ models: within 2" of at least TWO other models
+ * - Models are arranged in lines/blocks for tactical realism
+ */
 function createModelFormation(
   count: number,
   centerX: number,
@@ -49,16 +60,22 @@ function createModelFormation(
   spacing: number = DEFAULT_MODEL_SPACING
 ): { x: number; y: number; alive: boolean }[] {
   if (count <= 0) return [];
+
+  // Ensure spacing is at least enough for coherency (2" rule)
+  // But models should be within 2" of each other, so max spacing is ~2"
+  const coherentSpacing = Math.min(spacing, 2.0);
+
   const perRow = Math.max(1, Math.min(MODEL_PER_ROW, Math.ceil(Math.sqrt(count))));
   const rows = Math.ceil(count / perRow);
   const positions: { x: number; y: number; alive: boolean }[] = [];
   const rowOffset = (rows - 1) / 2;
   const colOffset = (perRow - 1) / 2;
+
   for (let i = 0; i < count; i++) {
     const row = Math.floor(i / perRow);
     const col = i % perRow;
-    const x = centerX + (col - colOffset) * spacing;
-    const y = centerY + (row - rowOffset) * spacing;
+    const x = centerX + (col - colOffset) * coherentSpacing;
+    const y = centerY + (row - rowOffset) * coherentSpacing;
     positions.push({ x, y, alive: true });
   }
   return positions;
@@ -79,61 +96,840 @@ function updateModelLife(unit: UnitState): void {
   });
 }
 
+/**
+ * Check if unit has Scout ability and extract the distance
+ * Returns the scout distance in inches (e.g., "Scouts 6\"" returns 6)
+ * Returns 0 if no Scout ability
+ */
+function getScoutDistance(unit: Unit): number {
+  const text = [
+    ...(unit.rules || []).map(r => r.toLowerCase?.() || ''),
+    ...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : ''))
+  ].join(' ');
+
+  // Look for "scout X" or "scouts X"
+  const scoutMatch = text.match(/scouts?\s+(\d+)/);
+  if (scoutMatch) {
+    return parseInt(scoutMatch[1], 10);
+  }
+
+  // Default scout distance if "scout" keyword exists
+  if (text.includes('scout')) {
+    return 6; // Default scout move
+  }
+
+  return 0;
+}
+
 function hasScout(unit: Unit): boolean {
+  return getScoutDistance(unit) > 0;
+}
+
+/**
+ * Check if unit has Infiltrator ability
+ * Infiltrators can deploy anywhere more than 9" from enemy deployment zone and enemy models
+ */
+function hasInfiltrator(unit: Unit): boolean {
   const text = [
     ...(unit.rules || []).map(r => r.toLowerCase?.() || ''),
     ...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : ''))
   ].join(' ');
-  return text.includes('scout') || text.includes('infiltrate');
+  return text.includes('infiltrator');
 }
 
-function hasDeepStrike(unit: Unit): boolean {
-  const text = [
-    ...(unit.rules || []).map(r => r.toLowerCase?.() || ''),
-    ...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : ''))
-  ].join(' ');
-  return text.includes('deep strike') || text.includes('strategic reserve');
+function hasDeepStrike(unit: Unit, army?: Army): boolean {
+  // Collect text from rules and abilities
+  const textParts: string[] = [];
+
+  // If army rules are available, look up actual rule names/descriptions by ID
+  if (army?.rules) {
+    for (const ruleId of unit.rules || []) {
+      const rule = army.rules[ruleId];
+      if (rule) {
+        textParts.push(rule.name.toLowerCase());
+        textParts.push(rule.description.toLowerCase());
+      }
+    }
+  }
+
+  // If army abilities are available, look up actual ability names/descriptions by ID
+  if (army?.abilities) {
+    for (const abilityId of unit.abilities || []) {
+      const ability = army.abilities[abilityId];
+      if (ability) {
+        textParts.push(ability.name.toLowerCase());
+        textParts.push(ability.description.toLowerCase());
+      }
+    }
+  }
+
+  // Fallback: if no army provided, try direct string matching (for old format or tests)
+  if (!army) {
+    textParts.push(...(unit.rules || []).map(r => r.toLowerCase?.() || ''));
+    textParts.push(...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : '')));
+  }
+
+  const text = textParts.join(' ');
+  return text.includes('deep strike') || text.includes('deepstrike');
 }
 
-function initializeArmyState(
-  army: Army,
+function hasStrategicReserves(unit: Unit, army?: Army): boolean {
+  // Collect text from rules and abilities
+  const textParts: string[] = [];
+
+  // If army rules are available, look up actual rule names/descriptions by ID
+  if (army?.rules) {
+    for (const ruleId of unit.rules || []) {
+      const rule = army.rules[ruleId];
+      if (rule) {
+        textParts.push(rule.name.toLowerCase());
+        textParts.push(rule.description.toLowerCase());
+      }
+    }
+  }
+
+  // If army abilities are available, look up actual ability names/descriptions by ID
+  if (army?.abilities) {
+    for (const abilityId of unit.abilities || []) {
+      const ability = army.abilities[abilityId];
+      if (ability) {
+        textParts.push(ability.name.toLowerCase());
+        textParts.push(ability.description.toLowerCase());
+      }
+    }
+  }
+
+  // Fallback: if no army provided, try direct string matching (for old format or tests)
+  if (!army) {
+    textParts.push(...(unit.rules || []).map(r => r.toLowerCase?.() || ''));
+    textParts.push(...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : '')));
+  }
+
+  const text = textParts.join(' ');
+  return text.includes('strategic reserve');
+}
+
+/**
+ * Determine reserve type for a unit
+ * Returns 'deep-strike', 'strategic-reserves', or null
+ */
+function getReserveType(unit: Unit, army?: Army): 'deep-strike' | 'strategic-reserves' | null {
+  if (hasDeepStrike(unit, army)) return 'deep-strike';
+  if (hasStrategicReserves(unit, army)) return 'strategic-reserves';
+  return null;
+}
+
+/**
+ * Create 5 objective markers following standard mission layout:
+ * - 1 in center
+ * - 2 in no-man's land (between deployment zones)
+ * - 1 in each deployment zone
+ */
+function createObjectiveMarkers(
+  battlefieldWidth: number,
+  battlefieldHeight: number,
+  deployDepth: number
+): ObjectiveMarker[] {
+  const halfW = battlefieldWidth / 2;
+  const halfH = battlefieldHeight / 2;
+
+  return [
+    // Center objective
+    { id: 'obj-center', x: 0, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+
+    // No-man's land objectives (between deployment zones, left and right)
+    { id: 'obj-nml-left', x: 0, y: -halfH / 2, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+    { id: 'obj-nml-right', x: 0, y: halfH / 2, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+
+    // Deployment zone objectives (one in each DZ, positioned 9" from edge)
+    { id: 'obj-dz-armyA', x: -halfW + 9, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+    { id: 'obj-dz-armyB', x: halfW - 9, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 }
+  ];
+}
+
+/**
+ * Update objective control based on models within range (3" horizontal, 5" vertical)
+ * Level of Control = sum of OC (Objective Control) characteristics
+ */
+function updateObjectiveControl(
+  objectives: ObjectiveMarker[],
+  stateA: ArmyState,
+  stateB: ArmyState
+): void {
+  const CONTROL_RANGE_HORIZONTAL = 3;
+  const CONTROL_RANGE_VERTICAL = 5;
+
+  objectives.forEach(obj => {
+    obj.levelOfControlA = 0;
+    obj.levelOfControlB = 0;
+
+    // Calculate Level of Control for armyA
+    stateA.units.forEach(u => {
+      if (u.remainingModels <= 0) return;
+      const dx = Math.abs(u.position.x - obj.x);
+      const dy = Math.abs(u.position.y - obj.y);
+      if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
+        // OC is typically 1 for infantry, 2 for characters, 0 for vehicles
+        // For simplicity, assume 1 per model (could be enhanced later)
+        obj.levelOfControlA += u.remainingModels;
+      }
+    });
+
+    // Calculate Level of Control for armyB
+    stateB.units.forEach(u => {
+      if (u.remainingModels <= 0) return;
+      const dx = Math.abs(u.position.x - obj.x);
+      const dy = Math.abs(u.position.y - obj.y);
+      if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
+        obj.levelOfControlB += u.remainingModels;
+      }
+    });
+
+    // Determine control
+    if (obj.levelOfControlA > obj.levelOfControlB) {
+      obj.controlledBy = 'armyA';
+    } else if (obj.levelOfControlB > obj.levelOfControlA) {
+      obj.controlledBy = 'armyB';
+    } else {
+      obj.controlledBy = 'contested';
+    }
+  });
+}
+
+/**
+ * Calculate X position based on unit role and deployment zone
+ * - Infiltrators: Deploy forward in no-man's land (beyond deployment zone but >9" from enemy zone)
+ * - Artillery/Gunline: Back of deployment (0-4" from edge)
+ * - Mobile firepower: Mid deployment (4-8" from edge)
+ * - Melee/Anvil: Forward deployment (8-12" from edge)
+ */
+function calculateDeploymentX(
+  role: string,
   tag: 'armyA' | 'armyB',
   deployDepth: number,
   battlefieldWidth: number,
-  battlefieldHeight: number
-): ArmyState {
-  const roles = classifyArmyRoles(army);
-  const n = army.units.length || 1;
-  const ySpacing = Math.min(DEPLOY_SPREAD_Y, battlefieldHeight / Math.max(1, n + 1));
+  hasScoutAbility: boolean,
+  hasInfiltratorAbility: boolean
+): number {
   const halfW = battlefieldWidth / 2;
-  const units: UnitState[] = army.units.map((unit, idx) => {
-    const scoutPush = hasScout(unit) ? Math.min(SCOUT_PUSH, deployDepth / 2) : 0;
-    const xBase = tag === 'armyA'
-      ? -halfW + deployDepth / 2 + scoutPush
-      : halfW - deployDepth / 2 - scoutPush;
-    const yPos = -battlefieldHeight / 2 + ySpacing * (idx + 1);
-    const modelCount = getUnitModelCount(unit);
-    const woundsPerModel = parseInt(unit.stats.wounds || '1', 10) || 1;
-    const baseSizeMM = lookupBaseSizeMM(unit.name);
-    const baseSizeInches = baseSizeMM ? baseSizeMM * INCHES_PER_MM : undefined;
-    const spacing = Math.max(baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
-    return {
-      unit,
-      remainingModels: modelCount,
-      remainingWounds: modelCount * woundsPerModel,
-      role: roles[unit.id],
-      position: { x: xBase, y: yPos },
-      engaged: false,
-      modelPositions: createModelFormation(modelCount, xBase, yPos, spacing),
-      baseSizeInches,
-      baseSizeMM,
-      advanced: false,
-      fellBack: false,
-      roleLabel: roles[unit.id]?.primary
-    };
-  });
+  const edgePosition = tag === 'armyA' ? -halfW : halfW;
 
-  return { army, units, tag };
+  // Infiltrators deploy in no-man's land, beyond deployment zone
+  // Must be >9" from enemy deployment zone (which starts at 12" from their edge)
+  if (hasInfiltratorAbility) {
+    // Enemy deployment zone edge is at ±(halfW - deployDepth) from center
+    // We need to be >9" from that, so max advance is deployDepth + 9" toward enemy
+    // But stay a bit conservative to ensure >9" rule
+    const maxAdvance = deployDepth + 6; // 12" + 6" = 18" from our edge
+    return tag === 'armyA'
+      ? edgePosition + maxAdvance
+      : edgePosition - maxAdvance;
+  }
+
+  // Base deployment depth based on role
+  let depthFromEdge: number;
+  switch (role) {
+    case 'gunline':
+    case 'artillery':
+      depthFromEdge = 2; // 0-4" from edge
+      break;
+    case 'anvil':
+    case 'melee-missile':
+      depthFromEdge = 10; // 8-12" from edge
+      break;
+    default: // mobile, skirmisher, etc.
+      depthFromEdge = 6; // 4-8" from edge
+  }
+
+  // Scouts deploy at forward edge of deployment zone
+  if (hasScoutAbility) {
+    depthFromEdge = Math.min(11, deployDepth - 1);
+  }
+
+  // Calculate position (positive means toward center)
+  return tag === 'armyA'
+    ? edgePosition + depthFromEdge
+    : edgePosition - depthFromEdge;
+}
+
+/**
+ * Assess the threat level of an enemy unit
+ * Higher score = more dangerous
+ */
+function assessUnitThreat(
+  unit: Unit,
+  role: UnitRoleInfo | undefined
+): number {
+  let threat = 0;
+
+  // Base threat from role
+  switch (role?.primary) {
+    case 'melee-missile':
+      threat += 10; // High threat, can close distance and wreck havoc
+      break;
+    case 'gunline':
+      threat += 8; // High ranged damage output
+      break;
+    case 'artillery':
+      threat += 7; // Devastating long-range firepower
+      break;
+    case 'mobile-firepower':
+      threat += 6; // Flexible and dangerous
+      break;
+    case 'anvil':
+      threat += 4; // Durable but less threatening offensively
+      break;
+    case 'skirmisher':
+      threat += 5; // Moderate threat
+      break;
+    default:
+      threat += 3;
+  }
+
+  // Boost threat based on weapon characteristics
+  for (const weapon of unit.weapons) {
+    const chars = weapon.characteristics;
+    const attacks = parseInt(chars.a || '0', 10) || 0;
+    const ap = Math.abs(parseInt(chars.ap || '0', 10));
+
+    // High volume of attacks increases threat
+    if (attacks > 10) threat += 2;
+    else if (attacks > 5) threat += 1;
+
+    // High AP increases threat
+    if (ap >= 3) threat += 2;
+    else if (ap >= 2) threat += 1;
+  }
+
+  // Scout and Infiltrator abilities increase threat (they can get close fast)
+  if (hasScout(unit)) threat += 2;
+  if (hasInfiltrator(unit)) threat += 3;
+
+  return threat;
+}
+
+/**
+ * Find the most threatening enemy units already deployed
+ */
+function identifyThreats(
+  opponentDeployed: UnitState[]
+): UnitState[] {
+  const threatsWithScores = opponentDeployed.map(enemy => ({
+    unit: enemy,
+    threat: assessUnitThreat(enemy.unit, enemy.role)
+  }));
+
+  // Sort by threat level (highest first)
+  threatsWithScores.sort((a, b) => b.threat - a.threat);
+
+  // Return top 3 threats
+  return threatsWithScores.slice(0, 3).map(t => t.unit);
+}
+
+/**
+ * Calculate Y position for a unit being deployed with counter-deployment strategy
+ * Spreads units across the battlefield width, considering already-deployed units
+ * and threats from opponent
+ */
+function calculateDeploymentY(
+  deployedUnits: UnitState[],
+  battlefieldHeight: number,
+  tag: 'armyA' | 'armyB',
+  myRole: UnitRoleInfo | undefined,
+  opponentDeployed: UnitState[],
+  myUnit: Unit,
+  isDefender: boolean
+): number {
+  if (deployedUnits.length === 0) {
+    // First unit goes in the center
+    return 0;
+  }
+
+  const halfH = battlefieldHeight / 2;
+
+  // If we're the defender, use threat assessment for counter-deployment
+  if (isDefender && opponentDeployed.length > 0) {
+    const threats = identifyThreats(opponentDeployed);
+
+    // Counter-deployment strategy based on our role
+    if (myRole?.primary === 'melee-missile') {
+      // Melee units: avoid enemy gunlines, target anvils or other melee
+      const gunlineThreats = threats.filter(t =>
+        t.role?.primary === 'gunline' || t.role?.primary === 'artillery'
+      );
+
+      if (gunlineThreats.length > 0) {
+        // Deploy away from gunlines
+        const avgGunlineY = gunlineThreats.reduce((sum, t) => sum + t.position.y, 0) / gunlineThreats.length;
+        // Deploy on opposite flank
+        return avgGunlineY > 0 ? -halfH / 2 : halfH / 2;
+      }
+    } else if (myRole?.primary === 'gunline' || myRole?.primary === 'artillery') {
+      // Gunline units: position to shoot enemy melee threats
+      const meleeThreats = threats.filter(t => t.role?.primary === 'melee-missile');
+
+      if (meleeThreats.length > 0) {
+        // Match Y position to target them
+        const mostDangerousMelee = meleeThreats[0];
+        return mostDangerousMelee.position.y;
+      }
+    } else if (myRole?.primary === 'mobile-firepower' || myRole?.primary === 'skirmisher') {
+      // Mobile units: position for flanking
+      const enemyConcentration = opponentDeployed.reduce((sum, u) => sum + u.position.y, 0) / opponentDeployed.length;
+
+      // Deploy on the flank opposite to enemy concentration for flanking
+      return enemyConcentration > 0 ? -halfH / 2 : halfH / 2;
+    } else if (myRole?.primary === 'anvil') {
+      // Anvil units: protect backline, stay near our important units
+      const ownGunlines = deployedUnits.filter(u =>
+        u.role?.primary === 'gunline' || u.role?.primary === 'artillery'
+      );
+
+      if (ownGunlines.length > 0) {
+        // Stay near our gunlines to protect them
+        const avgGunlineY = ownGunlines.reduce((sum, u) => sum + u.position.y, 0) / ownGunlines.length;
+        return avgGunlineY;
+      }
+    }
+  }
+
+  // Default: Find gaps in Y positioning and place new unit to spread out
+  const yPositions = deployedUnits.map(u => u.position.y).sort((a, b) => a - b);
+
+  let bestY = 0;
+  let maxGap = 0;
+
+  for (let i = 0; i <= yPositions.length; i++) {
+    const prevY = i === 0 ? -halfH : yPositions[i - 1];
+    const nextY = i === yPositions.length ? halfH : yPositions[i];
+    const gap = nextY - prevY;
+
+    if (gap > maxGap) {
+      maxGap = gap;
+      bestY = (prevY + nextY) / 2;
+    }
+  }
+
+  return bestY;
+}
+
+/**
+ * Initialize a single unit's state for deployment
+ */
+function createUnitState(
+  unit: Unit,
+  role: ReturnType<typeof classifyArmyRoles>[string],
+  tag: 'armyA' | 'armyB',
+  deployDepth: number,
+  battlefieldWidth: number,
+  xPos: number,
+  yPos: number,
+  inReserves?: boolean,
+  reserveType?: 'deep-strike' | 'strategic-reserves'
+): UnitState {
+  const modelCount = getUnitModelCount(unit);
+  const woundsPerModel = parseInt(unit.stats.wounds || '1', 10) || 1;
+  const baseSizeMM = lookupBaseSizeMM(unit.name);
+  const baseSizeInches = baseSizeMM ? baseSizeMM * INCHES_PER_MM : undefined;
+  const spacing = Math.max(baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
+
+  return {
+    unit,
+    remainingModels: modelCount,
+    remainingWounds: modelCount * woundsPerModel,
+    role,
+    position: { x: xPos, y: yPos },
+    engaged: false,
+    modelPositions: inReserves ? [] : createModelFormation(modelCount, xPos, yPos, spacing),
+    baseSizeInches,
+    baseSizeMM,
+    advanced: false,
+    fellBack: false,
+    roleLabel: role?.primary,
+    inReserves,
+    reserveType
+  };
+}
+
+/**
+ * Create a unit in reserves (off-table)
+ */
+function createUnitInReserves(
+  unit: Unit,
+  role: ReturnType<typeof classifyArmyRoles>[string],
+  tag: 'armyA' | 'armyB',
+  reserveType: 'deep-strike' | 'strategic-reserves'
+): UnitState {
+  const modelCount = getUnitModelCount(unit);
+  const woundsPerModel = parseInt(unit.stats.wounds || '1', 10) || 1;
+  const baseSizeMM = lookupBaseSizeMM(unit.name);
+  const baseSizeInches = baseSizeMM ? baseSizeMM * INCHES_PER_MM : undefined;
+
+  return {
+    unit,
+    remainingModels: modelCount,
+    remainingWounds: modelCount * woundsPerModel,
+    role,
+    position: { x: 0, y: 0 }, // Off-table position
+    engaged: false,
+    modelPositions: [], // No model positions until deployed
+    baseSizeInches,
+    baseSizeMM,
+    advanced: false,
+    fellBack: false,
+    roleLabel: role?.primary,
+    inReserves: true,
+    reserveType
+  };
+}
+
+/**
+ * Deploy a unit from reserves to the battlefield
+ */
+function deployFromReserves(
+  unitState: UnitState,
+  turn: number,
+  deployDepth: number,
+  battlefieldWidth: number,
+  battlefieldHeight: number,
+  tag: 'armyA' | 'armyB',
+  opponentUnits: UnitState[]
+): { success: boolean; position?: { x: number; y: number } } {
+  if (!unitState.inReserves) {
+    return { success: false };
+  }
+
+  const halfW = battlefieldWidth / 2;
+  const halfH = battlefieldHeight / 2;
+  const edgePosition = tag === 'armyA' ? -halfW : halfW;
+
+  if (unitState.reserveType === 'deep-strike') {
+    // Mission Pack: Reserves cannot arrive on turn 1
+    if (turn < 2) {
+      return { success: false };
+    }
+
+    // Deep Strike: Can arrive anywhere >9" from all enemy models
+    // Try to deploy in mid-field, checking distance constraints
+    let targetX = tag === 'armyA' ? edgePosition + 24 : edgePosition - 24; // ~24" from edge
+    let targetY = 0; // Try center first
+
+    // Check if position is >9" from all enemies (horizontally on the battlefield)
+    // Rules: "more than 9 inches horizontally away from all enemy models"
+    const MIN_DISTANCE = 9.0;
+    let validPosition = true;
+    for (const enemy of opponentUnits) {
+      if (enemy.inReserves) continue; // Skip units still in reserves
+      const dist = Math.sqrt(Math.pow(targetX - enemy.position.x, 2) + Math.pow(targetY - enemy.position.y, 2));
+      if (dist <= MIN_DISTANCE) { // Must be MORE than 9"
+        validPosition = false;
+        break;
+      }
+    }
+
+    if (!validPosition) {
+      // Try different Y positions to find valid placement
+      for (const tryY of [halfH / 2, -halfH / 2, halfH / 4, -halfH / 4, halfH * 0.75, -halfH * 0.75]) {
+        validPosition = true;
+        for (const enemy of opponentUnits) {
+          if (enemy.inReserves) continue;
+          const dist = Math.sqrt(Math.pow(targetX - enemy.position.x, 2) + Math.pow(tryY - enemy.position.y, 2));
+          if (dist <= MIN_DISTANCE) { // Must be MORE than 9"
+            validPosition = false;
+            break;
+          }
+        }
+        if (validPosition) {
+          targetY = tryY;
+          break;
+        }
+      }
+    }
+
+    // If still no valid position, try deploying further back
+    if (!validPosition) {
+      const fallbackX = tag === 'armyA' ? edgePosition + 15 : edgePosition - 15; // Closer to own edge
+      for (const tryY of [0, halfH / 2, -halfH / 2, halfH / 4, -halfH / 4]) {
+        validPosition = true;
+        for (const enemy of opponentUnits) {
+          if (enemy.inReserves) continue;
+          const dist = Math.sqrt(Math.pow(fallbackX - enemy.position.x, 2) + Math.pow(tryY - enemy.position.y, 2));
+          if (dist <= MIN_DISTANCE) {
+            validPosition = false;
+            break;
+          }
+        }
+        if (validPosition) {
+          targetX = fallbackX;
+          targetY = tryY;
+          break;
+        }
+      }
+    }
+
+    if (validPosition) {
+      unitState.position = { x: targetX, y: targetY };
+      unitState.inReserves = false;
+      unitState.arrivedTurn = turn;
+      // Create model formation now that unit is on table
+      const spacing = Math.max(unitState.baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
+      unitState.modelPositions = createModelFormation(unitState.remainingModels, targetX, targetY, spacing);
+      return { success: true, position: { x: targetX, y: targetY } };
+    }
+
+    // Couldn't find valid position - all spots too close to enemies
+    console.warn(`Deep Strike failed for ${unitState.unit.name}: No valid position >9" from all enemies on turn ${turn}`);
+    return { success: false };
+  } else if (unitState.reserveType === 'strategic-reserves') {
+    // Strategic Reserves: Must arrive within 6" of any battlefield edge
+    // Cannot arrive turn 1, must arrive turn 2+
+    if (turn < 2) {
+      return { success: false };
+    }
+
+    // Deploy on our battlefield edge, within 6" of edge
+    const xPos = tag === 'armyA' ? edgePosition + 3 : edgePosition - 3; // 3" from edge
+    const yPos = 0; // Center of edge
+
+    unitState.position = { x: xPos, y: yPos };
+    unitState.inReserves = false;
+    unitState.arrivedTurn = turn;
+    // Create model formation
+    const spacing = Math.max(unitState.baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
+    unitState.modelPositions = createModelFormation(unitState.remainingModels, xPos, yPos, spacing);
+    return { success: true, position: { x: xPos, y: yPos } };
+  }
+
+  return { success: false };
+}
+
+/**
+ * Deploy armies using alternating deployment (Attacker deploys first, then alternate)
+ * This allows later-deploying units to react to opponent positioning
+ * Returns deployed army states and movement details for logging
+ */
+function deployArmiesAlternating(
+  armyA: Army,
+  armyB: Army,
+  attackerTag: 'armyA' | 'armyB',
+  deployDepth: number,
+  battlefieldWidth: number,
+  battlefieldHeight: number
+): {
+  stateA: ArmyState;
+  stateB: ArmyState;
+  deploymentActions: MovementDetail[];
+} {
+  const rolesA = classifyArmyRoles(armyA);
+  const rolesB = classifyArmyRoles(armyB);
+
+  // Separate units that start in reserves from those deploying normally
+  const unitsToDeployA: { unit: Unit; role: UnitRoleInfo; tag: 'armyA' }[] = [];
+  const reservesA: { unit: Unit; role: UnitRoleInfo; tag: 'armyA'; reserveType: 'deep-strike' | 'strategic-reserves' }[] = [];
+
+  for (const u of armyA.units) {
+    const reserveType = getReserveType(u, armyA);
+    if (reserveType) {
+      reservesA.push({ unit: u, role: rolesA[u.id], tag: 'armyA', reserveType });
+    } else {
+      unitsToDeployA.push({ unit: u, role: rolesA[u.id], tag: 'armyA' });
+    }
+  }
+
+  const unitsToDeployB: { unit: Unit; role: UnitRoleInfo; tag: 'armyB' }[] = [];
+  const reservesB: { unit: Unit; role: UnitRoleInfo; tag: 'armyB'; reserveType: 'deep-strike' | 'strategic-reserves' }[] = [];
+
+  for (const u of armyB.units) {
+    const reserveType = getReserveType(u, armyB);
+    if (reserveType) {
+      reservesB.push({ unit: u, role: rolesB[u.id], tag: 'armyB', reserveType });
+    } else {
+      unitsToDeployB.push({ unit: u, role: rolesB[u.id], tag: 'armyB' });
+    }
+  }
+
+  // Enforce reserve limits per 40K 10th Edition Mission Pack rules:
+  // - ALL Reserves (Deep Strike + Strategic Reserves): Max 50% of units AND 50% of points
+  // - Strategic Reserves specifically: Max 25% of points (additional restriction)
+  const MAX_RESERVES_PERCENT = 0.5; // 50% for all reserves combined (Mission Pack)
+  const MAX_STRATEGIC_RESERVES_PERCENT = 0.25; // 25% for Strategic Reserves specifically (Core Rules)
+
+  const validateReserves = (
+    army: Army,
+    reserves: typeof reservesA,
+    normalDeploy: typeof unitsToDeployA,
+    armyLabel: string
+  ) => {
+    const totalPoints = army.pointsTotal || army.units.reduce((sum, u) => sum + (u.points || 0), 0);
+    const totalUnits = army.units.length;
+    const reservesPoints = reserves.reduce((sum, r) => sum + (r.unit.points || 0), 0);
+    const reservesUnitCount = reserves.length;
+    const strategicReservesPoints = reserves
+      .filter(r => r.reserveType === 'strategic-reserves')
+      .reduce((sum, r) => sum + (r.unit.points || 0), 0);
+
+    const unitsToMove: typeof reserves = [];
+
+    // Check 1: Total reserves cannot exceed 50% of units (Mission Pack)
+    const maxUnits = Math.floor(totalUnits * MAX_RESERVES_PERCENT);
+    if (reservesUnitCount > maxUnits) {
+      const excessCount = reservesUnitCount - maxUnits;
+      // Remove lowest-point units first to maximize tactical value
+      const sorted = [...reserves].sort((a, b) => (a.unit.points || 0) - (b.unit.points || 0));
+      unitsToMove.push(...sorted.slice(0, excessCount));
+      console.warn(`${armyLabel}: Exceeded 50% reserves unit limit (${reservesUnitCount}/${totalUnits} units, max ${maxUnits}). Moving ${excessCount} unit(s) to normal deployment.`);
+    }
+
+    // Check 2: Total reserves cannot exceed 50% of points (Mission Pack)
+    const maxReservesPoints = totalPoints * MAX_RESERVES_PERCENT;
+    if (reservesPoints > maxReservesPoints) {
+      // Remove units until under points limit (prioritize already-flagged units)
+      const sorted = [...reserves]
+        .filter(r => !unitsToMove.includes(r))
+        .sort((a, b) => (a.unit.points || 0) - (b.unit.points || 0));
+
+      let currentPoints = reservesPoints;
+      for (const unit of sorted) {
+        if (currentPoints <= maxReservesPoints) break;
+        if (!unitsToMove.includes(unit)) {
+          unitsToMove.push(unit);
+          currentPoints -= unit.unit.points || 0;
+        }
+      }
+      console.warn(`${armyLabel}: Exceeded 50% reserves points limit (${reservesPoints.toFixed(0)}/${totalPoints} pts, max ${maxReservesPoints.toFixed(0)}). Moving additional units to normal deployment.`);
+    }
+
+    // Check 3: Strategic Reserves cannot exceed 25% of points (Core Rules)
+    const maxSRPoints = totalPoints * MAX_STRATEGIC_RESERVES_PERCENT;
+    if (strategicReservesPoints > maxSRPoints) {
+      const srUnits = reserves
+        .filter(r => r.reserveType === 'strategic-reserves' && !unitsToMove.includes(r))
+        .sort((a, b) => (a.unit.points || 0) - (b.unit.points || 0));
+
+      let currentSRPoints = strategicReservesPoints;
+      for (const srUnit of srUnits) {
+        if (currentSRPoints <= maxSRPoints) break;
+        unitsToMove.push(srUnit);
+        currentSRPoints -= srUnit.unit.points || 0;
+      }
+      console.warn(`${armyLabel}: Exceeded 25% Strategic Reserves points limit (${strategicReservesPoints.toFixed(0)}/${totalPoints} pts, max ${maxSRPoints.toFixed(0)}).`);
+    }
+
+    // Apply all movements
+    unitsToMove.forEach(e => {
+      const idx = reserves.indexOf(e);
+      if (idx >= 0) {
+        reserves.splice(idx, 1);
+        normalDeploy.push({ unit: e.unit, role: e.role, tag: e.tag });
+      }
+    });
+  };
+
+  validateReserves(armyA, reservesA, unitsToDeployA, armyA.armyName || 'Army A');
+  validateReserves(armyB, reservesB, unitsToDeployB, armyB.armyName || 'Army B');
+
+  const deployedA: UnitState[] = [];
+  const deployedB: UnitState[] = [];
+  const deploymentActions: MovementDetail[] = [];
+
+  const attacker = attackerTag === 'armyA' ? unitsToDeployA : unitsToDeployB;
+  const defender = attackerTag === 'armyA' ? unitsToDeployB : unitsToDeployA;
+  const attackerDeployed = attackerTag === 'armyA' ? deployedA : deployedB;
+  const defenderDeployed = attackerTag === 'armyA' ? deployedB : deployedA;
+
+  // Alternate deployment: attacker first, then defender, repeat
+  while (attacker.length > 0 || defender.length > 0) {
+    // Attacker deploys
+    if (attacker.length > 0) {
+      const { unit, role, tag } = attacker.shift()!;
+      const scoutAbility = hasScout(unit);
+      const infiltratorAbility = hasInfiltrator(unit);
+      const xPos = calculateDeploymentX(role?.primary || 'mobile', tag, deployDepth, battlefieldWidth, scoutAbility, infiltratorAbility);
+      // Attacker doesn't get to react to opponent (isDefender = false)
+      const yPos = calculateDeploymentY(attackerDeployed, battlefieldHeight, tag, role, defenderDeployed, unit, false);
+
+      const unitState = createUnitState(unit, role, tag, deployDepth, battlefieldWidth, xPos, yPos);
+      attackerDeployed.push(unitState);
+
+      // Log deployment
+      const specialDeployment = infiltratorAbility ? ' (Infiltrator)' : '';
+      deploymentActions.push({
+        unitId: unit.id,
+        unitName: unit.name + specialDeployment,
+        army: tag,
+        from: { x: 0, y: 0 },
+        to: { x: xPos, y: yPos },
+        distance: 0,
+        advanced: false
+      });
+    }
+
+    // Defender deploys (reacting to attacker's placement)
+    if (defender.length > 0) {
+      const { unit, role, tag } = defender.shift()!;
+      const scoutAbility = hasScout(unit);
+      const infiltratorAbility = hasInfiltrator(unit);
+
+      const xPos = calculateDeploymentX(role?.primary || 'mobile', tag, deployDepth, battlefieldWidth, scoutAbility, infiltratorAbility);
+
+      // Defender uses threat assessment and counter-deployment (isDefender = true)
+      const yPos = calculateDeploymentY(defenderDeployed, battlefieldHeight, tag, role, attackerDeployed, unit, true);
+
+      const unitState = createUnitState(unit, role, tag, deployDepth, battlefieldWidth, xPos, yPos);
+      defenderDeployed.push(unitState);
+
+      // Log deployment
+      const specialDeployment = infiltratorAbility ? ' (Infiltrator)' : '';
+      deploymentActions.push({
+        unitId: unit.id,
+        unitName: unit.name + specialDeployment,
+        army: tag,
+        from: { x: 0, y: 0 },
+        to: { x: xPos, y: yPos },
+        distance: 0,
+        advanced: false
+      });
+    }
+  }
+
+  // Add units in reserves to deployed arrays (they're part of army but off-table)
+  for (const res of reservesA) {
+    const unitState = createUnitInReserves(res.unit, res.role, res.tag, res.reserveType);
+    deployedA.push(unitState);
+
+    // Log deployment to reserves
+    deploymentActions.push({
+      unitId: res.unit.id,
+      unitName: `${res.unit.name} (${res.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves'})`,
+      army: res.tag,
+      from: { x: 0, y: 0 },
+      to: { x: 0, y: 0 }, // Off-table
+      distance: 0,
+      advanced: false
+    });
+  }
+
+  for (const res of reservesB) {
+    const unitState = createUnitInReserves(res.unit, res.role, res.tag, res.reserveType);
+    deployedB.push(unitState);
+
+    // Log deployment to reserves
+    deploymentActions.push({
+      unitId: res.unit.id,
+      unitName: `${res.unit.name} (${res.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves'})`,
+      army: res.tag,
+      from: { x: 0, y: 0 },
+      to: { x: 0, y: 0 }, // Off-table
+      distance: 0,
+      advanced: false
+    });
+  }
+
+  return {
+    stateA: { army: armyA, units: deployedA, tag: 'armyA' },
+    stateB: { army: armyB, units: deployedB, tag: 'armyB' },
+    deploymentActions
+  };
 }
 
 function summarizePhase(
@@ -150,15 +946,35 @@ function summarizePhase(
   return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails };
 }
 
-function expectedShootingDamage(attacker: UnitState, defenderToughness: number, includeOneTimeWeapons: boolean): number {
-  return calculateUnitDamage(
-    attacker.unit,
-    defenderToughness,
-    false,
-    undefined,
-    includeOneTimeWeapons,
-    true
-  ).total;
+function expectedShootingDamage(
+  attacker: UnitState,
+  defender: UnitState,
+  includeOneTimeWeapons: boolean,
+  useDiceRolls: boolean
+): number {
+  const defenderToughness = parseInt(defender.unit.stats.toughness || '4', 10);
+  const defenderSave = defender.unit.stats.save || null;
+
+  if (useDiceRolls) {
+    return calculateUnitDamageWithDice(
+      attacker.unit,
+      defenderToughness,
+      defenderSave,
+      false, // useOvercharge
+      includeOneTimeWeapons,
+      false, // isCharging
+      undefined // targetFNP - TODO: parse from defender abilities
+    );
+  } else {
+    return calculateUnitDamage(
+      attacker.unit,
+      defenderToughness,
+      false,
+      undefined,
+      includeOneTimeWeapons,
+      true
+    ).total;
+  }
 }
 
 function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog[]): {
@@ -207,24 +1023,149 @@ export function runSimpleEngagement(
 ): SimulationResult {
   const includeOneTimeWeapons = config.includeOneTimeWeapons ?? false;
   const initiative = config.initiative ?? DEFAULT_INITIATIVE;
-  const maxRounds = config.maxRounds ?? 3;
+  const maxRounds = config.maxRounds ?? 5;
   const allowAdvance = config.allowAdvance ?? true;
   const randomCharge = config.randomCharge ?? false;
+  const useDiceRolls = config.useDiceRolls ?? false;
   const maxPoints = Math.max(armyA.pointsTotal || 2000, armyB.pointsTotal || 2000);
   const battlefield = battlefieldFromPoints(maxPoints);
-  const stateA = initializeArmyState(armyA, 'armyA', battlefield.deployDepth, battlefield.width, battlefield.height);
-  const stateB = initializeArmyState(armyB, 'armyB', battlefield.deployDepth, battlefield.width, battlefield.height);
-  const startPositions = snapshotPositions(stateA, stateB);
-  const startingDistance = minDistanceBetweenArmies(stateA, stateB);
+
   const perTurnPositions: SimulationResult['positionsPerTurn'] = [];
   const timeline: NonNullable<SimulationResult['positionsTimeline']> = [];
   const logs: PhaseLog[] = [];
   const damageTally = { armyA: 0, armyB: 0 };
   const survivorsCount = (state: ArmyState) => state.units.filter(u => u.remainingModels > 0).length;
-  const turnOrder = initiative === 'armyA' ? [stateA, stateB] : [stateB, stateA];
   let endReason: 'maxRounds' | 'armyDestroyed' = 'maxRounds';
 
+  // CREATE OBJECTIVE MARKERS
+  const objectives = createObjectiveMarkers(battlefield.width, battlefield.height, battlefield.deployDepth);
+
+  // DEPLOYMENT PHASE: Use alternating deployment - initiative player is the "Attacker" and deploys first
+  const { stateA, stateB, deploymentActions } = deployArmiesAlternating(
+    armyA,
+    armyB,
+    initiative, // Attacker deploys first
+    battlefield.deployDepth,
+    battlefield.width,
+    battlefield.height
+  );
+
+  // Log deployment phase
+  logs.push(summarizePhase(
+    'movement',
+    0,
+    initiative,
+    `Deployment: ${initiative === 'armyA' ? armyA.armyName : armyB.armyName} deploys first (Attacker)`,
+    undefined,
+    minDistanceBetweenArmies(stateA, stateB),
+    undefined,
+    undefined,
+    deploymentActions
+  ));
+  timeline.push({ phaseIndex: logs.length - 1, turn: 0, actor: initiative, ...snapshotState(stateA, stateB) });
+
+  const turnOrder = initiative === 'armyA' ? [stateA, stateB] : [stateB, stateA];
+
+  // PRE-BATTLE SCOUT MOVES (player taking first turn moves Scouts first)
+  const scoutMovements: MovementDetail[] = [];
+  for (const state of turnOrder) {
+    const opponent = state === stateA ? stateB : stateA;
+
+    state.units.forEach(u => {
+      const scoutDist = getScoutDistance(u.unit);
+      if (scoutDist > 0 && u.remainingModels > 0) {
+        const startPos = { x: u.position.x, y: u.position.y };
+        // Move toward enemy deployment zone (toward center of battlefield)
+        const direction = state.tag === 'armyA' ? 1 : -1;
+        const moveX = direction * scoutDist;
+        u.position.x += moveX;
+        shiftModelPositions(u, moveX, 0);
+        clampToBoard(u, battlefield.width, battlefield.height);
+
+        // Must end more than 9" from all enemy models (per Scout rules)
+        const tooClose = opponent.units.some(enemy => {
+          if (enemy.remainingModels <= 0) return false;
+          return distanceBetween(u, enemy) < 9;
+        });
+
+        if (tooClose) {
+          // Revert the move
+          u.position.x = startPos.x;
+          u.position.y = startPos.y;
+          // Recreate model positions at original location
+          const modelCount = u.modelPositions.length;
+          const spacing = Math.max(u.baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
+          u.modelPositions = createModelFormation(modelCount, startPos.x, startPos.y, spacing);
+        } else {
+          const actualDistance = Math.abs(u.position.x - startPos.x);
+          if (actualDistance > 0.05) {
+            scoutMovements.push({
+              unitId: u.unit.id,
+              unitName: u.unit.name + ` (Scout ${scoutDist}")`,
+              army: state.tag,
+              from: startPos,
+              to: { x: u.position.x, y: u.position.y },
+              distance: actualDistance,
+              advanced: false
+            });
+          }
+        }
+      }
+    });
+  }
+
+  // Ensure units don't overlap after Scout moves
+  clampAllSpacing(stateA, stateB);
+
+  // Log Scout moves if any occurred
+  if (scoutMovements.length > 0) {
+    logs.push(summarizePhase('movement', 0, initiative, 'Pre-battle: Scout moves', undefined, minDistanceBetweenArmies(stateA, stateB), undefined, undefined, scoutMovements));
+    timeline.push({ phaseIndex: logs.length - 1, turn: 0, actor: initiative, ...snapshotState(stateA, stateB) });
+  }
+
+  const startPositions = snapshotPositions(stateA, stateB);
+  const startingDistance = minDistanceBetweenArmies(stateA, stateB);
+
   for (let round = 1; round <= maxRounds; round++) {
+    // RESERVES ARRIVAL PHASE - happens at start of each player's turn
+    const reservesArrivals: MovementDetail[] = [];
+    for (const active of turnOrder) {
+      const opponent = active === stateA ? stateB : stateA;
+
+      // Attempt to deploy units from reserves
+      for (const unit of active.units) {
+        if (unit.inReserves) {
+          const result = deployFromReserves(
+            unit,
+            round,
+            battlefield.deployDepth,
+            battlefield.width,
+            battlefield.height,
+            active.tag,
+            opponent.units
+          );
+
+          if (result.success && result.position) {
+            reservesArrivals.push({
+              unitId: unit.unit.id,
+              unitName: `${unit.unit.name} (${unit.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves'} arrival)`,
+              army: active.tag,
+              from: { x: 0, y: 0 }, // Off-table
+              to: result.position,
+              distance: 0,
+              advanced: false
+            });
+          }
+        }
+      }
+    }
+
+    // Log reserves arrivals if any
+    if (reservesArrivals.length > 0) {
+      logs.push(summarizePhase('movement', round, initiative, `Round ${round}: Reinforcements arrive`, undefined, undefined, undefined, undefined, reservesArrivals));
+      timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: initiative, ...snapshotState(stateA, stateB) });
+    }
+
     for (const active of turnOrder) {
       const opponent = active === stateA ? stateB : stateA;
 
@@ -237,7 +1178,7 @@ export function runSimpleEngagement(
 
       const shootActions: ActionLog[] = [];
       const shootCasualties: CasualtyLog[] = [];
-      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, shootActions, shootCasualties);
+      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, shootActions, shootCasualties);
       logs.push(summarizePhase('shooting', round, active.tag, `Round ${round}: ${active.tag} shooting.`, shootDamage, undefined, shootActions));
       damageTally[active.tag] += shootDamage;
       logs[logs.length - 1].casualties = shootCasualties;
@@ -253,11 +1194,14 @@ export function runSimpleEngagement(
 
       const meleeActions: ActionLog[] = [];
       const meleeCasualties: CasualtyLog[] = [];
-      const meleeDamage = expectedMeleeDamageBatch(active, opponent, includeOneTimeWeapons, meleeActions, meleeCasualties);
+      const meleeDamage = expectedMeleeDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, meleeActions, meleeCasualties);
       logs.push(summarizePhase('melee', round, active.tag, `Round ${round}: ${active.tag} fights.`, meleeDamage, undefined, meleeActions));
       damageTally[active.tag] += meleeDamage;
       logs[logs.length - 1].casualties = meleeCasualties;
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
+
+      // Update objective control at end of each player's turn
+      updateObjectiveControl(objectives, stateA, stateB);
 
       perTurnPositions.push({ turn: round, ...snapshotPositions(stateA, stateB) });
 
@@ -279,6 +1223,9 @@ export function runSimpleEngagement(
     winner = survA > survB ? 'armyA' : 'armyB';
   }
 
+  // Final objective control update
+  updateObjectiveControl(objectives, stateA, stateB);
+
   return {
     startingDistance,
     initiative,
@@ -286,6 +1233,7 @@ export function runSimpleEngagement(
     armyAState: stateA,
     armyBState: stateB,
     battlefield,
+    objectives,
     positions: {
       start: startPositions,
       end: snapshotPositions(stateA, stateB)
@@ -331,7 +1279,7 @@ function moveArmiesTowardEachOther(
   };
 
   active.units.forEach(u => {
-    if (u.remainingModels <= 0) return;
+    if (u.remainingModels <= 0 || u.inReserves) return; // Skip destroyed units and units in reserves
     const mv = parseInt(u.unit.stats.move || '0', 10) || 0;
     const startPos = { x: u.position.x, y: u.position.y };
     // Nearest defender
@@ -376,9 +1324,9 @@ function moveArmiesTowardEachOther(
 function minDistanceBetweenArmies(stateA: ArmyState, stateB: ArmyState): number {
   let minDist = Infinity;
   stateA.units.forEach(a => {
-    if (a.remainingModels <= 0) return;
+    if (a.remainingModels <= 0 || a.inReserves) return; // Skip units in reserves
     stateB.units.forEach(b => {
-      if (b.remainingModels <= 0) return;
+      if (b.remainingModels <= 0 || b.inReserves) return; // Skip units in reserves
       const d = distanceBetween(a, b);
       if (d < minDist) minDist = d;
     });
@@ -416,7 +1364,7 @@ function clampAllSpacing(stateA: ArmyState, stateB: ArmyState): void {
 }
 
 function clampArmySpacing(state: ArmyState): void {
-  const units = state.units.filter(u => u.remainingModels > 0);
+  const units = state.units.filter(u => u.remainingModels > 0 && !u.inReserves);
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
       const a = units[i];
@@ -427,11 +1375,15 @@ function clampArmySpacing(state: ArmyState): void {
 }
 
 function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState): void {
-  stateA.units.forEach(a => {
-    stateB.units.forEach(b => {
-      resolveOverlap(a, b);
+  stateA.units
+    .filter(a => a.remainingModels > 0 && !a.inReserves)
+    .forEach(a => {
+      stateB.units
+        .filter(b => b.remainingModels > 0 && !b.inReserves)
+        .forEach(b => {
+          resolveOverlap(a, b);
+        });
     });
-  });
 }
 
 function resolveOverlap(a: UnitState, b: UnitState): void {
@@ -523,12 +1475,13 @@ function expectedShootingDamageBatch(
   attackerArmy: ArmyState,
   defenderArmy: ArmyState,
   includeOneTimeWeapons: boolean,
+  useDiceRolls: boolean,
   actions?: ActionLog[],
   casualties?: CasualtyLog[]
 ): number {
   let total = 0;
-  const attackers = attackerArmy.units.filter(u => u.remainingModels > 0);
-  const defenders = defenderArmy.units.filter(d => d.remainingModels > 0);
+  const attackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves);
+  const defenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
   const fired = new Set<string>();
 
   for (const attacker of attackers) {
@@ -564,21 +1517,60 @@ function expectedShootingDamageBatch(
 
       if (!candidates.length) return;
       const best = candidates[0];
-      const casualtyDetails = applyDamage(best.def, best.dmg, casualties);
-      total += best.dmg;
+
+      // If using dice rolls, re-roll the actual damage with dice
+      let actualDamage = best.dmg;
+      let diceBreakdown;
+      const defenderToughness = parseInt(best.def.unit.stats.toughness || '4', 10);
+      const defenderSave = best.def.unit.stats.save || null;
+
+      if (useDiceRolls) {
+        diceBreakdown = calculateWeaponDamageWithDice(
+          weapon,
+          defenderToughness,
+          defenderSave,
+          false, // useOvercharge
+          includeOneTimeWeapons,
+          false, // isCharging
+          attacker.unit.unitRerolls,
+          undefined // targetFNP
+        );
+        actualDamage = diceBreakdown.totalDamage;
+      }
+
+      const casualtyDetails = applyDamage(best.def, actualDamage, casualties);
+      total += actualDamage;
+
+      // Get weapon characteristics for tooltip
+      const chars = weapon.characteristics;
+
       actions?.push({
         attackerId: attacker.unit.id,
         attackerName: attacker.unit.name,
         defenderId: best.def.unit.id,
         defenderName: best.def.unit.name,
-        damage: best.dmg,
+        damage: actualDamage,
         phase: 'shooting',
         weaponName: weapon.name,
         distance: best.dist,
+        attacks: diceBreakdown?.attacks,
+        hits: diceBreakdown?.hits,
+        wounds: diceBreakdown?.wounds,
+        failedSaves: diceBreakdown?.failedSaves,
+        mortalWounds: diceBreakdown?.mortalWounds,
+        skill: chars?.bs || chars?.ws,
+        strength: parseInt(chars?.s || '0'),
+        ap: parseInt(chars?.ap || '0'),
+        damageCharacteristic: chars?.d,
+        targetToughness: defenderToughness,
+        targetSave: defenderSave || undefined,
         modelsKilled: casualtyDetails.modelsKilled,
         damagePerModel: casualtyDetails.damagePerModel,
         remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
-        totalModelsInUnit: casualtyDetails.totalModelsInUnit
+        totalModelsInUnit: casualtyDetails.totalModelsInUnit,
+        lethalHits: diceBreakdown?.lethalHits,
+        sustainedHits: diceBreakdown?.sustainedHits,
+        devastatingWounds: diceBreakdown?.devastatingWounds
       });
 
       // remove defender if dead
@@ -592,19 +1584,20 @@ function expectedShootingDamageBatch(
   return total;
 }
 
-function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmyState, includeOneTimeWeapons: boolean, actions?: ActionLog[], casualties?: CasualtyLog[]): number {
+function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmyState, includeOneTimeWeapons: boolean, useDiceRolls: boolean, actions?: ActionLog[], casualties?: CasualtyLog[]): number {
   let total = 0;
 
-  const meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && (u.engaged || u.role.primary === 'melee-missile'));
-  const defenders = defenderArmy.units.filter(d => d.remainingModels > 0);
+  const meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves && (u.engaged || u.role.primary === 'melee-missile'));
+  const defenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
 
   for (const attacker of meleeAttackers) {
     if (!defenders.length) break;
 
+    // Find best target
     const best = defenders
       .map(def => ({
         def,
-        dmg: expectedMeleeDamage(attacker, parseInt(def.unit.stats.toughness || '4', 10), includeOneTimeWeapons)
+        dmg: expectedMeleeDamage(attacker, def, includeOneTimeWeapons, useDiceRolls)
       }))
       .sort((a, b) => b.dmg - a.dmg)[0];
 
@@ -612,22 +1605,81 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
     const inRange = dist <= 1.1 || attacker.engaged;
 
     if (best && best.dmg > 0 && inRange) {
-      const casualtyDetails = applyDamage(best.def, best.dmg, casualties);
-      total += best.dmg;
-      actions?.push({
-        attackerId: attacker.unit.id,
-        attackerName: attacker.unit.name,
-        defenderId: best.def.unit.id,
-        defenderName: best.def.unit.name,
-        damage: best.dmg,
-        phase: 'melee',
-        weaponName: 'Melee',
-        distance: dist,
-        modelsKilled: casualtyDetails.modelsKilled,
-        damagePerModel: casualtyDetails.damagePerModel,
-        remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
-        totalModelsInUnit: casualtyDetails.totalModelsInUnit
-      });
+      const defenderToughness = parseInt(best.def.unit.stats.toughness || '4', 10);
+      const defenderSave = best.def.unit.stats.save || null;
+
+      // Process each melee weapon individually (like shooting)
+      const meleeWeapons = (attacker.unit.weapons || []).filter(w => !w.characteristics?.range || w.characteristics.range === 'Melee');
+
+      if (meleeWeapons.length > 0 && useDiceRolls) {
+        // With dice rolls, process each weapon
+        meleeWeapons.forEach(weapon => {
+          const diceBreakdown = calculateWeaponDamageWithDice(
+            weapon,
+            defenderToughness,
+            defenderSave,
+            false, // useOvercharge
+            includeOneTimeWeapons,
+            true, // isCharging
+            attacker.unit.unitRerolls,
+            undefined // targetFNP
+          );
+
+          const weaponDamage = diceBreakdown.totalDamage;
+          if (weaponDamage > 0) {
+            const casualtyDetails = applyDamage(best.def, weaponDamage, casualties);
+            total += weaponDamage;
+
+            const chars = weapon.characteristics;
+            actions?.push({
+              attackerId: attacker.unit.id,
+              attackerName: attacker.unit.name,
+              defenderId: best.def.unit.id,
+              defenderName: best.def.unit.name,
+              damage: weaponDamage,
+              phase: 'melee',
+              weaponName: weapon.name,
+              distance: dist,
+              attacks: diceBreakdown?.attacks,
+              hits: diceBreakdown?.hits,
+              wounds: diceBreakdown?.wounds,
+              failedSaves: diceBreakdown?.failedSaves,
+              mortalWounds: diceBreakdown?.mortalWounds,
+              skill: chars?.ws,
+              strength: parseInt(chars?.s || '0'),
+              ap: parseInt(chars?.ap || '0'),
+              damageCharacteristic: chars?.d,
+              targetToughness: defenderToughness,
+              targetSave: defenderSave || undefined,
+              modelsKilled: casualtyDetails.modelsKilled,
+              damagePerModel: casualtyDetails.damagePerModel,
+              remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
+              totalModelsInUnit: casualtyDetails.totalModelsInUnit,
+              lethalHits: diceBreakdown?.lethalHits,
+              sustainedHits: diceBreakdown?.sustainedHits,
+              devastatingWounds: diceBreakdown?.devastatingWounds
+            });
+          }
+        });
+      } else {
+        // Without dice rolls or no melee weapons, use old method
+        const casualtyDetails = applyDamage(best.def, best.dmg, casualties);
+        total += best.dmg;
+        actions?.push({
+          attackerId: attacker.unit.id,
+          attackerName: attacker.unit.name,
+          defenderId: best.def.unit.id,
+          defenderName: best.def.unit.name,
+          damage: best.dmg,
+          phase: 'melee',
+          weaponName: 'Melee',
+          distance: dist,
+          modelsKilled: casualtyDetails.modelsKilled,
+          damagePerModel: casualtyDetails.damagePerModel,
+          remainingWounds: casualtyDetails.remainingWoundsOnDamagedModel,
+          totalModelsInUnit: casualtyDetails.totalModelsInUnit
+        });
+      }
 
       if (best.def.remainingModels <= 0) {
         const idx = defenders.indexOf(best.def);
@@ -639,7 +1691,22 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
   return total;
 }
 
-function expectedMeleeDamage(attacker: UnitState, defenderToughness: number, includeOneTimeWeapons: boolean): number {
+function expectedMeleeDamage(attacker: UnitState, defender: UnitState, includeOneTimeWeapons: boolean, useDiceRolls: boolean): number {
+  const defenderToughness = parseInt(defender.unit.stats.toughness || '4', 10);
+  const defenderSave = defender.unit.stats.save || null;
+
+  if (useDiceRolls) {
+    return calculateUnitDamageWithDice(
+      attacker.unit,
+      defenderToughness,
+      defenderSave,
+      false, // useOvercharge
+      includeOneTimeWeapons,
+      true, // isCharging - treat as charging to favor melee-first units
+      undefined // targetFNP - TODO: parse from defender abilities
+    );
+  }
+
   return calculateUnitDamage(
     attacker.unit,
     defenderToughness,
@@ -673,6 +1740,9 @@ function snapshotUnit(u: UnitState) {
     baseSizeMM: u.baseSizeMM,
     baseSizeInches: u.baseSizeInches,
     baseRadius: unitCollisionRadius(u),
+    inReserves: u.inReserves,
+    reserveType: u.reserveType,
+    arrivedTurn: u.arrivedTurn,
     models: u.modelPositions.map((pos, idx) => ({
       index: idx,
       x: pos.x,
@@ -698,11 +1768,11 @@ function snapshotState(stateA: ArmyState, stateB: ArmyState) {
 
 function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: boolean): void {
   const ENGAGE_RANGE = 1.0;
-  const rollCharge = () => randomCharge ? Math.floor(Math.random() * 6 + 1) + Math.floor(Math.random() * 6 + 1) : 7;
+  const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
 
   const attemptCharge = (attacker: UnitState, targets: UnitState[]) => {
-    if (attacker.remainingModels <= 0) return;
-    const targetsAlive = targets.filter(t => t.remainingModels > 0);
+    if (attacker.remainingModels <= 0 || attacker.inReserves) return; // Skip units in reserves
+    const targetsAlive = targets.filter(t => t.remainingModels > 0 && !t.inReserves); // Only charge units on table
     if (!targetsAlive.length) return;
     // Closest target
     targetsAlive.sort((a, b) => distanceBetween(attacker, a) - distanceBetween(attacker, b));

@@ -3,7 +3,7 @@
  * Dedicated page for running tactical battle simulations
  */
 
-import type { Army } from './types';
+import type { Army, AttachmentMap } from './types';
 import type { SimulationResult } from './simulation';
 import { runSimpleEngagement, pickStartingDistance } from './simulation';
 import {
@@ -15,11 +15,14 @@ import {
   isComingFrom,
   returnToAnalyzer
 } from './utils/app-state';
+import { applyLeaderAttachments } from './utils/leader';
 import { renderBattlefield, getScaleFactors } from './sim-ui/battlefield-renderer';
 import { renderBattleLog, renderBattleSummary, renderUnitStatesTable } from './sim-ui/results-display';
 
 let armyA: Army | null = null;
 let armyB: Army | null = null;
+let leaderAttachmentsA: AttachmentMap = {};
+let leaderAttachmentsB: AttachmentMap = {};
 let lastSimResult: SimulationResult | null = null;
 let currentPhaseIndex: number = -1;
 
@@ -151,6 +154,7 @@ function runBattle(): void {
   const includeOneTimeInput = document.getElementById('includeOneTimeWeapons') as HTMLInputElement;
   const allowAdvanceInput = document.getElementById('allowAdvance') as HTMLInputElement;
   const randomChargeInput = document.getElementById('randomCharge') as HTMLInputElement;
+  const useDiceRollsInput = document.getElementById('useDiceRolls') as HTMLInputElement;
 
   const manualDistance = parseFloat(startingDistanceInput.value);
   const startingDistance = !isNaN(manualDistance) && manualDistance > 0
@@ -160,18 +164,23 @@ function runBattle(): void {
   const config = {
     startingDistance,
     initiative: initiativeSelect.value as 'armyA' | 'armyB',
-    maxRounds: parseInt(maxRoundsInput.value) || 3,
+    maxRounds: parseInt(maxRoundsInput.value) || 5,
     includeOneTimeWeapons: includeOneTimeInput.checked,
     allowAdvance: allowAdvanceInput.checked,
-    randomCharge: randomChargeInput.checked
+    randomCharge: randomChargeInput.checked,
+    useDiceRolls: useDiceRollsInput.checked
   };
 
   // Save config
   saveBattleSimConfig(config);
 
+  // Apply leader attachments before simulation
+  const armyAWithLeaders = applyLeaderAttachments(armyA, leaderAttachmentsA);
+  const armyBWithLeaders = applyLeaderAttachments(armyB, leaderAttachmentsB);
+
   // Run simulation
   try {
-    lastSimResult = runSimpleEngagement(armyA, armyB, config);
+    lastSimResult = runSimpleEngagement(armyAWithLeaders, armyBWithLeaders, config);
     currentPhaseIndex = 0;
     renderSimulationResult();
   } catch (error) {
@@ -491,12 +500,14 @@ async function main() {
     // Load armies from state if available
     if (state.currentArmy) {
       armyA = state.currentArmy;
+      leaderAttachmentsA = state.leaderAttachments || {};
       displayArmyInfo(armyA, 'armyAInfo');
       // Note: dropdown value will remain at default since we loaded from state
     }
 
     if (state.opponentArmy) {
       armyB = state.opponentArmy;
+      leaderAttachmentsB = state.opponentAttachments || {};
       displayArmyInfo(armyB, 'armyBInfo');
       // Note: dropdown value will remain at default since we loaded from state
     }
@@ -509,12 +520,14 @@ async function main() {
       const includeOneTimeInput = document.getElementById('includeOneTimeWeapons') as HTMLInputElement;
       const allowAdvanceInput = document.getElementById('allowAdvance') as HTMLInputElement;
       const randomChargeInput = document.getElementById('randomCharge') as HTMLInputElement;
+      const useDiceRollsInput = document.getElementById('useDiceRolls') as HTMLInputElement;
 
       if (initiativeSelect) initiativeSelect.value = config.initiative;
       if (maxRoundsInput && config.maxRounds) maxRoundsInput.value = config.maxRounds.toString();
       if (includeOneTimeInput) includeOneTimeInput.checked = config.includeOneTimeWeapons ?? false;
       if (allowAdvanceInput) allowAdvanceInput.checked = config.allowAdvance;
       if (randomChargeInput) randomChargeInput.checked = config.randomCharge;
+      if (useDiceRollsInput) useDiceRollsInput.checked = config.useDiceRolls ?? false;
       if (startingDistanceInput && config.startingDistance) startingDistanceInput.value = config.startingDistance.toString();
     }
 
