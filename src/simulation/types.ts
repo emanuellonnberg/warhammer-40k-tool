@@ -108,6 +108,17 @@ export interface PhaseLog {
   actions?: ActionLog[];
   advancedUnits?: string[];
   movementDetails?: MovementDetail[];
+  objectiveStates?: Array<{
+    id: string;
+    name: string;
+    priority: 'primary' | 'secondary';
+    controlledBy: 'armyA' | 'armyB' | 'contested';
+    heldByA: number;
+    heldByB: number;
+    baseVp: number;
+    holdNeeded: number;
+    readyFor: 'armyA' | 'armyB' | null;
+  }>;
 }
 
 export interface ObjectiveMarker {

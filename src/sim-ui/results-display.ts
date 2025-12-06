@@ -29,6 +29,32 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `${name} ${verb} ${detail.distance.toFixed(1)}" to (${detail.to.x.toFixed(1)}, ${detail.to.y.toFixed(1)})`;
   };
 
+  const renderObjectiveStates = (
+    states: typeof result.logs[number]['objectiveStates'],
+    aLabel: string,
+    bLabel: string
+  ) => {
+    if (!states || !states.length) return '';
+    const items = states.map(state => {
+      const controller = state.controlledBy === 'armyA' ? aLabel : state.controlledBy === 'armyB' ? bLabel : 'Contested';
+      const holdProgress = state.controlledBy === 'armyA' ? state.heldByA : state.controlledBy === 'armyB' ? state.heldByB : 0;
+      const roundsNeeded = Math.max(0, state.holdNeeded - holdProgress);
+      const readyText = state.readyFor
+        ? `ready +${state.baseVp}VP for ${state.readyFor === 'armyA' ? aLabel : bLabel}`
+        : state.controlledBy === 'contested'
+          ? '0VP (contested)'
+          : state.holdNeeded > 0
+            ? `+${state.baseVp}VP in ${roundsNeeded}r`
+            : '0VP';
+      const holdText = state.holdNeeded > 0
+        ? `hold ${holdProgress}/${state.holdNeeded}`
+        : 'scores immediately';
+      const badge = state.priority === 'primary' ? '★' : '⬢';
+      return `<li class="sim-objective-item">${badge} <strong>${state.name}</strong> (${state.priority}) — ${controller}; ${holdText}; ${readyText}</li>`;
+    }).join('');
+    return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
+  };
+
   const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB' }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
@@ -167,6 +193,7 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
       : '';
     
     const movementList = log.phase === 'movement' ? renderMovementDetails(log.movementDetails) : '';
+    const objectiveList = log.phase === 'command' ? renderObjectiveStates(log.objectiveStates, armyALabel, armyBLabel) : '';
     const attackList = (log.phase === 'shooting' || log.phase === 'melee') ? renderAttackDetails(log.actions, entry.index) : '';
     
     const description = `<div class="mb-2"><strong>${formatPhaseHeader(log)}</strong></div><p>${log.description}</p>`;
@@ -179,7 +206,7 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     
     return {
       header: `<li class="nav-item" role="presentation"><button class="nav-link ${isActive ? 'active' : ''}" id="${tabId}" data-bs-toggle="tab" data-bs-target="#${paneId}" type="button" role="tab" aria-controls="${paneId}" aria-selected="${isActive}">${label}</button></li>`,
-      pane: `<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">${description}${statsText}${casualtiesText}${movementList}${attackList}</div>`
+      pane: `<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">${description}${objectiveList}${statsText}${casualtiesText}${movementList}${attackList}</div>`
     };
   });
 

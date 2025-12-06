@@ -27,7 +27,8 @@ import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
   DEFAULT_OBJECTIVE_SCORING,
-  getMissionScoringConfig
+  getMissionScoringConfig,
+  type ObjectiveScoringConfig
 } from './objective-scoring';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
@@ -1112,9 +1113,10 @@ function summarizePhase(
   distanceAfter?: number,
   actions?: ActionLog[],
   advancedUnits?: string[],
-  movementDetails?: MovementDetail[]
+  movementDetails?: MovementDetail[],
+  objectiveStates?: PhaseLog['objectiveStates']
 ): PhaseLog {
-  return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails };
+  return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails, objectiveStates };
 }
 
 /**
@@ -1128,6 +1130,32 @@ function getObjectiveSummary(objectives: ObjectiveMarker[]): string {
 
   const detail = getObjectiveSummaryEnhanced(objectives);
   return `Objectives - Army A: ${objA}, Army B: ${objB}, Contested: ${objContested} | ${detail}`;
+}
+
+function mapObjectiveStatesForLog(
+  objectives: ObjectiveMarker[],
+  config: ObjectiveScoringConfig
+): PhaseLog['objectiveStates'] {
+  const holdNeeded = config.holdTimerRequired ?? 0;
+  return objectives.map(obj => {
+    const baseVp = config.vpPerObjective + (obj.priority === 'primary' ? config.primaryObjectiveBonus : 0);
+    const heldA = obj.heldByA || 0;
+    const heldB = obj.heldByB || 0;
+    const readyA = obj.controlledBy === 'armyA' && (holdNeeded === 0 || heldA >= holdNeeded);
+    const readyB = obj.controlledBy === 'armyB' && (holdNeeded === 0 || heldB >= holdNeeded);
+
+    return {
+      id: obj.id,
+      name: obj.name,
+      priority: obj.priority,
+      controlledBy: obj.controlledBy,
+      heldByA: heldA,
+      heldByB: heldB,
+      baseVp,
+      holdNeeded,
+      readyFor: readyA ? 'armyA' : readyB ? 'armyB' : null
+    };
+  });
 }
 
 function expectedShootingDamage(
@@ -1386,6 +1414,7 @@ export function runSimpleEngagement(
       // COMMAND PHASE: Objective control and battle shock
       updateObjectiveControl(objectives, stateA, stateB);
       const objSummary = getObjectiveSummary(objectives);
+      const objectiveStatesForLog = mapObjectiveStatesForLog(objectives, missionScoring);
       
       // Resolve Battle Shock tests
       const battleShockResults = resolveBattleShock(active, round);
@@ -1402,7 +1431,8 @@ export function runSimpleEngagement(
         undefined,
         undefined,
         undefined,
-        undefined
+        undefined,
+        objectiveStatesForLog
       ));
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
