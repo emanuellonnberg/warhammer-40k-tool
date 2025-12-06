@@ -5,6 +5,7 @@
 
 import type { Army, AttachmentMap, RerollConfig } from '../types';
 import { RerollType } from '../types';
+import type { StrategyProfile } from '../simulation/planner';
 
 export interface BattleSimConfig {
   startingDistance?: number;
@@ -12,6 +13,13 @@ export interface BattleSimConfig {
   allowAdvance: boolean;
   randomCharge: boolean;
   maxRounds?: number;
+  includeOneTimeWeapons?: boolean;
+  useDiceRolls?: boolean;
+  strategyProfile?: StrategyProfile;
+  useBeamSearch?: boolean;
+  beamWidth?: number;
+  useAdaptiveStrategy?: boolean;
+  missionScoring?: 'matched-play' | 'hold-2' | 'high-stakes';
 }
 
 export interface UserPreferences {
@@ -61,7 +69,14 @@ function getDefaultBattleSimConfig(): BattleSimConfig {
     initiative: 'armyA',
     allowAdvance: true,
     randomCharge: false,
-    maxRounds: 5
+    maxRounds: 5,
+    includeOneTimeWeapons: false,
+    useDiceRolls: false,
+    strategyProfile: 'greedy',
+    useBeamSearch: false,
+    beamWidth: 3,
+    useAdaptiveStrategy: false,
+    missionScoring: 'matched-play'
   };
 }
 

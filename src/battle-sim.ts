@@ -5,6 +5,7 @@
 
 import type { Army, AttachmentMap } from './types';
 import type { SimulationResult } from './simulation';
+import type { StrategyProfile } from './simulation/planner';
 import { runSimpleEngagement, pickStartingDistance } from './simulation';
 import {
   loadAppState,
@@ -155,6 +156,11 @@ function runBattle(): void {
   const allowAdvanceInput = document.getElementById('allowAdvance') as HTMLInputElement;
   const randomChargeInput = document.getElementById('randomCharge') as HTMLInputElement;
   const useDiceRollsInput = document.getElementById('useDiceRolls') as HTMLInputElement;
+  const plannerStrategySelect = document.getElementById('plannerStrategy') as HTMLSelectElement;
+  const useAdaptiveStrategyInput = document.getElementById('useAdaptiveStrategy') as HTMLInputElement;
+  const useBeamSearchInput = document.getElementById('useBeamSearch') as HTMLInputElement;
+  const beamWidthInput = document.getElementById('beamWidth') as HTMLInputElement;
+  const missionScoringSelect = document.getElementById('missionScoring') as HTMLSelectElement;
 
   const manualDistance = parseFloat(startingDistanceInput.value);
   const startingDistance = !isNaN(manualDistance) && manualDistance > 0
@@ -168,7 +174,12 @@ function runBattle(): void {
     includeOneTimeWeapons: includeOneTimeInput.checked,
     allowAdvance: allowAdvanceInput.checked,
     randomCharge: randomChargeInput.checked,
-    useDiceRolls: useDiceRollsInput.checked
+    useDiceRolls: useDiceRollsInput.checked,
+    strategyProfile: (plannerStrategySelect?.value as StrategyProfile) || 'greedy',
+    useAdaptiveStrategy: useAdaptiveStrategyInput?.checked ?? false,
+    useBeamSearch: useBeamSearchInput?.checked ?? false,
+    beamWidth: parseInt(beamWidthInput?.value || '3', 10) || 3,
+    missionScoring: (missionScoringSelect?.value as 'matched-play' | 'hold-2' | 'high-stakes') || 'matched-play'
   };
 
   // Save config
@@ -224,6 +235,10 @@ function renderSimulationResult(): void {
   if (battlefieldViz) {
     battlefieldViz.innerHTML = renderBattlefield(lastSimResult, currentPhaseIndex);
   }
+
+  // Draw passive movement overlays for current movement phase (low opacity)
+  const scales = getScaleFactors(lastSimResult);
+  renderPhaseMovementOverlay(currentPhaseIndex, scales);
 
   // Render unit states table
   const unitStatesTable = document.getElementById('unitStatesTable');
@@ -324,7 +339,7 @@ function setupBattlefieldInteractions(): void {
 }
 
 /**
- * Highlight movement on battlefield
+ * Highlight movement on battlefield (hover-driven)
  */
 function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB' }, scales: ReturnType<typeof getScaleFactors>): void {
   const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
@@ -343,7 +358,7 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
   line.setAttribute('stroke', color);
   line.setAttribute('stroke-width', '3');
   line.setAttribute('stroke-dasharray', '6 3');
-  line.setAttribute('opacity', '0.8');
+  line.setAttribute('opacity', '0.85');
   overlay.appendChild(line);
 
   const start = document.createElementNS(ns, 'circle');
@@ -351,7 +366,7 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
   start.setAttribute('cy', scales.toSvgY(detail.fromY).toFixed(1));
   start.setAttribute('r', '6');
   start.setAttribute('fill', color);
-  start.setAttribute('fill-opacity', '0.25');
+  start.setAttribute('fill-opacity', '0.35');
   start.setAttribute('stroke', color);
   overlay.appendChild(start);
 
@@ -360,9 +375,66 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
   end.setAttribute('cy', scales.toSvgY(detail.toY).toFixed(1));
   end.setAttribute('r', '7');
   end.setAttribute('fill', color);
-  end.setAttribute('fill-opacity', '0.4');
+  end.setAttribute('fill-opacity', '0.55');
   end.setAttribute('stroke', '#111');
   overlay.appendChild(end);
+}
+
+/**
+ * Render passive movement paths for the current movement phase (low opacity)
+ */
+function renderPhaseMovementOverlay(phaseIndex: number, scales: ReturnType<typeof getScaleFactors>): void {
+  if (!lastSimResult) return;
+  const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
+  const layer = svg?.querySelector('#movementPhasePaths') as SVGGElement | null;
+  if (!layer) return;
+
+  layer.innerHTML = '';
+  if (phaseIndex < 0) return;
+
+  const log = lastSimResult.logs[phaseIndex];
+  if (!log || log.phase !== 'movement' || !log.movementDetails || !log.movementDetails.length) return;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  log.movementDetails.forEach(detail => {
+    // Skip zero-distance deployments/reserve placements so we don't draw artifacts from origin
+    const dx = detail.to.x - detail.from.x;
+    const dy = detail.to.y - detail.from.y;
+    const distSq = dx * dx + dy * dy;
+    if (distSq < 0.01) return;
+
+    const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', scales.toSvgX(detail.from.x).toFixed(1));
+    line.setAttribute('y1', scales.toSvgY(detail.from.y).toFixed(1));
+    line.setAttribute('x2', scales.toSvgX(detail.to.x).toFixed(1));
+    line.setAttribute('y2', scales.toSvgY(detail.to.y).toFixed(1));
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', '4 4');
+    line.setAttribute('opacity', '0.25');
+    layer.appendChild(line);
+
+    const start = document.createElementNS(ns, 'circle');
+    start.setAttribute('cx', scales.toSvgX(detail.from.x).toFixed(1));
+    start.setAttribute('cy', scales.toSvgY(detail.from.y).toFixed(1));
+    start.setAttribute('r', '5');
+    start.setAttribute('fill', color);
+    start.setAttribute('fill-opacity', '0.15');
+    start.setAttribute('stroke', color);
+    start.setAttribute('stroke-opacity', '0.4');
+    layer.appendChild(start);
+
+    const end = document.createElementNS(ns, 'circle');
+    end.setAttribute('cx', scales.toSvgX(detail.to.x).toFixed(1));
+    end.setAttribute('cy', scales.toSvgY(detail.to.y).toFixed(1));
+    end.setAttribute('r', '6');
+    end.setAttribute('fill', color);
+    end.setAttribute('fill-opacity', '0.3');
+    end.setAttribute('stroke', '#111');
+    end.setAttribute('stroke-opacity', '0.4');
+    layer.appendChild(end);
+  });
 }
 
 /**
@@ -496,6 +568,9 @@ async function main() {
     const nextPhaseBtn = document.getElementById('nextPhaseBtn');
     const showAllBtn = document.getElementById('showAllBtn');
     const rerunSimBtn = document.getElementById('rerunSimBtn');
+    const plannerStrategySelect = document.getElementById('plannerStrategy') as HTMLSelectElement;
+    const useBeamSearchInput = document.getElementById('useBeamSearch') as HTMLInputElement;
+    const beamWidthInput = document.getElementById('beamWidth') as HTMLInputElement;
 
     // Load armies from state if available
     if (state.currentArmy) {
@@ -521,6 +596,7 @@ async function main() {
       const allowAdvanceInput = document.getElementById('allowAdvance') as HTMLInputElement;
       const randomChargeInput = document.getElementById('randomCharge') as HTMLInputElement;
       const useDiceRollsInput = document.getElementById('useDiceRolls') as HTMLInputElement;
+      const useAdaptiveStrategyInput = document.getElementById('useAdaptiveStrategy') as HTMLInputElement;
 
       if (initiativeSelect) initiativeSelect.value = config.initiative;
       if (maxRoundsInput && config.maxRounds) maxRoundsInput.value = config.maxRounds.toString();
@@ -528,7 +604,23 @@ async function main() {
       if (allowAdvanceInput) allowAdvanceInput.checked = config.allowAdvance;
       if (randomChargeInput) randomChargeInput.checked = config.randomCharge;
       if (useDiceRollsInput) useDiceRollsInput.checked = config.useDiceRolls ?? false;
+      if (plannerStrategySelect && config.strategyProfile) plannerStrategySelect.value = config.strategyProfile;
+      if (useAdaptiveStrategyInput && typeof config.useAdaptiveStrategy === 'boolean') useAdaptiveStrategyInput.checked = config.useAdaptiveStrategy;
+      if (useBeamSearchInput && typeof config.useBeamSearch === 'boolean') useBeamSearchInput.checked = config.useBeamSearch;
+      if (beamWidthInput && config.beamWidth) beamWidthInput.value = config.beamWidth.toString();
       if (startingDistanceInput && config.startingDistance) startingDistanceInput.value = config.startingDistance.toString();
+      const missionScoringSelect = document.getElementById('missionScoring') as HTMLSelectElement;
+      if (missionScoringSelect && config.missionScoring) missionScoringSelect.value = config.missionScoring;
+    }
+
+    // Toggle beam width input based on checkbox
+    const syncBeamWidthState = () => {
+      if (!beamWidthInput || !useBeamSearchInput) return;
+      beamWidthInput.disabled = !useBeamSearchInput.checked;
+    };
+    if (useBeamSearchInput && beamWidthInput) {
+      useBeamSearchInput.addEventListener('change', syncBeamWidthState);
+      syncBeamWidthState();
     }
 
     updateBattleMatchup();

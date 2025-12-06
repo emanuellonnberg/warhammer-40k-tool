@@ -295,6 +295,51 @@
             max-width: 400px;
         }
 
+        /* Tabbed battle log styles */
+        .nav-tabs {
+            border-bottom: 1px solid var(--divider);
+            margin-bottom: 1rem;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--text-secondary);
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary-blue);
+            background-color: transparent;
+            border-bottom-color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            padding: 0;
+        }
+
+        .tab-pane {
+            padding: 1rem;
+            border-radius: 4px;
+            background: var(--background);
+        }
+
+        .tab-pane p {
+            margin-bottom: 0.5rem;
+        }
+
         .drop-zone-content i {
             font-size: 2rem;
             margin-bottom: 0.5rem;
@@ -497,6 +542,35 @@
                                     Allow Advance (no shooting unless Assault)
                                 </label>
                             </div>
+                            <label class="form-label mt-3" for="plannerStrategy">Planner Strategy:</label>
+                            <select id="plannerStrategy" class="form-select">
+                                <option value="greedy" selected>Greedy (balanced)</option>
+                                <option value="aggressive">Aggressive</option>
+                                <option value="defensive">Defensive</option>
+                                <option value="objective-focused">Objective-focused</option>
+                            </select>
+                            <label class="form-label mt-3" for="missionScoring">Mission Scoring:</label>
+                            <select id="missionScoring" class="form-select">
+                                <option value="matched-play" selected>Matched Play (3 VP per objective)</option>
+                                <option value="hold-2">Hold for 2 (score after 2 rounds held)</option>
+                                <option value="high-stakes">High Stakes (5 VP per objective)</option>
+                            </select>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="useAdaptiveStrategy">
+                                <label class="form-check-label" for="useAdaptiveStrategy">
+                                    🧠 Adaptive AI (automatically adjusts strategy)
+                                </label>
+                            </div>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="useBeamSearch">
+                                <label class="form-check-label" for="useBeamSearch">
+                                    Use beam search (multi-unit lookahead)
+                                </label>
+                            </div>
+                            <div class="input-group mt-2">
+                                <span class="input-group-text">Beam width</span>
+                                <input type="number" class="form-control" id="beamWidth" min="1" max="6" value="3">
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-check">
@@ -517,6 +591,19 @@
                                 <i class="bi bi-play-fill"></i> Run Battle Simulation
                             </button>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Objective Scoring Legend -->
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="alert alert-info shadow-sm" role="alert">
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <div><strong><i class="bi bi-bullseye"></i> Objective Scoring</strong></div>
+                        <div class="badge bg-primary-subtle text-primary-emphasis border">Primary [P]: 5 VP / round</div>
+                        <div class="badge bg-secondary-subtle text-secondary-emphasis border">Secondary [S]: 3 VP / round</div>
+                        <div class="text-muted small">Hold tracker shows as hN; VP hints (+XVP or "in Nr") appear in Command phase logs.</div>
                     </div>
                 </div>
             </div>
@@ -560,7 +647,7 @@
                 <div class="col-lg-6">
                     <div class="results-panel" style="height: 600px; display: flex; flex-direction: column;">
                         <h3><i class="bi bi-journal-text"></i> Battle Log</h3>
-                        <div class="sim-log" id="battleLog" style="flex: 1; max-height: none;"></div>
+                        <div class="sim-log" id="battleLog" style="flex: 1; max-height: none; overflow-y: auto;"></div>
                     </div>
                 </div>
             </div>

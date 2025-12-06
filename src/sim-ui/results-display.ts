@@ -5,10 +5,16 @@
 import type { SimulationResult, ArmyState } from '../simulation';
 
 export function renderBattleLog(result: SimulationResult, phaseIndex: number, armyALabel: string, armyBLabel: string): string {
-  const totalPhases = result.logs.length;
-  const logEntries = result.logs.map((log, index) => ({ log, index }));
+  // Use tabbed interface for better readability
+  return renderBattleLogTabs(result, phaseIndex, armyALabel, armyBLabel);
+}
 
-  const visibleEntries = phaseIndex >= 0
+export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number, armyALabel: string, armyBLabel: string): string {
+  const totalPhases = result.logs.length;
+  if (totalPhases === 0) return '<p class="text-muted">No battle log entries</p>';
+  
+  const logEntries = result.logs.map((log, index) => ({ log, index }));
+  const activeTabs = phaseIndex >= 0
     ? logEntries.slice(0, Math.min(totalPhases, phaseIndex + 1))
     : logEntries;
 
@@ -148,22 +154,39 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
     return `<ul class="sim-attack-list mb-1 ps-3">${items}</ul>`;
   };
 
-  const sequentialLogs = visibleEntries.map(entry => {
+  const sequentialLogs = activeTabs.map((entry, idx) => {
     const log = entry.log;
     const stats: string[] = [];
     if (typeof log.damageDealt === 'number') stats.push(`Damage ${log.damageDealt.toFixed(1)}`);
     if (typeof log.distanceAfter === 'number') stats.push(`Distance ${log.distanceAfter.toFixed(1)}"`);
     if (log.advancedUnits?.length) stats.push(`Advanced: ${log.advancedUnits.join(', ')}`);
-    const statsText = stats.length ? ` | ${stats.join(' | ')}` : '';
+    const statsText = stats.length ? `<div class="small text-muted mb-2">${stats.join(' | ')}</div>` : '';
+    
     const casualtiesText = log.casualties?.length
-      ? `<br><em>Casualties:</em> ${log.casualties.map(c => `${c.unitName} -${c.modelsLost}`).join(', ')}`
+      ? `<div class="mb-2"><em>Casualties:</em> ${log.casualties.map(c => `${c.unitName} -${c.modelsLost}`).join(', ')}</div>`
       : '';
+    
     const movementList = log.phase === 'movement' ? renderMovementDetails(log.movementDetails) : '';
     const attackList = (log.phase === 'shooting' || log.phase === 'melee') ? renderAttackDetails(log.actions, entry.index) : '';
-    return `<li><strong>${formatPhaseHeader(log)}</strong>: ${log.description}${statsText}${casualtiesText}${movementList}${attackList}</li>`;
-  }).join('');
+    
+    const description = `<div class="mb-2"><strong>${formatPhaseHeader(log)}</strong></div><p>${log.description}</p>`;
+    
+    const paneId = `log-pane-${entry.index}`;
+    const tabId = `log-tab-${entry.index}`;
+    const isActive = idx === activeTabs.length - 1;
+    const icon = log.phase === 'movement' ? '🚀' : log.phase === 'shooting' ? '🎯' : log.phase === 'melee' ? '⚔️' : log.phase === 'charge' ? '💨' : log.phase === 'command' ? '📢' : '📋';
+    const label = `${icon} R${log.turn} ${log.phase[0].toUpperCase()}`;
+    
+    return {
+      header: `<li class="nav-item" role="presentation"><button class="nav-link ${isActive ? 'active' : ''}" id="${tabId}" data-bs-toggle="tab" data-bs-target="#${paneId}" type="button" role="tab" aria-controls="${paneId}" aria-selected="${isActive}">${label}</button></li>`,
+      pane: `<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">${description}${statsText}${casualtiesText}${movementList}${attackList}</div>`
+    };
+  });
 
-  return `<ul>${sequentialLogs}</ul>`;
+  const tabHeaders = sequentialLogs.map(entry => entry.header).join('');
+  const tabPanes = sequentialLogs.map(entry => entry.pane).join('');
+
+  return `<ul class="nav nav-tabs" role="tablist" style="border-bottom: 1px solid var(--divider); margin-bottom: 1rem; overflow-x: auto; flex-wrap: nowrap;">${tabHeaders}</ul><div class="tab-content">${tabPanes}</div>`;
 }
 
 export function renderActionLog(result: SimulationResult, phaseIndex: number, armyALabel: string, armyBLabel: string): string {
@@ -333,7 +356,7 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
   const reservesB = calculateReservesInfo(result.armyBState);
 
   const formatArmyState = (
-    summary: { survivors: number; totalUnits: number; damageDealt: number; damageTaken: number },
+    summary: { survivors: number; totalUnits: number; damageDealt: number; damageTaken: number; victoryPoints?: number },
     reserves: ReturnType<typeof calculateReservesInfo>
   ) => {
     const reservesInfo = reserves.hasReserves
@@ -344,7 +367,12 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
         </div>`
       : '';
 
+    const vpInfo = summary.victoryPoints !== undefined
+      ? `<div class="stat"><strong>Victory Points:</strong> ${summary.victoryPoints}</div>`
+      : '';
+
     return `
+      ${vpInfo}
       <div class="stat"><strong>Survivors:</strong> ${summary.survivors}/${summary.totalUnits} units</div>
       <div class="stat"><strong>Damage Dealt:</strong> ${summary.damageDealt.toFixed(1)}</div>
       <div class="stat"><strong>Damage Taken:</strong> ${summary.damageTaken.toFixed(1)}</div>
@@ -354,6 +382,16 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
 
   const armyAClass = result.winner === 'armyA' ? 'winner' : (result.winner === 'armyB' ? 'loser' : '');
   const armyBClass = result.winner === 'armyB' ? 'winner' : (result.winner === 'armyA' ? 'loser' : '');
+
+  // Calculate final objective control
+  const objectives = result.objectives || [];
+  const objA = objectives.filter(o => o.controlledBy === 'armyA').length;
+  const objB = objectives.filter(o => o.controlledBy === 'armyB').length;
+  const objContested = objectives.filter(o => o.controlledBy === 'contested').length;
+
+  const objectivesInfo = objectives.length > 0
+    ? `<p class="mb-0 small mt-1"><strong>Final Objectives:</strong> ${armyALabel}: ${objA}, ${armyBLabel}: ${objB}, Contested: ${objContested}</p>`
+    : '';
 
   return `
     <div class="summary-card ${armyAClass} mb-3">
@@ -368,6 +406,7 @@ export function renderBattleSummary(result: SimulationResult, armyALabel: string
       <h6 class="mb-2">${outcomeText}</h6>
       <p class="mb-0 small">${endReasonText}</p>
       <p class="mb-0 small mt-1"><strong>Starting distance:</strong> ${result.startingDistance}" | <strong>Initiative:</strong> ${result.initiative === 'armyA' ? armyALabel : armyBLabel}</p>
+      ${objectivesInfo}
     </div>
   `;
 }

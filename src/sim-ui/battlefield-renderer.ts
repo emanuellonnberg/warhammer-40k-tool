@@ -163,6 +163,49 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     `;
   }).join('');
 
+  // Render objective markers
+  const objectiveMarkers = (result.objectives || []).map(obj => {
+    const cx = sx(obj.x);
+    const cy = sy(obj.y);
+    const objRadius = 8;
+
+    // Color based on control status and priority
+    let fillColor = '#888'; // contested (grey)
+    let strokeColor = '#333';
+    let fillOpacity = 0.3;
+    let radiusMultiplier = 1.0; // Larger markers for primary objectives
+
+    if (obj.controlledBy === 'armyA') {
+      fillColor = '#1f77b4';
+      strokeColor = '#0d47a1';
+      fillOpacity = 0.7;
+    } else if (obj.controlledBy === 'armyB') {
+      fillColor = '#d62728';
+      strokeColor = '#8b0000';
+      fillOpacity = 0.7;
+    }
+
+    // Primary objectives are larger and brighter
+    if (obj.priority === 'primary') {
+      radiusMultiplier = 1.3;
+      fillOpacity = Math.min(1.0, fillOpacity + 0.15);
+    }
+
+    const primaryLabel = obj.priority === 'primary' ? ' [PRIMARY]' : '';
+    const tooltipText = `${obj.id}${primaryLabel}: ${obj.controlledBy === 'contested' ? 'Contested' : (obj.controlledBy === 'armyA' ? 'Army A' : 'Army B')} (A: ${obj.levelOfControlA} OC, B: ${obj.levelOfControlB} OC) Hold: A=${obj.heldByA}, B=${obj.heldByB}`;
+
+    const markerRadius = objRadius * radiusMultiplier;
+
+    return `
+      <g class="objective-marker" data-obj-id="${escapeAttr(obj.id)}" data-priority="${obj.priority}">
+        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(markerRadius + 3).toFixed(1)}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-dasharray="3 2" opacity="0.5" />
+        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${markerRadius.toFixed(1)}" fill="${fillColor}" fill-opacity="${fillOpacity}" stroke="${strokeColor}" stroke-width="2" />
+        <text x="${cx.toFixed(1)}" y="${(cy + 3).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff" stroke="#000" stroke-width="0.5">${obj.priority === 'primary' ? '★' : '⬢'}</text>
+        <title>${tooltipText}</title>
+      </g>
+    `;
+  }).join('');
+
   return `
     <svg id="battlefieldSvg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Unit positions">
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f8f9fa" stroke="#ddd" />
@@ -171,8 +214,10 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
       <line x1="${sx(0).toFixed(1)}" y1="0" x2="${sx(0).toFixed(1)}" y2="${height}" stroke="#888" stroke-dasharray="4 4" />
       <text x="${4}" y="${12}" font-size="10" fill="#1f77b4">Army A zone</text>
       <text x="${width - field.deployDepth * scaleX + 4}" y="${12}" font-size="10" fill="#d62728">Army B zone</text>
+      ${objectiveMarkers}
       ${startCircles}
       ${currentMarkers}
+      <g id="movementPhasePaths"></g>
       <g id="movementHighlight"></g>
       <g id="attackHighlight"></g>
     </svg>

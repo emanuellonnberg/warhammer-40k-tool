@@ -30,6 +30,9 @@ export interface UnitState {
   advanced?: boolean;
   fellBack?: boolean;
   roleLabel?: string;
+  // Battle Shock state
+  battleShocked?: boolean;
+  battleShockedUntilTurn?: number; // The Command phase turn when this status expires
   // Reserves tracking
   inReserves?: boolean;
   reserveType?: 'deep-strike' | 'strategic-reserves';
@@ -42,7 +45,7 @@ export interface ArmyState {
   tag: 'armyA' | 'armyB';
 }
 
-export type PhaseType = 'movement' | 'shooting' | 'charge' | 'melee';
+export type PhaseType = 'movement' | 'shooting' | 'charge' | 'melee' | 'command';
 
 export interface ActionLog {
   attackerId: string;
@@ -109,11 +112,21 @@ export interface PhaseLog {
 
 export interface ObjectiveMarker {
   id: string;
+  name: string;
   x: number;
   y: number;
+  priority: 'primary' | 'secondary'; // Primary objectives worth more VP
   controlledBy: 'armyA' | 'armyB' | 'contested';
   levelOfControlA: number; // Sum of OC for armyA models in range
   levelOfControlB: number; // Sum of OC for armyB models in range
+  // Hold tracking for hold-based VP scoring (e.g., "score VP after holding for 2 rounds")
+  heldByA: number; // Number of consecutive rounds controlled by armyA
+  heldByB: number; // Number of consecutive rounds controlled by armyB
+  // Scoring info
+  vpRewardA: number; // VP scored by armyA for controlling this objective this round
+  vpRewardB: number; // VP scored by armyB for controlling this objective this round
+  scoringUnitsA: string[]; // Unit names contributing to control (for logging)
+  scoringUnitsB: string[]; // Unit names contributing to control (for logging)
 }
 
 export interface SimulationConfig {
@@ -124,6 +137,11 @@ export interface SimulationConfig {
   allowAdvance?: boolean;
   randomCharge?: boolean;
   useDiceRolls?: boolean;  // If true, use actual dice rolls; if false, use expected values
+  strategyProfile?: import('./planner').StrategyProfile;
+  useBeamSearch?: boolean;
+  beamWidth?: number;
+  useAdaptiveStrategy?: boolean;  // If true, AI adapts strategy based on battle state
+  missionScoring?: 'matched-play' | 'hold-2' | 'high-stakes';  // Mission scoring variant
 }
 
 export interface SimulationResult {
@@ -169,12 +187,14 @@ export interface SimulationResult {
       damageTaken: number;
       survivors: number;
       totalUnits: number;
+      victoryPoints?: number;
     };
     armyB: {
       damageDealt: number;
       damageTaken: number;
       survivors: number;
       totalUnits: number;
+      victoryPoints?: number;
     };
   };
 }

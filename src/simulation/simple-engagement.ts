@@ -18,8 +18,17 @@ import type { Weapon, Unit } from '../types';
 import { getWeaponType } from '../utils/weapon';
 import { lookupBaseSizeMM } from '../data/base-sizes';
 import { calculateUnitDamageWithDice, calculateWeaponDamageWithDice } from './dice-damage';
+import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
+import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
+import { planMovement, type StrategyProfile } from './planner';
+import {
+  calculateVictoryPoints as calculateVictoryPointsEnhanced,
+  getObjectiveSummary as getObjectiveSummaryEnhanced,
+  DEFAULT_OBJECTIVE_SCORING,
+  getMissionScoringConfig
+} from './objective-scoring';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
 const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
@@ -81,19 +90,30 @@ function createModelFormation(
   return positions;
 }
 
-function shiftModelPositions(unit: UnitState, dx: number, dy: number): void {
-  if ((!dx && !dy) || !unit.modelPositions) return;
-  unit.modelPositions.forEach(model => {
-    model.x += dx;
-    model.y += dy;
-  });
+/**
+ * Shift model positions by the given delta (immutable operation)
+ * Returns true if positions were updated, false otherwise
+ */
+function shiftModelPositions(unit: UnitState, dx: number, dy: number): boolean {
+  if ((!dx && !dy) || !unit.modelPositions) return false;
+  unit.modelPositions = unit.modelPositions.map(model => ({
+    ...model,
+    x: model.x + dx,
+    y: model.y + dy
+  }));
+  return true;
 }
 
+/**
+ * Update model alive status based on remaining models (immutable operation)
+ * Ensures all alive models come first, then all dead models
+ */
 function updateModelLife(unit: UnitState): void {
   if (!unit.modelPositions) return;
-  unit.modelPositions.forEach((model, idx) => {
-    model.alive = idx < unit.remainingModels;
-  });
+  unit.modelPositions = unit.modelPositions.map((model, idx) => ({
+    ...model,
+    alive: idx < unit.remainingModels
+  }));
 }
 
 /**
@@ -234,66 +254,217 @@ function createObjectiveMarkers(
   const halfH = battlefieldHeight / 2;
 
   return [
-    // Center objective
-    { id: 'obj-center', x: 0, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+    // Center objective (primary - most contested)
+    { 
+      id: 'obj-center', 
+      name: 'Center Objective',
+      x: 0, 
+      y: 0, 
+      priority: 'primary',
+      controlledBy: 'contested', 
+      levelOfControlA: 0, 
+      levelOfControlB: 0,
+      heldByA: 0,
+      heldByB: 0,
+      vpRewardA: 0,
+      vpRewardB: 0,
+      scoringUnitsA: [],
+      scoringUnitsB: []
+    },
 
-    // No-man's land objectives (between deployment zones, left and right)
-    { id: 'obj-nml-left', x: 0, y: -halfH / 2, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
-    { id: 'obj-nml-right', x: 0, y: halfH / 2, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
+    // No-man's land objectives (between deployment zones, left and right) - secondary
+    { 
+      id: 'obj-nml-left', 
+      name: 'Left Flank Objective',
+      x: 0, 
+      y: -halfH / 2, 
+      priority: 'secondary',
+      controlledBy: 'contested', 
+      levelOfControlA: 0, 
+      levelOfControlB: 0,
+      heldByA: 0,
+      heldByB: 0,
+      vpRewardA: 0,
+      vpRewardB: 0,
+      scoringUnitsA: [],
+      scoringUnitsB: []
+    },
+    { 
+      id: 'obj-nml-right', 
+      name: 'Right Flank Objective',
+      x: 0, 
+      y: halfH / 2, 
+      priority: 'secondary',
+      controlledBy: 'contested', 
+      levelOfControlA: 0, 
+      levelOfControlB: 0,
+      heldByA: 0,
+      heldByB: 0,
+      vpRewardA: 0,
+      vpRewardB: 0,
+      scoringUnitsA: [],
+      scoringUnitsB: []
+    },
 
-    // Deployment zone objectives (one in each DZ, positioned 9" from edge)
-    { id: 'obj-dz-armyA', x: -halfW + 9, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 },
-    { id: 'obj-dz-armyB', x: halfW - 9, y: 0, controlledBy: 'contested', levelOfControlA: 0, levelOfControlB: 0 }
+    // Deployment zone objectives (one in each DZ, positioned 9" from edge) - primary
+    { 
+      id: 'obj-dz-armyA', 
+      name: "Army A's Objective",
+      x: -halfW + 9, 
+      y: 0, 
+      priority: 'primary',
+      controlledBy: 'contested', 
+      levelOfControlA: 0, 
+      levelOfControlB: 0,
+      heldByA: 0,
+      heldByB: 0,
+      vpRewardA: 0,
+      vpRewardB: 0,
+      scoringUnitsA: [],
+      scoringUnitsB: []
+    },
+    { 
+      id: 'obj-dz-armyB', 
+      name: "Army B's Objective",
+      x: halfW - 9, 
+      y: 0, 
+      priority: 'primary',
+      controlledBy: 'contested', 
+      levelOfControlA: 0, 
+      levelOfControlB: 0,
+      heldByA: 0,
+      heldByB: 0,
+      vpRewardA: 0,
+      vpRewardB: 0,
+      scoringUnitsA: [],
+      scoringUnitsB: []
+    }
   ];
 }
 
 /**
- * Update objective control based on models within range (3" horizontal, 5" vertical)
- * Level of Control = sum of OC (Objective Control) characteristics
+ * Calculate victory points based on objective control
+ * Uses mission scoring config (default matched play: 5 VP for controlling more objectives than opponent at end of turn)
+ */
+function calculateVictoryPoints(objectives: ObjectiveMarker[], config?: any): { armyA: number; armyB: number } {
+  return calculateVictoryPointsEnhanced(objectives, config || DEFAULT_OBJECTIVE_SCORING);
+}
+
+/**
+ * Update objective control based on models within range
+ * Per 40K 10th Edition Core Rules:
+ * - A model can control an objective if within 3" horizontally AND 5" vertically
+ * - Level of Control = sum of all OC (Objective Control) values from models in range
+ * - A model's contribution = OC stat × number of remaining models in that unit
+ * 
+ * Objectives are updated immutably with new control values and owner
  */
 function updateObjectiveControl(
   objectives: ObjectiveMarker[],
   stateA: ArmyState,
   stateB: ArmyState
 ): void {
+  // Range requirements: 3" horizontal (x-axis in battlefield) and 5" vertical (y-axis)
   const CONTROL_RANGE_HORIZONTAL = 3;
   const CONTROL_RANGE_VERTICAL = 5;
 
-  objectives.forEach(obj => {
-    obj.levelOfControlA = 0;
-    obj.levelOfControlB = 0;
+  for (let i = 0; i < objectives.length; i++) {
+    const obj = objectives[i];
+    let levelOfControlA = 0;
+    let levelOfControlB = 0;
+    const unitsControllingA: string[] = [];
+    const unitsControllingB: string[] = [];
 
     // Calculate Level of Control for armyA
-    stateA.units.forEach(u => {
-      if (u.remainingModels <= 0) return;
+    for (const u of stateA.units) {
+      // Skip units with no remaining models or units in reserves (not on battlefield)
+      if (u.remainingModels <= 0 || u.inReserves) continue;
+      
+      // Battle-shocked units have OC of 0 per 40K rules
+      if (u.battleShocked) continue;
+      
       const dx = Math.abs(u.position.x - obj.x);
       const dy = Math.abs(u.position.y - obj.y);
+      
+      // Check if unit is within control range
       if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
-        // OC is typically 1 for infantry, 2 for characters, 0 for vehicles
-        // For simplicity, assume 1 per model (could be enhanced later)
-        obj.levelOfControlA += u.remainingModels;
+        const oc = parseInt(u.unit.stats.objectiveControl || '0', 10);
+        const contribution = oc * u.remainingModels;
+        levelOfControlA += contribution;
+        
+        // Track which units contribute for debugging
+        if (oc > 0) {
+          unitsControllingA.push(`${u.unit.name} (${u.remainingModels} models × OC${oc} = ${contribution})`);
+        }
       }
-    });
+    }
 
     // Calculate Level of Control for armyB
-    stateB.units.forEach(u => {
-      if (u.remainingModels <= 0) return;
+    for (const u of stateB.units) {
+      // Skip units with no remaining models or units in reserves (not on battlefield)
+      if (u.remainingModels <= 0 || u.inReserves) continue;
+      
+      // Battle-shocked units have OC of 0 per 40K rules
+      if (u.battleShocked) continue;
+      
       const dx = Math.abs(u.position.x - obj.x);
       const dy = Math.abs(u.position.y - obj.y);
+      
+      // Check if unit is within control range
       if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
-        obj.levelOfControlB += u.remainingModels;
+        const oc = parseInt(u.unit.stats.objectiveControl || '0', 10);
+        const contribution = oc * u.remainingModels;
+        levelOfControlB += contribution;
+        
+        // Track which units contribute for debugging
+        if (oc > 0) {
+          unitsControllingB.push(`${u.unit.name} (${u.remainingModels} models × OC${oc} = ${contribution})`);
+        }
       }
-    });
-
-    // Determine control
-    if (obj.levelOfControlA > obj.levelOfControlB) {
-      obj.controlledBy = 'armyA';
-    } else if (obj.levelOfControlB > obj.levelOfControlA) {
-      obj.controlledBy = 'armyB';
-    } else {
-      obj.controlledBy = 'contested';
     }
-  });
+
+    // Determine control based on Level of Control comparison
+    let controlledBy: 'armyA' | 'armyB' | 'contested';
+    if (levelOfControlA > levelOfControlB) {
+      controlledBy = 'armyA';
+    } else if (levelOfControlB > levelOfControlA) {
+      controlledBy = 'armyB';
+    } else {
+      // Tied or both zero = contested
+      controlledBy = 'contested';
+    }
+
+    // Determine control and update hold time
+    const previousController = obj.controlledBy;
+    
+    // Update hold timers
+    let heldByA = obj.heldByA || 0;
+    let heldByB = obj.heldByB || 0;
+    
+    if (controlledBy === 'armyA') {
+      heldByA = (previousController === 'armyA' ? heldByA : 0) + 1;
+      heldByB = 0;
+    } else if (controlledBy === 'armyB') {
+      heldByB = (previousController === 'armyB' ? heldByB : 0) + 1;
+      heldByA = 0;
+    } else {
+      // Contested - reset hold times
+      heldByA = 0;
+      heldByB = 0;
+    }
+
+    // Update objective with new values (create new object for immutability)
+    objectives[i] = {
+      ...obj,
+      levelOfControlA,
+      levelOfControlB,
+      controlledBy,
+      heldByA,
+      heldByB,
+      scoringUnitsA: unitsControllingA,
+      scoringUnitsB: unitsControllingB
+    };
+  }
 }
 
 /**
@@ -946,6 +1117,19 @@ function summarizePhase(
   return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails };
 }
 
+/**
+ * Generate a detailed summary of objective control status
+ * Shows which objectives are controlled and by whom, and the Level of Control values
+ */
+function getObjectiveSummary(objectives: ObjectiveMarker[]): string {
+  const objA = objectives.filter(o => o.controlledBy === 'armyA').length;
+  const objB = objectives.filter(o => o.controlledBy === 'armyB').length;
+  const objContested = objectives.filter(o => o.controlledBy === 'contested').length;
+
+  const detail = getObjectiveSummaryEnhanced(objectives);
+  return `Objectives - Army A: ${objA}, Army B: ${objB}, Contested: ${objContested} | ${detail}`;
+}
+
 function expectedShootingDamage(
   attacker: UnitState,
   defender: UnitState,
@@ -977,6 +1161,10 @@ function expectedShootingDamage(
   }
 }
 
+/**
+ * Apply damage to a unit with proper state consistency checks
+ * Uses atomic updates to ensure state integrity
+ */
 function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog[]): {
   modelsKilled: number;
   damagePerModel: number;
@@ -985,17 +1173,37 @@ function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog
 } {
   const woundsPerModel = parseInt(target.unit.stats.wounds || '1', 10);
   const beforeModels = target.remainingModels;
-  let woundsRemaining = target.remainingWounds - damage;
+  const beforeWounds = target.remainingWounds;
+  
+  // Calculate new state
+  let woundsRemaining = beforeWounds - damage;
   woundsRemaining = Math.max(0, woundsRemaining);
-  const modelsRemaining = Math.floor(woundsRemaining / woundsPerModel);
+  const modelsRemaining = woundsRemaining === 0
+    ? 0
+    : Math.max(1, Math.ceil(woundsRemaining / woundsPerModel));
 
+  // Update state atomically
   target.remainingWounds = woundsRemaining;
   target.remainingModels = Math.max(0, modelsRemaining);
+  
+  // Update model alive status
   updateModelLife(target);
 
+  // Calculate results
   const modelsKilled = beforeModels - target.remainingModels;
   const damagePerModel = beforeModels > 0 ? damage / beforeModels : 0;
   const remainingWoundsOnDamagedModel = woundsRemaining % woundsPerModel;
+
+  // Validate consistency
+  if (target.modelPositions.length > 0) {
+    const aliveCount = target.modelPositions.filter(m => m.alive).length;
+    if (aliveCount !== target.remainingModels) {
+      console.warn(
+        `State inconsistency for ${target.unit.name}: ` +
+        `alive models (${aliveCount}) !== remainingModels (${target.remainingModels})`
+      );
+    }
+  }
 
   if (casualties && modelsKilled > 0) {
     casualties.push({
@@ -1027,6 +1235,11 @@ export function runSimpleEngagement(
   const allowAdvance = config.allowAdvance ?? true;
   const randomCharge = config.randomCharge ?? false;
   const useDiceRolls = config.useDiceRolls ?? false;
+  const strategyProfile = config.strategyProfile ?? 'greedy';
+  const useBeamSearch = config.useBeamSearch ?? false;
+  const beamWidth = config.beamWidth ?? 3;
+  const useAdaptiveStrategy = config.useAdaptiveStrategy ?? false;
+  const missionScoring = getMissionScoringConfig(config.missionScoring);
   const maxPoints = Math.max(armyA.pointsTotal || 2000, armyB.pointsTotal || 2000);
   const battlefield = battlefieldFromPoints(maxPoints);
 
@@ -1034,6 +1247,7 @@ export function runSimpleEngagement(
   const timeline: NonNullable<SimulationResult['positionsTimeline']> = [];
   const logs: PhaseLog[] = [];
   const damageTally = { armyA: 0, armyB: 0 };
+  const victoryPoints = { armyA: 0, armyB: 0 };
   const survivorsCount = (state: ArmyState) => state.units.filter(u => u.remainingModels > 0).length;
   let endReason: 'maxRounds' | 'armyDestroyed' = 'maxRounds';
 
@@ -1078,7 +1292,8 @@ export function runSimpleEngagement(
         // Move toward enemy deployment zone (toward center of battlefield)
         const direction = state.tag === 'armyA' ? 1 : -1;
         const moveX = direction * scoutDist;
-        u.position.x += moveX;
+        // Update position immutably
+        u.position = { x: u.position.x + moveX, y: u.position.y };
         shiftModelPositions(u, moveX, 0);
         clampToBoard(u, battlefield.width, battlefield.height);
 
@@ -1089,9 +1304,8 @@ export function runSimpleEngagement(
         });
 
         if (tooClose) {
-          // Revert the move
-          u.position.x = startPos.x;
-          u.position.y = startPos.y;
+          // Revert the move: restore original position immutably
+          u.position = { x: startPos.x, y: startPos.y };
           // Recreate model positions at original location
           const modelCount = u.modelPositions.length;
           const spacing = Math.max(u.baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
@@ -1169,11 +1383,86 @@ export function runSimpleEngagement(
     for (const active of turnOrder) {
       const opponent = active === stateA ? stateB : stateA;
 
-      const movementDetails = moveArmiesTowardEachOther(active, opponent, allowAdvance, battlefield.width, battlefield.height);
+      // COMMAND PHASE: Objective control and battle shock
+      updateObjectiveControl(objectives, stateA, stateB);
+      const objSummary = getObjectiveSummary(objectives);
+      
+      // Resolve Battle Shock tests
+      const battleShockResults = resolveBattleShock(active, round);
+      const battleShockSummary = battleShockResults.length > 0
+        ? battleShockResults.map(r => formatBattleShockResult(r)).join('; ')
+        : 'No Battle Shock tests required.';
+      
+      logs.push(summarizePhase(
+        'command',
+        round,
+        active.tag,
+        `Round ${round}: ${active.tag} - Command Phase. Objectives: ${objSummary}. Battle Shock: ${battleShockSummary}`,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      ));
+      timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
+
+      // Adaptive strategy: Evaluate battle state and potentially switch strategy
+      let currentStrategy = strategyProfile;
+      let strategyExplanation = '';
+      
+      if (useAdaptiveStrategy) {
+        const ourVP = active.tag === 'armyA' ? victoryPoints.armyA : victoryPoints.armyB;
+        const enemyVP = active.tag === 'armyA' ? victoryPoints.armyB : victoryPoints.armyA;
+        
+        const battleState = evaluateBattleState(active, opponent, objectives, ourVP, enemyVP);
+        const recommendedStrategy = recommendStrategy(battleState, round, maxRounds);
+        
+        if (recommendedStrategy) {
+          currentStrategy = recommendedStrategy;
+          strategyExplanation = ` [AI: ${recommendedStrategy} - ${explainStrategyChoice(battleState, recommendedStrategy, round)}]`;
+        }
+      }
+
+      // Planner-driven movement
+      const { movements } = planMovement(
+        active,
+        opponent,
+        objectives,
+        allowAdvance,
+        battlefield.width,
+        battlefield.height,
+        currentStrategy,
+        useBeamSearch,
+        beamWidth
+      );
+
+      const movementDetails: MovementDetail[] = [];
+      movements.forEach(({ unit, to }) => {
+        const startPos = { x: unit.position.x, y: unit.position.y };
+        const dx = to.x - unit.position.x;
+        const dy = to.y - unit.position.y;
+        unit.position = { x: to.x, y: to.y };
+        shiftModelPositions(unit, dx, dy);
+        clampToBoard(unit, battlefield.width, battlefield.height);
+        const actualDistance = Math.sqrt((unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2);
+        unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
+        if (actualDistance > 0.05) {
+          movementDetails.push({
+            unitId: unit.unit.id,
+            unitName: unit.unit.name,
+            army: active.tag,
+            from: startPos,
+            to: { x: unit.position.x, y: unit.position.y },
+            distance: actualDistance,
+            advanced: unit.advanced ?? false
+          });
+        }
+      });
+
       clampAllSpacing(stateA, stateB);
       const postMoveDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       const advancedUnits = active.units.filter(u => u.advanced).map(u => u.unit.name);
-      logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined));
+      logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.${strategyExplanation}`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined));
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const shootActions: ActionLog[] = [];
@@ -1185,7 +1474,7 @@ export function runSimpleEngagement(
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const chargeActions: ActionLog[] = [];
-      performCharges(active, opponent, randomCharge);
+      performCharges(active, opponent, randomCharge, chargeActions);
       clampAllSpacing(stateA, stateB);
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
@@ -1200,8 +1489,25 @@ export function runSimpleEngagement(
       logs[logs.length - 1].casualties = meleeCasualties;
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
-      // Update objective control at end of each player's turn
-      updateObjectiveControl(objectives, stateA, stateB);
+      // Score victory points at end of each battle round (after both players have taken turns)
+      if (active === turnOrder[1]) {
+        const roundVP = calculateVictoryPoints(objectives, missionScoring);
+        victoryPoints.armyA += roundVP.armyA;
+        victoryPoints.armyB += roundVP.armyB;
+
+        // Log objective scoring with detailed information
+        logs.push(summarizePhase(
+          'movement',
+          round,
+          'armyA',
+          `END OF ROUND ${round} - VICTORY POINTS SCORED: Army A +${roundVP.armyA}VP, Army B +${roundVP.armyB}VP. Cumulative: A ${victoryPoints.armyA}VP, B ${victoryPoints.armyB}VP`,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        ));
+      }
 
       perTurnPositions.push({ turn: round, ...snapshotPositions(stateA, stateB) });
 
@@ -1247,13 +1553,15 @@ export function runSimpleEngagement(
         damageDealt: damageTally.armyA,
         damageTaken: damageTally.armyB,
         survivors: survA,
-        totalUnits: stateA.units.length
+        totalUnits: stateA.units.length,
+        victoryPoints: victoryPoints.armyA
       },
       armyB: {
         damageDealt: damageTally.armyB,
         damageTaken: damageTally.armyA,
         survivors: survB,
-        totalUnits: stateB.units.length
+        totalUnits: stateB.units.length,
+        victoryPoints: victoryPoints.armyB
       }
     }
   };
@@ -1298,8 +1606,8 @@ function moveArmiesTowardEachOther(
     const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
     const moveX = (dx / len) * step;
     const moveY = (dy / len) * step;
-    u.position.x += moveX;
-    u.position.y += moveY;
+    // Update position immutably
+    u.position = { x: u.position.x + moveX, y: u.position.y + moveY };
     shiftModelPositions(u, moveX, moveY);
     clampToBoard(u, battlefieldWidth, battlefieldHeight);
     u.engaged = false;
@@ -1386,6 +1694,9 @@ function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState): void {
     });
 }
 
+/**
+ * Resolve overlap between two units by pushing them apart (immutable position updates)
+ */
 function resolveOverlap(a: UnitState, b: UnitState): void {
   if (a.remainingModels <= 0 || b.remainingModels <= 0) return;
   const minDist = unitCollisionRadius(a) + unitCollisionRadius(b) + 0.1;
@@ -1393,6 +1704,7 @@ function resolveOverlap(a: UnitState, b: UnitState): void {
   const dy = b.position.y - a.position.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
   if (dist >= minDist && dist > 0.001) return;
+  
   const primaryDx = dist > 0.001 ? dx : (a.position.x <= b.position.x ? -0.01 : 0.01);
   const primaryDy = dist > 0.001 ? dy : 0;
   const actualDist = dist > 0.001 ? dist : Math.sqrt(primaryDx * primaryDx + primaryDy * primaryDy);
@@ -1401,10 +1713,12 @@ function resolveOverlap(a: UnitState, b: UnitState): void {
   const adjustAy = -primaryDy * scale;
   const adjustBx = primaryDx * scale;
   const adjustBy = primaryDy * scale;
-  a.position.x += adjustAx;
-  a.position.y += adjustAy;
-  b.position.x += adjustBx;
-  b.position.y += adjustBy;
+  
+  // Update positions immutably
+  a.position = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
+  b.position = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
+  
+  // Update model positions immutably
   shiftModelPositions(a, adjustAx, adjustAy);
   shiftModelPositions(b, adjustBx, adjustBy);
 }
@@ -1428,10 +1742,14 @@ function clampToBoard(u: UnitState, battlefieldWidth: number, battlefieldHeight:
   const halfH = battlefieldHeight / 2;
   const beforeX = u.position.x;
   const beforeY = u.position.y;
-  u.position.x = Math.max(-halfW, Math.min(halfW, u.position.x));
-  u.position.y = Math.max(-halfH, Math.min(halfH, u.position.y));
-  const dx = u.position.x - beforeX;
-  const dy = u.position.y - beforeY;
+  const clampedX = Math.max(-halfW, Math.min(halfW, u.position.x));
+  const clampedY = Math.max(-halfH, Math.min(halfH, u.position.y));
+  
+  // Update position immutably
+  u.position = { x: clampedX, y: clampedY };
+  
+  const dx = clampedX - beforeX;
+  const dy = clampedY - beforeY;
   shiftModelPositions(u, dx, dy);
 }
 
@@ -1766,7 +2084,7 @@ function snapshotState(stateA: ArmyState, stateB: ArmyState) {
   };
 }
 
-function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: boolean): void {
+function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: boolean, actions?: ActionLog[]): void {
   const ENGAGE_RANGE = 1.0;
   const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
 
@@ -1781,10 +2099,32 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
     if (dist <= ENGAGE_RANGE) {
       attacker.engaged = true;
       target.engaged = true;
+      actions?.push({
+        attackerId: attacker.unit.id,
+        attackerName: attacker.unit.name,
+        defenderId: target.unit.id,
+        defenderName: target.unit.name,
+        damage: 0,
+        phase: 'charge',
+        distance: dist,
+        description: 'Already engaged at start of charge'
+      } as ActionLog);
       return;
     }
     const chargeReach = rollCharge();
-    if (dist > chargeReach) return; // failed charge
+    if (dist > chargeReach) {
+      actions?.push({
+        attackerId: attacker.unit.id,
+        attackerName: attacker.unit.name,
+        defenderId: target.unit.id,
+        defenderName: target.unit.name,
+        damage: 0,
+        phase: 'charge',
+        distance: dist,
+        description: `Charge failed (needed ${dist.toFixed(2)}\", rolled ${chargeReach})`
+      } as ActionLog);
+      return; // failed charge
+    }
     const dx = target.position.x - attacker.position.x;
     const dy = target.position.y - attacker.position.y;
     const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
@@ -1795,10 +2135,23 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
     attacker.position.y += moveY;
     shiftModelPositions(attacker, moveX, moveY);
     const newDist = distanceBetween(attacker, target);
-    if (newDist <= ENGAGE_RANGE) {
+    const succeeded = newDist <= ENGAGE_RANGE;
+    if (succeeded) {
       attacker.engaged = true;
       target.engaged = true;
     }
+    actions?.push({
+      attackerId: attacker.unit.id,
+      attackerName: attacker.unit.name,
+      defenderId: target.unit.id,
+      defenderName: target.unit.name,
+      damage: 0,
+      phase: 'charge',
+      distance: dist,
+      description: succeeded
+        ? `Charge successful (rolled ${chargeReach}, moved ${moveDist.toFixed(2)}\")`
+        : `Charge fell short after move (rolled ${chargeReach})`
+    } as ActionLog);
   };
 
   stateA.units.forEach(a => {
