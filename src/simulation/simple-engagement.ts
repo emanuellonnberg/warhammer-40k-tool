@@ -1516,7 +1516,7 @@ export function runSimpleEngagement(
 
       const shootActions: ActionLog[] = [];
       const shootCasualties: CasualtyLog[] = [];
-      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, shootActions, shootCasualties);
+      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, shootActions, shootCasualties, terrain);
       logs.push(summarizePhase('shooting', round, active.tag, `Round ${round}: ${active.tag} shooting.`, shootDamage, undefined, shootActions));
       damageTally[active.tag] += shootDamage;
       logs[logs.length - 1].casualties = shootCasualties;
@@ -1839,13 +1839,29 @@ function distanceBetween(a: UnitState, b: UnitState): number {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/**
+ * Apply cover save bonus to a save value string
+ * E.g., "3+" with +1 cover becomes "2+"
+ * Minimum save is 2+ (can't go lower)
+ */
+function applyCoverToSave(baseSave: string | null, coverBonus: number): string | null {
+  if (!baseSave || coverBonus === 0) return baseSave;
+  const match = baseSave.match(/(\d+)\+/);
+  if (!match) return baseSave;
+  const saveValue = parseInt(match[1]);
+  // Cover improves save, so we subtract (3+ becomes 2+ with +1 cover)
+  const improvedSave = Math.max(2, saveValue - coverBonus);
+  return `${improvedSave}+`;
+}
+
 function expectedShootingDamageBatch(
   attackerArmy: ArmyState,
   defenderArmy: ArmyState,
   includeOneTimeWeapons: boolean,
   useDiceRolls: boolean,
   actions?: ActionLog[],
-  casualties?: CasualtyLog[]
+  casualties?: CasualtyLog[],
+  terrain: TerrainFeature[] = []
 ): number {
   let total = 0;
   const attackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves);
@@ -1874,13 +1890,63 @@ function expectedShootingDamageBatch(
         .map(def => {
           const dist = distanceBetween(attacker, def);
           const range = parseRangeStr(weapon.characteristics?.range);
+
+          // Check line of sight through terrain
+          const losCheck = terrain.length > 0
+            ? checkLineOfSight(attacker.position, def.position, terrain)
+            : { hasLoS: true, throughDense: false };
+
+          // If LoS is blocked, can't shoot this target
+          if (!losCheck.hasLoS) {
+            return { def, dist, dmg: 0, hasLoS: false, cover: null, throughDense: false };
+          }
+
+          // Get cover information
+          const cover = terrain.length > 0
+            ? getTerrainCover(def.position, attacker.position, terrain)
+            : { hasCover: false, coverType: 'none' as const, denseCover: false };
+
+          // Calculate cover save bonus (light = +1, heavy = +2 in most cases)
+          const coverBonus = cover.hasCover ? (cover.coverType === 'heavy' ? 2 : 1) : 0;
+
+          // Apply cover save bonus to defender's save
+          const baseSave = def.unit.stats.save || null;
+          const effectiveSave = applyCoverToSave(baseSave, coverBonus);
+
+          // Dense cover OR shooting through dense terrain = -1 to hit
+          const densePenalty = (cover.denseCover || losCheck.throughDense) ? -1 : 0;
+
+          // Calculate damage with terrain modifiers
+          const dmg = dist <= range
+            ? calculateWeaponDamage(
+                weapon,
+                parseInt(def.unit.stats.toughness || '4', 10),
+                false, // useOvercharge
+                includeOneTimeWeapons,
+                true, // optimalRange
+                [], // targetKeywords
+                1, // targetUnitSize
+                false, // isCharging
+                effectiveSave,
+                undefined, // unitRerolls
+                undefined, // scenarioRerolls
+                undefined, // targetFNP
+                densePenalty !== 0 ? { hit: densePenalty } : undefined // unitModifiers for dense cover
+              )
+            : 0;
+
           return {
             def,
             dist,
-            dmg: dist <= range ? calculateWeaponDamage(weapon, parseInt(def.unit.stats.toughness || '4', 10), false, includeOneTimeWeapons, true) : 0
+            dmg,
+            hasLoS: true,
+            cover,
+            throughDense: losCheck.throughDense,
+            effectiveSave,
+            densePenalty
           };
         })
-        .filter(c => c.dmg > 0)
+        .filter(c => c.dmg > 0 && c.hasLoS)
         .sort((a, b) => b.dmg - a.dmg);
 
       if (!candidates.length) return;
@@ -1890,7 +1956,8 @@ function expectedShootingDamageBatch(
       let actualDamage = best.dmg;
       let diceBreakdown;
       const defenderToughness = parseInt(best.def.unit.stats.toughness || '4', 10);
-      const defenderSave = best.def.unit.stats.save || null;
+      // Use the effective save (with cover) for dice rolls too
+      const defenderSave = best.effectiveSave || best.def.unit.stats.save || null;
 
       if (useDiceRolls) {
         diceBreakdown = calculateWeaponDamageWithDice(
@@ -1901,7 +1968,8 @@ function expectedShootingDamageBatch(
           includeOneTimeWeapons,
           false, // isCharging
           attacker.unit.unitRerolls,
-          undefined // targetFNP
+          undefined, // targetFNP
+          best.densePenalty || 0 // hit modifier for dense cover
         );
         actualDamage = diceBreakdown.totalDamage;
       }
