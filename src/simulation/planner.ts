@@ -1,5 +1,9 @@
 import type { ArmyState, ObjectiveMarker, UnitState } from './types';
 import type { Unit } from '../types';
+import type { TerrainFeature, Point } from './terrain';
+import type { NavMesh, PathResult } from './pathfinding';
+import { isMovementBlocked, getMovementPenalty } from './terrain';
+import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
 
 export interface PlannerWeights {
   objectiveValue: number;
@@ -84,6 +88,28 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }): num
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/**
+ * Calculate path distance between two points, accounting for terrain obstacles.
+ * Falls back to euclidean distance if no navmesh is provided.
+ */
+function pathDistance(
+  a: Point,
+  b: Point,
+  navMesh: NavMesh | undefined,
+  terrain: TerrainFeature[]
+): { distance: number; path: Point[]; blocked: boolean } {
+  if (!navMesh || terrain.length === 0) {
+    return { distance: euclideanDistance(a, b), path: [a, b], blocked: false };
+  }
+
+  const result = findPath(a, b, navMesh, terrain, true, false);
+  return {
+    distance: result.distance + result.movementPenalty,
+    path: result.path,
+    blocked: !result.found,
+  };
+}
+
 function buildThreatMap(active: ArmyState, opponent: ArmyState): Map<string, ThreatEstimate> {
   const map = new Map<string, ThreatEstimate>();
   opponent.units.forEach(enemy => {
@@ -134,42 +160,124 @@ function findNearestObjective(unit: UnitState, objectives: ObjectiveMarker[]): O
   return best;
 }
 
+interface CandidateMoveWithPath extends CandidateMove {
+  /** Path to reach this candidate (if pathfinding was used) */
+  path?: Point[];
+  /** Effective distance accounting for terrain */
+  effectiveDistance?: number;
+}
+
 function generateCandidates(
   unit: UnitState,
   objectives: ObjectiveMarker[],
   moveAllowance: number,
   battlefieldWidth: number,
-  battlefieldHeight: number
-): CandidateMove[] {
-  const candidates: CandidateMove[] = [];
+  battlefieldHeight: number,
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): CandidateMoveWithPath[] {
+  const candidates: CandidateMoveWithPath[] = [];
   const halfW = battlefieldWidth / 2;
   const halfH = battlefieldHeight / 2;
+  const unitPos: Point = { x: unit.position.x, y: unit.position.y };
 
-  // Hold
+  // Hold - always valid
   candidates.push({ x: unit.position.x, y: unit.position.y, label: 'hold' });
 
   const nearestObj = findNearestObjective(unit, objectives);
+
+  // Helper to add a candidate if reachable
+  const addCandidate = (targetX: number, targetY: number, label: string) => {
+    const target: Point = { x: targetX, y: targetY };
+
+    // Calculate path to this candidate
+    const pathResult = pathDistance(unitPos, target, navMesh, terrain);
+
+    if (pathResult.blocked && terrain.length > 0) {
+      // Try to find a reachable point along the path
+      if (pathResult.path.length > 2) {
+        // Use intermediate waypoint as candidate
+        const maxTravel = getMaxTravelPoint(pathResult.path, moveAllowance, terrain);
+        if (distance(unitPos, maxTravel.point) > 0.5) {
+          candidates.push({
+            x: maxTravel.point.x,
+            y: maxTravel.point.y,
+            label: label + '-partial',
+            path: pathResult.path.slice(0, maxTravel.pathIndex + 2),
+            effectiveDistance: maxTravel.distanceTraveled,
+          });
+        }
+      }
+      return; // Don't add fully blocked candidate
+    }
+
+    // Check if we can reach within movement allowance
+    if (pathResult.distance <= moveAllowance) {
+      candidates.push({
+        x: targetX,
+        y: targetY,
+        label,
+        path: pathResult.path,
+        effectiveDistance: pathResult.distance,
+      });
+    } else {
+      // Can only move part way - find maximum reachable point
+      const maxTravel = getMaxTravelPoint(pathResult.path, moveAllowance, terrain);
+      candidates.push({
+        x: maxTravel.point.x,
+        y: maxTravel.point.y,
+        label: label + '-partial',
+        path: pathResult.path.slice(0, maxTravel.pathIndex + 2),
+        effectiveDistance: maxTravel.distanceTraveled,
+      });
+    }
+  };
 
   // Advance toward nearest objective
   if (nearestObj) {
     const dx = nearestObj.x - unit.position.x;
     const dy = nearestObj.y - unit.position.y;
     const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
-    const step = Math.min(moveAllowance, len);
-    candidates.push({
-      x: unit.position.x + (dx / len) * step,
-      y: unit.position.y + (dy / len) * step,
-      label: 'advance-obj'
-    });
+    // Target the objective directly (let pathfinding handle obstacles)
+    const targetX = len <= moveAllowance ? nearestObj.x : unit.position.x + (dx / len) * moveAllowance;
+    const targetY = len <= moveAllowance ? nearestObj.y : unit.position.y + (dy / len) * moveAllowance;
+    addCandidate(targetX, targetY, 'advance-obj');
   }
 
   // Backstep from center (defensive)
   const awayX = unit.position.x + (unit.position.x >= 0 ? moveAllowance : -moveAllowance);
-  candidates.push({ x: clamp(awayX, -halfW, halfW), y: unit.position.y, label: 'backstep' });
+  addCandidate(clamp(awayX, -halfW, halfW), unit.position.y, 'backstep');
 
   // Flank up/down
-  candidates.push({ x: unit.position.x, y: clamp(unit.position.y + moveAllowance, -halfH, halfH), label: 'flank-up' });
-  candidates.push({ x: unit.position.x, y: clamp(unit.position.y - moveAllowance, -halfH, halfH), label: 'flank-down' });
+  addCandidate(unit.position.x, clamp(unit.position.y + moveAllowance, -halfH, halfH), 'flank-up');
+  addCandidate(unit.position.x, clamp(unit.position.y - moveAllowance, -halfH, halfH), 'flank-down');
+
+  // Additional candidates: move around nearby terrain
+  if (terrain.length > 0 && navMesh) {
+    // Find nearby waypoints that could be tactical positions
+    for (const wp of navMesh.waypoints.values()) {
+      const wpDist = distance(unitPos, { x: wp.x, y: wp.y });
+      if (wpDist <= moveAllowance && wpDist > 2) {
+        // Check if this gives us a new angle
+        const pathResult = pathDistance(unitPos, { x: wp.x, y: wp.y }, navMesh, terrain);
+        if (!pathResult.blocked && pathResult.distance <= moveAllowance) {
+          // Only add if not too close to existing candidates
+          const tooClose = candidates.some(c =>
+            distance({ x: c.x, y: c.y }, { x: wp.x, y: wp.y }) < 2
+          );
+          if (!tooClose) {
+            candidates.push({
+              x: wp.x,
+              y: wp.y,
+              label: 'waypoint',
+              path: pathResult.path,
+              effectiveDistance: pathResult.distance,
+            });
+          }
+        }
+      }
+    }
+  }
 
   return candidates;
 }
@@ -232,6 +340,16 @@ function scoreCandidate(
   return objValue + distanceBias - threatPenalty - moveCost;
 }
 
+/** Movement plan for a single unit */
+export interface PlannedMovement {
+  unit: UnitState;
+  to: { x: number; y: number };
+  /** Path to follow (if using pathfinding) */
+  path?: Point[];
+  /** Whether unit is advancing */
+  advanced?: boolean;
+}
+
 export function planGreedyMovement(
   active: ArmyState,
   opponent: ArmyState,
@@ -239,10 +357,12 @@ export function planGreedyMovement(
   allowAdvance: boolean,
   battlefieldWidth: number,
   battlefieldHeight: number,
-  weights: PlannerWeights = DEFAULT_WEIGHTS
-): { movements: { unit: UnitState; to: { x: number; y: number } }[] } {
+  weights: PlannerWeights = DEFAULT_WEIGHTS,
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): { movements: PlannedMovement[] } {
   const threatMap = buildThreatMap(active, opponent);
-  const movements: { unit: UnitState; to: { x: number; y: number } }[] = [];
+  const movements: PlannedMovement[] = [];
   const activeTag = (active as any).tag ?? 'armyA';
 
   // Higher impact units move first: melee > mobile > others
@@ -265,8 +385,8 @@ export function planGreedyMovement(
   for (const u of sorted) {
     const mv = parseInt(u.unit.stats.move || '0', 10) || 0;
     const moveAllowance = allowAdvance ? mv + 3 : mv;
-    const candidates = generateCandidates(u, objectives, moveAllowance, battlefieldWidth, battlefieldHeight);
-    let best = candidates[0];
+    const candidates = generateCandidates(u, objectives, moveAllowance, battlefieldWidth, battlefieldHeight, terrain, navMesh);
+    let best: CandidateMoveWithPath = candidates[0];
     let bestScore = -Infinity;
     for (const c of candidates) {
       const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag);
@@ -275,14 +395,24 @@ export function planGreedyMovement(
         best = c;
       }
     }
-    movements.push({ unit: u, to: { x: best.x, y: best.y } });
+
+    // Determine if this was an advance move
+    const actualDistance = best.effectiveDistance ?? distance(u.position, { x: best.x, y: best.y });
+    const isAdvance = allowAdvance && actualDistance > mv;
+
+    movements.push({
+      unit: u,
+      to: { x: best.x, y: best.y },
+      path: best.path,
+      advanced: isAdvance,
+    });
   }
 
   return { movements };
 }
 
 interface BeamState {
-  moves: Map<string, { x: number; y: number }>;
+  moves: Map<string, { x: number; y: number; path?: Point[] }>;
   score: number;
 }
 
@@ -294,8 +424,10 @@ export function planBeamMovement(
   battlefieldWidth: number,
   battlefieldHeight: number,
   weights: PlannerWeights = DEFAULT_WEIGHTS,
-  beamWidth: number = 3
-): { movements: { unit: UnitState; to: { x: number; y: number } }[] } {
+  beamWidth: number = 3,
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): { movements: PlannedMovement[] } {
   const threatMap = buildThreatMap(active, opponent);
   const activeTag = (active as any).tag ?? 'armyA';
   const sorted = [...active.units]
@@ -321,14 +453,14 @@ export function planBeamMovement(
   for (const unit of sorted) {
     const mv = parseInt(unit.unit.stats.move || '0', 10) || 0;
     const moveAllowance = allowAdvance ? mv + 3 : mv;
-    const candidates = generateCandidates(unit, objectives, moveAllowance, battlefieldWidth, battlefieldHeight);
+    const candidates = generateCandidates(unit, objectives, moveAllowance, battlefieldWidth, battlefieldHeight, terrain, navMesh);
 
     // Generate next states by adding each candidate to each beam state
     const nextStates: BeamState[] = [];
     for (const state of beam) {
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
-        newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y });
+        newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path });
         const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag);
         nextStates.push({ moves: newMoves, score });
       }
@@ -341,10 +473,17 @@ export function planBeamMovement(
 
   // Extract best state
   const bestState = beam[0] || { moves: new Map(), score: 0 };
-  const movements: { unit: UnitState; to: { x: number; y: number } }[] = [];
+  const movements: PlannedMovement[] = [];
   for (const unit of sorted) {
+    const mv = parseInt(unit.unit.stats.move || '0', 10) || 0;
     const move = bestState.moves.get(unit.unit.id) || { x: unit.position.x, y: unit.position.y };
-    movements.push({ unit, to: move });
+    const actualDist = distance(unit.position, { x: move.x, y: move.y });
+    movements.push({
+      unit,
+      to: { x: move.x, y: move.y },
+      path: move.path,
+      advanced: allowAdvance && actualDist > mv,
+    });
   }
 
   return { movements };
@@ -359,12 +498,17 @@ export function planMovement(
   battlefieldHeight: number,
   strategy: StrategyProfile = 'greedy',
   useBeamSearch: boolean = false,
-  beamWidth: number = 3
-): { movements: { unit: UnitState; to: { x: number; y: number } }[] } {
+  beamWidth: number = 3,
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): { movements: PlannedMovement[] } {
   const weights = getStrategyWeights(strategy);
   if (useBeamSearch) {
-    return planBeamMovement(active, opponent, objectives, allowAdvance, battlefieldWidth, battlefieldHeight, weights, beamWidth);
+    return planBeamMovement(active, opponent, objectives, allowAdvance, battlefieldWidth, battlefieldHeight, weights, beamWidth, terrain, navMesh);
   } else {
-    return planGreedyMovement(active, opponent, objectives, allowAdvance, battlefieldWidth, battlefieldHeight, weights);
+    return planGreedyMovement(active, opponent, objectives, allowAdvance, battlefieldWidth, battlefieldHeight, weights, terrain, navMesh);
   }
 }
+
+// Re-export for convenience
+export { generateNavMesh } from './pathfinding';

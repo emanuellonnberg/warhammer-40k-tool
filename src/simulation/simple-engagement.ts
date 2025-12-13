@@ -22,7 +22,7 @@ import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
 import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
-import { planMovement, type StrategyProfile } from './planner';
+import { planMovement, type StrategyProfile, generateNavMesh } from './planner';
 import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
@@ -30,6 +30,10 @@ import {
   getMissionScoringConfig,
   type ObjectiveScoringConfig
 } from './objective-scoring';
+import type { TerrainFeature, TerrainLayout } from './terrain';
+import { createGTLayout, isMovementBlocked, checkLineOfSight, getTerrainCover } from './terrain';
+import { findPath, euclideanDistance, getMaxTravelPoint } from './pathfinding';
+import type { NavMesh } from './pathfinding';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
 const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
@@ -1271,6 +1275,19 @@ export function runSimpleEngagement(
   const maxPoints = Math.max(armyA.pointsTotal || 2000, armyB.pointsTotal || 2000);
   const battlefield = battlefieldFromPoints(maxPoints);
 
+  // TERRAIN SETUP
+  // Priority: custom terrain > terrain layout > no terrain (empty)
+  let terrain: TerrainFeature[] = [];
+  if (config.terrain && config.terrain.length > 0) {
+    terrain = config.terrain;
+  } else if (config.terrainLayout) {
+    terrain = config.terrainLayout.features;
+  }
+  // Generate navigation mesh if we have terrain
+  const navMesh: NavMesh | undefined = terrain.length > 0
+    ? generateNavMesh(terrain, battlefield.width, battlefield.height)
+    : undefined;
+
   const perTurnPositions: SimulationResult['positionsPerTurn'] = [];
   const timeline: NonNullable<SimulationResult['positionsTimeline']> = [];
   const logs: PhaseLog[] = [];
@@ -1453,7 +1470,7 @@ export function runSimpleEngagement(
         }
       }
 
-      // Planner-driven movement
+      // Planner-driven movement (with terrain awareness)
       const { movements } = planMovement(
         active,
         opponent,
@@ -1463,7 +1480,9 @@ export function runSimpleEngagement(
         battlefield.height,
         currentStrategy,
         useBeamSearch,
-        beamWidth
+        beamWidth,
+        terrain,
+        navMesh
       );
 
       const movementDetails: MovementDetail[] = [];
@@ -1504,7 +1523,7 @@ export function runSimpleEngagement(
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const chargeActions: ActionLog[] = [];
-      performCharges(active, opponent, randomCharge, chargeActions);
+      performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh);
       clampAllSpacing(stateA, stateB);
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
@@ -1569,6 +1588,7 @@ export function runSimpleEngagement(
     armyAState: stateA,
     armyBState: stateB,
     battlefield,
+    terrain: terrain.length > 0 ? terrain : undefined,
     objectives,
     positions: {
       start: startPositions,
@@ -2114,7 +2134,14 @@ function snapshotState(stateA: ArmyState, stateB: ArmyState) {
   };
 }
 
-function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: boolean, actions?: ActionLog[]): void {
+function performCharges(
+  stateA: ArmyState,
+  stateB: ArmyState,
+  randomCharge: boolean,
+  actions?: ActionLog[],
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): void {
   const ENGAGE_RANGE = 1.0;
   const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
 
@@ -2122,11 +2149,21 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
     if (attacker.remainingModels <= 0 || attacker.inReserves) return; // Skip units in reserves
     const targetsAlive = targets.filter(t => t.remainingModels > 0 && !t.inReserves); // Only charge units on table
     if (!targetsAlive.length) return;
-    // Closest target
-    targetsAlive.sort((a, b) => distanceBetween(attacker, a) - distanceBetween(attacker, b));
+    // Closest target (using path distance if terrain exists)
+    targetsAlive.sort((a, b) => {
+      if (terrain.length === 0 || !navMesh) {
+        return distanceBetween(attacker, a) - distanceBetween(attacker, b);
+      }
+      // Use pathfinding distance for sorting
+      const pathA = findPath(attacker.position, a.position, navMesh, terrain);
+      const pathB = findPath(attacker.position, b.position, navMesh, terrain);
+      return pathA.distance - pathB.distance;
+    });
     const target = targetsAlive[0];
-    const dist = distanceBetween(attacker, target);
-    if (dist <= ENGAGE_RANGE) {
+    const straightDist = distanceBetween(attacker, target);
+
+    // Check if already engaged
+    if (straightDist <= ENGAGE_RANGE) {
       attacker.engaged = true;
       target.engaged = true;
       actions?.push({
@@ -2136,13 +2173,39 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
         defenderName: target.unit.name,
         damage: 0,
         phase: 'charge',
-        distance: dist,
+        distance: straightDist,
         description: 'Already engaged at start of charge'
       } as ActionLog);
       return;
     }
+
+    // Calculate path distance (accounting for terrain)
+    let chargePath: { x: number; y: number }[] = [attacker.position, target.position];
+    let pathDist = straightDist;
+
+    if (terrain.length > 0 && navMesh) {
+      const pathResult = findPath(attacker.position, target.position, navMesh, terrain);
+      if (pathResult.found) {
+        chargePath = pathResult.path;
+        pathDist = pathResult.distance;
+      } else {
+        // Path blocked by terrain - charge impossible
+        actions?.push({
+          attackerId: attacker.unit.id,
+          attackerName: attacker.unit.name,
+          defenderId: target.unit.id,
+          defenderName: target.unit.name,
+          damage: 0,
+          phase: 'charge',
+          distance: straightDist,
+          description: `Charge blocked by terrain`
+        } as ActionLog);
+        return;
+      }
+    }
+
     const chargeReach = rollCharge();
-    if (dist > chargeReach) {
+    if (pathDist > chargeReach) {
       actions?.push({
         attackerId: attacker.unit.id,
         attackerName: attacker.unit.name,
@@ -2150,20 +2213,20 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
         defenderName: target.unit.name,
         damage: 0,
         phase: 'charge',
-        distance: dist,
-        description: `Charge failed (needed ${dist.toFixed(2)}\", rolled ${chargeReach})`
+        distance: pathDist,
+        description: `Charge failed (needed ${pathDist.toFixed(2)}\", rolled ${chargeReach})`
       } as ActionLog);
       return; // failed charge
     }
-    const dx = target.position.x - attacker.position.x;
-    const dy = target.position.y - attacker.position.y;
-    const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
-    const moveDist = Math.min(chargeReach, dist - ENGAGE_RANGE);
-    const moveX = (dx / len) * moveDist;
-    const moveY = (dy / len) * moveDist;
-    attacker.position.x += moveX;
-    attacker.position.y += moveY;
+
+    // Move along path
+    const maxTravel = getMaxTravelPoint(chargePath, Math.min(chargeReach, pathDist - ENGAGE_RANGE), terrain);
+    const moveX = maxTravel.point.x - attacker.position.x;
+    const moveY = maxTravel.point.y - attacker.position.y;
+
+    attacker.position = { x: maxTravel.point.x, y: maxTravel.point.y };
     shiftModelPositions(attacker, moveX, moveY);
+
     const newDist = distanceBetween(attacker, target);
     const succeeded = newDist <= ENGAGE_RANGE;
     if (succeeded) {
@@ -2177,9 +2240,9 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
       defenderName: target.unit.name,
       damage: 0,
       phase: 'charge',
-      distance: dist,
+      distance: pathDist,
       description: succeeded
-        ? `Charge successful (rolled ${chargeReach}, moved ${moveDist.toFixed(2)}\")`
+        ? `Charge successful (rolled ${chargeReach}, moved ${maxTravel.distanceTraveled.toFixed(2)}\"${terrain.length > 0 ? ' around terrain' : ''})`
         : `Charge fell short after move (rolled ${chargeReach})`
     } as ActionLog);
   };
