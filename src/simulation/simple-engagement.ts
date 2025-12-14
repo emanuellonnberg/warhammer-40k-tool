@@ -22,7 +22,7 @@ import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
 import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
-import { planMovement, type StrategyProfile } from './planner';
+import { planMovement, type StrategyProfile, generateNavMesh } from './planner';
 import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
@@ -30,6 +30,10 @@ import {
   getMissionScoringConfig,
   type ObjectiveScoringConfig
 } from './objective-scoring';
+import type { TerrainFeature, TerrainLayout } from './terrain';
+import { createGTLayout, isMovementBlocked, checkLineOfSight, getTerrainCover } from './terrain';
+import { findPath, euclideanDistance, getMaxTravelPoint } from './pathfinding';
+import type { NavMesh } from './pathfinding';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
 const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
@@ -1271,6 +1275,19 @@ export function runSimpleEngagement(
   const maxPoints = Math.max(armyA.pointsTotal || 2000, armyB.pointsTotal || 2000);
   const battlefield = battlefieldFromPoints(maxPoints);
 
+  // TERRAIN SETUP
+  // Priority: custom terrain > terrain layout > no terrain (empty)
+  let terrain: TerrainFeature[] = [];
+  if (config.terrain && config.terrain.length > 0) {
+    terrain = config.terrain;
+  } else if (config.terrainLayout) {
+    terrain = config.terrainLayout.features;
+  }
+  // Generate navigation mesh if we have terrain
+  const navMesh: NavMesh | undefined = terrain.length > 0
+    ? generateNavMesh(terrain, battlefield.width, battlefield.height)
+    : undefined;
+
   const perTurnPositions: SimulationResult['positionsPerTurn'] = [];
   const timeline: NonNullable<SimulationResult['positionsTimeline']> = [];
   const logs: PhaseLog[] = [];
@@ -1453,7 +1470,7 @@ export function runSimpleEngagement(
         }
       }
 
-      // Planner-driven movement
+      // Planner-driven movement (with terrain awareness)
       const { movements } = planMovement(
         active,
         opponent,
@@ -1463,7 +1480,9 @@ export function runSimpleEngagement(
         battlefield.height,
         currentStrategy,
         useBeamSearch,
-        beamWidth
+        beamWidth,
+        terrain,
+        navMesh
       );
 
       const movementDetails: MovementDetail[] = [];
@@ -1497,14 +1516,14 @@ export function runSimpleEngagement(
 
       const shootActions: ActionLog[] = [];
       const shootCasualties: CasualtyLog[] = [];
-      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, shootActions, shootCasualties);
+      const shootDamage = expectedShootingDamageBatch(active, opponent, includeOneTimeWeapons, useDiceRolls, shootActions, shootCasualties, terrain);
       logs.push(summarizePhase('shooting', round, active.tag, `Round ${round}: ${active.tag} shooting.`, shootDamage, undefined, shootActions));
       damageTally[active.tag] += shootDamage;
       logs[logs.length - 1].casualties = shootCasualties;
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const chargeActions: ActionLog[] = [];
-      performCharges(active, opponent, randomCharge, chargeActions);
+      performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh);
       clampAllSpacing(stateA, stateB);
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
@@ -1569,6 +1588,7 @@ export function runSimpleEngagement(
     armyAState: stateA,
     armyBState: stateB,
     battlefield,
+    terrain: terrain.length > 0 ? terrain : undefined,
     objectives,
     positions: {
       start: startPositions,
@@ -1819,13 +1839,29 @@ function distanceBetween(a: UnitState, b: UnitState): number {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+/**
+ * Apply cover save bonus to a save value string
+ * E.g., "3+" with +1 cover becomes "2+"
+ * Minimum save is 2+ (can't go lower)
+ */
+function applyCoverToSave(baseSave: string | null, coverBonus: number): string | null {
+  if (!baseSave || coverBonus === 0) return baseSave;
+  const match = baseSave.match(/(\d+)\+/);
+  if (!match) return baseSave;
+  const saveValue = parseInt(match[1]);
+  // Cover improves save, so we subtract (3+ becomes 2+ with +1 cover)
+  const improvedSave = Math.max(2, saveValue - coverBonus);
+  return `${improvedSave}+`;
+}
+
 function expectedShootingDamageBatch(
   attackerArmy: ArmyState,
   defenderArmy: ArmyState,
   includeOneTimeWeapons: boolean,
   useDiceRolls: boolean,
   actions?: ActionLog[],
-  casualties?: CasualtyLog[]
+  casualties?: CasualtyLog[],
+  terrain: TerrainFeature[] = []
 ): number {
   let total = 0;
   const attackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves);
@@ -1854,13 +1890,63 @@ function expectedShootingDamageBatch(
         .map(def => {
           const dist = distanceBetween(attacker, def);
           const range = parseRangeStr(weapon.characteristics?.range);
+
+          // Check line of sight through terrain
+          const losCheck = terrain.length > 0
+            ? checkLineOfSight(attacker.position, def.position, terrain)
+            : { hasLoS: true, throughDense: false };
+
+          // If LoS is blocked, can't shoot this target
+          if (!losCheck.hasLoS) {
+            return { def, dist, dmg: 0, hasLoS: false, cover: null, throughDense: false };
+          }
+
+          // Get cover information
+          const cover = terrain.length > 0
+            ? getTerrainCover(def.position, attacker.position, terrain)
+            : { hasCover: false, coverType: 'none' as const, denseCover: false };
+
+          // Calculate cover save bonus (light = +1, heavy = +2 in most cases)
+          const coverBonus = cover.hasCover ? (cover.coverType === 'heavy' ? 2 : 1) : 0;
+
+          // Apply cover save bonus to defender's save
+          const baseSave = def.unit.stats.save || null;
+          const effectiveSave = applyCoverToSave(baseSave, coverBonus);
+
+          // Dense cover OR shooting through dense terrain = -1 to hit
+          const densePenalty = (cover.denseCover || losCheck.throughDense) ? -1 : 0;
+
+          // Calculate damage with terrain modifiers
+          const dmg = dist <= range
+            ? calculateWeaponDamage(
+                weapon,
+                parseInt(def.unit.stats.toughness || '4', 10),
+                false, // useOvercharge
+                includeOneTimeWeapons,
+                true, // optimalRange
+                [], // targetKeywords
+                1, // targetUnitSize
+                false, // isCharging
+                effectiveSave,
+                undefined, // unitRerolls
+                undefined, // scenarioRerolls
+                undefined, // targetFNP
+                densePenalty !== 0 ? { hit: densePenalty } : undefined // unitModifiers for dense cover
+              )
+            : 0;
+
           return {
             def,
             dist,
-            dmg: dist <= range ? calculateWeaponDamage(weapon, parseInt(def.unit.stats.toughness || '4', 10), false, includeOneTimeWeapons, true) : 0
+            dmg,
+            hasLoS: true,
+            cover,
+            throughDense: losCheck.throughDense,
+            effectiveSave,
+            densePenalty
           };
         })
-        .filter(c => c.dmg > 0)
+        .filter(c => c.dmg > 0 && c.hasLoS)
         .sort((a, b) => b.dmg - a.dmg);
 
       if (!candidates.length) return;
@@ -1870,7 +1956,8 @@ function expectedShootingDamageBatch(
       let actualDamage = best.dmg;
       let diceBreakdown;
       const defenderToughness = parseInt(best.def.unit.stats.toughness || '4', 10);
-      const defenderSave = best.def.unit.stats.save || null;
+      // Use the effective save (with cover) for dice rolls too
+      const defenderSave = best.effectiveSave || best.def.unit.stats.save || null;
 
       if (useDiceRolls) {
         diceBreakdown = calculateWeaponDamageWithDice(
@@ -1881,7 +1968,8 @@ function expectedShootingDamageBatch(
           includeOneTimeWeapons,
           false, // isCharging
           attacker.unit.unitRerolls,
-          undefined // targetFNP
+          undefined, // targetFNP
+          best.densePenalty || 0 // hit modifier for dense cover
         );
         actualDamage = diceBreakdown.totalDamage;
       }
@@ -2114,7 +2202,14 @@ function snapshotState(stateA: ArmyState, stateB: ArmyState) {
   };
 }
 
-function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: boolean, actions?: ActionLog[]): void {
+function performCharges(
+  stateA: ArmyState,
+  stateB: ArmyState,
+  randomCharge: boolean,
+  actions?: ActionLog[],
+  terrain: TerrainFeature[] = [],
+  navMesh?: NavMesh
+): void {
   const ENGAGE_RANGE = 1.0;
   const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
 
@@ -2122,11 +2217,21 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
     if (attacker.remainingModels <= 0 || attacker.inReserves) return; // Skip units in reserves
     const targetsAlive = targets.filter(t => t.remainingModels > 0 && !t.inReserves); // Only charge units on table
     if (!targetsAlive.length) return;
-    // Closest target
-    targetsAlive.sort((a, b) => distanceBetween(attacker, a) - distanceBetween(attacker, b));
+    // Closest target (using path distance if terrain exists)
+    targetsAlive.sort((a, b) => {
+      if (terrain.length === 0 || !navMesh) {
+        return distanceBetween(attacker, a) - distanceBetween(attacker, b);
+      }
+      // Use pathfinding distance for sorting
+      const pathA = findPath(attacker.position, a.position, navMesh, terrain);
+      const pathB = findPath(attacker.position, b.position, navMesh, terrain);
+      return pathA.distance - pathB.distance;
+    });
     const target = targetsAlive[0];
-    const dist = distanceBetween(attacker, target);
-    if (dist <= ENGAGE_RANGE) {
+    const straightDist = distanceBetween(attacker, target);
+
+    // Check if already engaged
+    if (straightDist <= ENGAGE_RANGE) {
       attacker.engaged = true;
       target.engaged = true;
       actions?.push({
@@ -2136,13 +2241,39 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
         defenderName: target.unit.name,
         damage: 0,
         phase: 'charge',
-        distance: dist,
+        distance: straightDist,
         description: 'Already engaged at start of charge'
       } as ActionLog);
       return;
     }
+
+    // Calculate path distance (accounting for terrain)
+    let chargePath: { x: number; y: number }[] = [attacker.position, target.position];
+    let pathDist = straightDist;
+
+    if (terrain.length > 0 && navMesh) {
+      const pathResult = findPath(attacker.position, target.position, navMesh, terrain);
+      if (pathResult.found) {
+        chargePath = pathResult.path;
+        pathDist = pathResult.distance;
+      } else {
+        // Path blocked by terrain - charge impossible
+        actions?.push({
+          attackerId: attacker.unit.id,
+          attackerName: attacker.unit.name,
+          defenderId: target.unit.id,
+          defenderName: target.unit.name,
+          damage: 0,
+          phase: 'charge',
+          distance: straightDist,
+          description: `Charge blocked by terrain`
+        } as ActionLog);
+        return;
+      }
+    }
+
     const chargeReach = rollCharge();
-    if (dist > chargeReach) {
+    if (pathDist > chargeReach) {
       actions?.push({
         attackerId: attacker.unit.id,
         attackerName: attacker.unit.name,
@@ -2150,20 +2281,20 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
         defenderName: target.unit.name,
         damage: 0,
         phase: 'charge',
-        distance: dist,
-        description: `Charge failed (needed ${dist.toFixed(2)}\", rolled ${chargeReach})`
+        distance: pathDist,
+        description: `Charge failed (needed ${pathDist.toFixed(2)}\", rolled ${chargeReach})`
       } as ActionLog);
       return; // failed charge
     }
-    const dx = target.position.x - attacker.position.x;
-    const dy = target.position.y - attacker.position.y;
-    const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
-    const moveDist = Math.min(chargeReach, dist - ENGAGE_RANGE);
-    const moveX = (dx / len) * moveDist;
-    const moveY = (dy / len) * moveDist;
-    attacker.position.x += moveX;
-    attacker.position.y += moveY;
+
+    // Move along path
+    const maxTravel = getMaxTravelPoint(chargePath, Math.min(chargeReach, pathDist - ENGAGE_RANGE), terrain);
+    const moveX = maxTravel.point.x - attacker.position.x;
+    const moveY = maxTravel.point.y - attacker.position.y;
+
+    attacker.position = { x: maxTravel.point.x, y: maxTravel.point.y };
     shiftModelPositions(attacker, moveX, moveY);
+
     const newDist = distanceBetween(attacker, target);
     const succeeded = newDist <= ENGAGE_RANGE;
     if (succeeded) {
@@ -2177,9 +2308,9 @@ function performCharges(stateA: ArmyState, stateB: ArmyState, randomCharge: bool
       defenderName: target.unit.name,
       damage: 0,
       phase: 'charge',
-      distance: dist,
+      distance: pathDist,
       description: succeeded
-        ? `Charge successful (rolled ${chargeReach}, moved ${moveDist.toFixed(2)}\")`
+        ? `Charge successful (rolled ${chargeReach}, moved ${maxTravel.distanceTraveled.toFixed(2)}\"${terrain.length > 0 ? ' around terrain' : ''})`
         : `Charge fell short after move (rolled ${chargeReach})`
     } as ActionLog);
   };

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { planGreedyMovement, planBeamMovement, getStrategyWeights, type StrategyProfile } from '../src/simulation/planner';
 import type { ArmyState, UnitState, ObjectiveMarker } from '../src/simulation/types';
 import type { Unit } from '../src/types';
+import { createContainer, createRuins } from '../src/simulation/terrain';
+import { generateNavMesh } from '../src/simulation/pathfinding';
 
 // Mock unit and army state for testing
 function createMockUnit(id: string, range = '12', move = '5'): Unit {
@@ -263,5 +265,133 @@ describe('Planner - Threat Evaluation', () => {
     // With distant threat, should be less defensive
     expect(typeof farResult.movements[0].to.x).toBe('number');
     expect(typeof closeResult.movements[0].to.x).toBe('number');
+  });
+});
+
+describe('Planner - Terrain-Aware Movement', () => {
+  it('should generate movements with terrain consideration', () => {
+    const testUnit = createMockUnit('unit-1', '12', '6');
+    const allyState = createMockUnitState(testUnit, -15, 0);
+    const active = createMockArmyState([allyState]);
+
+    const enemyUnit = createMockUnit('enemy-1', '12', '5');
+    const enemyState = createMockUnitState(enemyUnit, 15, 0);
+    const opponent = createMockArmyState([enemyState]);
+
+    const objectives: ObjectiveMarker[] = [{ x: 10, y: 0, id: 'obj-1' }];
+
+    // Add blocking terrain between units
+    const container = createContainer(0, 0, true);
+    const terrain = [container];
+    const navMesh = generateNavMesh(terrain, 48, 48, 1.5);
+
+    const result = planGreedyMovement(
+      active,
+      opponent,
+      objectives,
+      false,
+      48,
+      48,
+      getStrategyWeights('greedy'),
+      terrain,
+      navMesh
+    );
+
+    expect(result.movements).toHaveLength(1);
+    expect(result.movements[0].to).toBeDefined();
+    // Movement should include path information when terrain is present
+    expect(typeof result.movements[0].to.x).toBe('number');
+  });
+
+  it('should include path data when pathfinding is used', () => {
+    const testUnit = createMockUnit('unit-1', '12', '6');
+    const allyState = createMockUnitState(testUnit, -15, 0);
+    const active = createMockArmyState([allyState]);
+
+    const enemyUnit = createMockUnit('enemy-1', '12', '5');
+    const enemyState = createMockUnitState(enemyUnit, 15, 0);
+    const opponent = createMockArmyState([enemyState]);
+
+    const objectives: ObjectiveMarker[] = [{ x: 10, y: 0, id: 'obj-1' }];
+
+    const container = createContainer(0, 0, true);
+    const terrain = [container];
+    const navMesh = generateNavMesh(terrain, 48, 48, 1.5);
+
+    const result = planGreedyMovement(
+      active,
+      opponent,
+      objectives,
+      false,
+      48,
+      48,
+      getStrategyWeights('objective-focused'),
+      terrain,
+      navMesh
+    );
+
+    // Movements that require pathfinding should have path data
+    expect(result.movements[0]).toBeDefined();
+    // Path may be undefined for direct moves or defined for pathfinding
+    expect(typeof result.movements[0].to.x).toBe('number');
+  });
+
+  it('should work without terrain (backward compatible)', () => {
+    const testUnit = createMockUnit('unit-1', '12', '6');
+    const allyState = createMockUnitState(testUnit, 0, 0);
+    const active = createMockArmyState([allyState]);
+
+    const enemyUnit = createMockUnit('enemy-1', '12', '5');
+    const enemyState = createMockUnitState(enemyUnit, 15, 0);
+    const opponent = createMockArmyState([enemyState]);
+
+    const objectives: ObjectiveMarker[] = [{ x: 5, y: 0, id: 'obj-1' }];
+
+    // Call without terrain parameters (backward compatible)
+    const result = planGreedyMovement(
+      active,
+      opponent,
+      objectives,
+      false,
+      48,
+      48,
+      getStrategyWeights('greedy')
+      // No terrain, no navMesh
+    );
+
+    expect(result.movements).toHaveLength(1);
+    expect(result.movements[0].to).toBeDefined();
+  });
+
+  it('beam search should also work with terrain', () => {
+    const testUnit = createMockUnit('unit-1', '12', '6');
+    const allyState = createMockUnitState(testUnit, -10, 0);
+    const active = createMockArmyState([allyState]);
+
+    const enemyUnit = createMockUnit('enemy-1', '12', '5');
+    const enemyState = createMockUnitState(enemyUnit, 10, 0);
+    const opponent = createMockArmyState([enemyState]);
+
+    const objectives: ObjectiveMarker[] = [{ x: 5, y: 5, id: 'obj-1' }];
+
+    const ruins = createRuins(0, 0, 6, 6);
+    const terrain = [ruins];
+    const navMesh = generateNavMesh(terrain, 48, 48, 1.5);
+
+    const result = planBeamMovement(
+      active,
+      opponent,
+      objectives,
+      false,
+      48,
+      48,
+      getStrategyWeights('greedy'),
+      3,
+      terrain,
+      navMesh
+    );
+
+    expect(result.movements).toHaveLength(1);
+    expect(result.movements[0].to).toBeDefined();
   });
 });

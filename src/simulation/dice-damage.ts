@@ -53,6 +53,7 @@ function calculateWoundTarget(strength: number, toughness: number): number {
 /**
  * Calculate damage for a single weapon using dice rolls
  * This simulates the actual attack sequence with dice
+ * @param hitModifier - Modifier to hit rolls (e.g., -1 for dense cover)
  */
 export function calculateWeaponDamageWithDice(
   weapon: Weapon,
@@ -62,7 +63,8 @@ export function calculateWeaponDamageWithDice(
   includeOneTimeWeapons: boolean = false,
   isCharging: boolean = false,
   unitRerolls?: { hits?: RerollType; wounds?: RerollType },
-  targetFNP?: number
+  targetFNP?: number,
+  hitModifier: number = 0
 ): DiceRollBreakdown {
   // First, get the expected damage from the base calculator
   // This handles all the special rules, modifiers, etc.
@@ -140,18 +142,32 @@ export function calculateWeaponDamageWithDice(
     let totalHits = 0;
     for (let i = 0; i < numAttacks; i++) {
       let roll = Math.floor(Math.random() * 6) + 1;
+      const unmodifiedRoll = roll;
 
-      // Handle rerolls
+      // Handle rerolls (based on unmodified roll)
       if (hitReroll === RerollType.ONES && roll === 1) {
         roll = Math.floor(Math.random() * 6) + 1;
       } else if ((hitReroll === RerollType.ALL || hitReroll === RerollType.FAILED) && roll < hitTarget) {
         roll = Math.floor(Math.random() * 6) + 1;
       }
 
-      if (roll >= hitTarget) {
+      // Apply hit modifier (e.g., -1 for dense cover)
+      // In 10th edition, modifiers are capped at ±1 and natural 1s always fail, 6s always hit
+      const modifiedRoll = Math.max(1, Math.min(6, roll + Math.max(-1, Math.min(1, hitModifier))));
+
+      // Natural 1s always miss, natural 6s always hit
+      const isNat1 = roll === 1;
+      const isNat6 = roll === 6;
+
+      if (isNat1) {
+        // Natural 1 always misses
+        continue;
+      }
+
+      if (isNat6 || modifiedRoll >= hitTarget) {
         totalHits++;
 
-        // Check for critical hit (6)
+        // Check for critical hit (unmodified 6)
         if (roll === 6) {
           // Lethal Hits: critical hits auto-wound
           if (hasLethalHits) {

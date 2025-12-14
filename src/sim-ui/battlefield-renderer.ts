@@ -2,11 +2,24 @@
  * SVG battlefield rendering for battle simulator
  */
 
-import type { SimulationResult } from '../simulation';
+import type { SimulationResult, TerrainFeature } from '../simulation';
 
 const SIM_SVG_WIDTH = 800;
 const SIM_SVG_HEIGHT = 400;
 const SIM_SVG_PAD = 20;
+
+/** Color palette for different terrain types */
+const TERRAIN_COLORS: Record<string, { fill: string; stroke: string; opacity: number }> = {
+  ruins: { fill: '#8b7355', stroke: '#5c4d3c', opacity: 0.6 },
+  woods: { fill: '#228b22', stroke: '#006400', opacity: 0.5 },
+  crater: { fill: '#4a4a4a', stroke: '#2d2d2d', opacity: 0.4 },
+  barricade: { fill: '#6b6b6b', stroke: '#404040', opacity: 0.7 },
+  building: { fill: '#8b7355', stroke: '#5c4d3c', opacity: 0.7 },
+  container: { fill: '#4682b4', stroke: '#2f5577', opacity: 0.7 },
+  hills: { fill: '#90a959', stroke: '#6b8040', opacity: 0.35 },
+  debris: { fill: '#808080', stroke: '#505050', opacity: 0.4 },
+  custom: { fill: '#9370db', stroke: '#6a5acd', opacity: 0.5 },
+};
 
 interface FlattenedModel {
   x: number;
@@ -37,6 +50,109 @@ function estimateBaseRadiusFromName(name?: string): number {
     if (hint.match.test(lower)) return hint.radius;
   }
   return 1;
+}
+
+/**
+ * Render terrain features as SVG elements
+ */
+function renderTerrainFeatures(
+  terrain: TerrainFeature[],
+  sx: (x: number) => number,
+  sy: (y: number) => number,
+  scaleX: number,
+  scaleY: number,
+  escapeAttr: (s?: string) => string
+): string {
+  if (!terrain || terrain.length === 0) return '';
+
+  return terrain.map(t => {
+    const colors = TERRAIN_COLORS[t.type] || TERRAIN_COLORS.custom;
+    const cx = sx(t.x);
+    const cy = sy(t.y);
+
+    // Build tooltip text
+    const traits: string[] = [];
+    if (t.traits.coverLight) traits.push('Light Cover');
+    if (t.traits.coverHeavy) traits.push('Heavy Cover');
+    if (t.traits.obscuring) traits.push('Obscuring');
+    if (t.traits.denseCover) traits.push('Dense');
+    if (t.traits.difficultGround) traits.push('Difficult Ground');
+    if (t.traits.breachable) traits.push('Breachable');
+    if (t.impassable) traits.push('Impassable');
+    const tooltipText = `${t.name} (${t.type})${traits.length ? ': ' + traits.join(', ') : ''}`;
+
+    // Shape rendering
+    if (t.shape === 'circle') {
+      const radius = (t.radius || t.width / 2) * ((scaleX + scaleY) / 2);
+      return `
+        <g class="terrain-feature" data-terrain-id="${escapeAttr(t.id)}" data-terrain-type="${t.type}">
+          <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius.toFixed(1)}"
+            fill="${colors.fill}" fill-opacity="${colors.opacity}"
+            stroke="${colors.stroke}" stroke-width="1.5" stroke-dasharray="4 2" />
+          <title>${escapeAttr(tooltipText)}</title>
+        </g>
+      `;
+    }
+
+    if (t.shape === 'polygon' && t.vertices && t.vertices.length > 2) {
+      const points = t.vertices
+        .map(v => `${sx(t.x + v.x).toFixed(1)},${sy(t.y + v.y).toFixed(1)}`)
+        .join(' ');
+      return `
+        <g class="terrain-feature" data-terrain-id="${escapeAttr(t.id)}" data-terrain-type="${t.type}">
+          <polygon points="${points}"
+            fill="${colors.fill}" fill-opacity="${colors.opacity}"
+            stroke="${colors.stroke}" stroke-width="1.5" stroke-dasharray="4 2" />
+          <title>${escapeAttr(tooltipText)}</title>
+        </g>
+      `;
+    }
+
+    // Default: rectangle
+    const width = t.width * scaleX;
+    const height = t.height * scaleY;
+    const rx = cx - width / 2;
+    const ry = cy - height / 2;
+
+    // Add visual indicators for special terrain
+    let extraElements = '';
+
+    // Obscuring terrain gets diagonal lines pattern
+    if (t.traits.obscuring) {
+      const patternId = `pattern-${t.id}`;
+      extraElements += `
+        <defs>
+          <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="8" height="8">
+            <line x1="0" y1="8" x2="8" y2="0" stroke="${colors.stroke}" stroke-width="0.5" opacity="0.5"/>
+          </pattern>
+        </defs>
+        <rect x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${width.toFixed(1)}" height="${height.toFixed(1)}"
+          fill="url(#${patternId})" />
+      `;
+    }
+
+    // Impassable terrain gets a crossed pattern
+    if (t.impassable) {
+      extraElements += `
+        <line x1="${rx.toFixed(1)}" y1="${ry.toFixed(1)}" x2="${(rx + width).toFixed(1)}" y2="${(ry + height).toFixed(1)}"
+          stroke="${colors.stroke}" stroke-width="1" opacity="0.3" />
+        <line x1="${(rx + width).toFixed(1)}" y1="${ry.toFixed(1)}" x2="${rx.toFixed(1)}" y2="${(ry + height).toFixed(1)}"
+          stroke="${colors.stroke}" stroke-width="1" opacity="0.3" />
+      `;
+    }
+
+    return `
+      <g class="terrain-feature" data-terrain-id="${escapeAttr(t.id)}" data-terrain-type="${t.type}">
+        <rect x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${width.toFixed(1)}" height="${height.toFixed(1)}"
+          fill="${colors.fill}" fill-opacity="${colors.opacity}"
+          stroke="${colors.stroke}" stroke-width="1.5" stroke-dasharray="4 2" rx="2" />
+        ${extraElements}
+        <text x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" text-anchor="middle" dominant-baseline="middle"
+          font-size="8" fill="${colors.stroke}" opacity="0.7">${t.type.charAt(0).toUpperCase()}</text>
+        <title>${escapeAttr(tooltipText)}</title>
+      </g>
+    `;
+  }).join('');
 }
 
 export function renderBattlefield(result: SimulationResult, phaseIndex?: number): string {
@@ -163,6 +279,16 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     `;
   }).join('');
 
+  // Render terrain features
+  const terrainLayer = renderTerrainFeatures(
+    result.terrain || [],
+    sx,
+    sy,
+    scaleX,
+    scaleY,
+    escapeAttr
+  );
+
   // Render objective markers
   const objectiveMarkers = (result.objectives || []).map(obj => {
     const cx = sx(obj.x);
@@ -214,6 +340,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
       <line x1="${sx(0).toFixed(1)}" y1="0" x2="${sx(0).toFixed(1)}" y2="${height}" stroke="#888" stroke-dasharray="4 4" />
       <text x="${4}" y="${12}" font-size="10" fill="#1f77b4">Army A zone</text>
       <text x="${width - field.deployDepth * scaleX + 4}" y="${12}" font-size="10" fill="#d62728">Army B zone</text>
+      <g id="terrainLayer">${terrainLayer}</g>
       ${objectiveMarkers}
       ${startCircles}
       ${currentMarkers}

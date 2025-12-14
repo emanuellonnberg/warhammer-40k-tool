@@ -153,6 +153,9 @@ export interface SimulationConfig {
   beamWidth?: number;
   useAdaptiveStrategy?: boolean;  // If true, AI adapts strategy based on battle state
   missionScoring?: 'matched-play' | 'hold-2' | 'high-stakes';  // Mission scoring variant
+  // Terrain configuration
+  terrainLayout?: import('./terrain').TerrainLayout;  // Pre-defined terrain layout
+  terrain?: import('./terrain').TerrainFeature[];      // Custom terrain features (overrides layout)
 }
 
 export interface SimulationResult {
@@ -166,6 +169,7 @@ export interface SimulationResult {
     height: number;
     deployDepth: number;
   };
+  terrain?: import('./terrain').TerrainFeature[];  // Terrain features used in simulation
   objectives?: ObjectiveMarker[];
 
   positions: {
