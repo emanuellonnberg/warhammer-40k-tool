@@ -2,8 +2,51 @@ import type { ArmyState, ObjectiveMarker, UnitState } from './types';
 import type { Unit } from '../types';
 import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
-import { isMovementBlocked, getMovementPenalty } from './terrain';
+import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
+
+// ============================================================================
+// UNIT TYPE HELPERS
+// ============================================================================
+
+/**
+ * Determine if a unit is infantry based on its type
+ */
+export function isUnitInfantry(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  // Infantry types that can move through breachable terrain
+  return type.includes('infantry') ||
+         type.includes('character') ||
+         type.includes('beast') ||
+         type.includes('swarm');
+}
+
+/**
+ * Determine if a unit is a large model (Vehicle/Monster) that may be blocked by certain terrain
+ */
+export function isUnitLargeModel(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  // Large model types
+  return type.includes('vehicle') ||
+         type.includes('monster') ||
+         type.includes('titanic') ||
+         type.includes('knight') ||
+         type.includes('walker');
+}
+
+/**
+ * Get the base radius for a unit in inches
+ */
+export function getUnitBaseRadius(unit: UnitState): number {
+  if (unit.baseSizeInches) {
+    return unit.baseSizeInches / 2;
+  }
+  // Default fallback based on unit type
+  if (isUnitLargeModel(unit)) {
+    return 2.5; // ~130mm base
+  }
+  return 0.5; // ~25mm base
+}
 
 export interface PlannerWeights {
   objectiveValue: number;
@@ -91,18 +134,26 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }): num
 /**
  * Calculate path distance between two points, accounting for terrain obstacles.
  * Falls back to euclidean distance if no navmesh is provided.
+ * Now accepts unit information for proper terrain interaction.
  */
 function pathDistance(
   a: Point,
   b: Point,
   navMesh: NavMesh | undefined,
-  terrain: TerrainFeature[]
+  terrain: TerrainFeature[],
+  unit?: UnitState
 ): { distance: number; path: Point[]; blocked: boolean } {
+  const isInfantry = unit ? isUnitInfantry(unit) : true;
+  const isLarge = unit ? isUnitLargeModel(unit) : false;
+  const baseRadius = unit ? getUnitBaseRadius(unit) : 0;
+
   if (!navMesh || terrain.length === 0) {
-    return { distance: euclideanDistance(a, b), path: [a, b], blocked: false };
+    // Even without navmesh, check if direct path is blocked
+    const blocked = isMovementBlocked(a, b, terrain, isInfantry, isLarge, baseRadius);
+    return { distance: euclideanDistance(a, b), path: [a, b], blocked: blocked.blocked };
   }
 
-  const result = findPath(a, b, navMesh, terrain, true, false);
+  const result = findPath(a, b, navMesh, terrain, isInfantry, isLarge, baseRadius);
   return {
     distance: result.distance + result.movementPenalty,
     path: result.path,
@@ -190,8 +241,8 @@ function generateCandidates(
   const addCandidate = (targetX: number, targetY: number, label: string) => {
     const target: Point = { x: targetX, y: targetY };
 
-    // Calculate path to this candidate
-    const pathResult = pathDistance(unitPos, target, navMesh, terrain);
+    // Calculate path to this candidate (now with unit type awareness)
+    const pathResult = pathDistance(unitPos, target, navMesh, terrain, unit);
 
     if (pathResult.blocked && terrain.length > 0) {
       // Try to find a reachable point along the path
@@ -258,8 +309,8 @@ function generateCandidates(
     for (const wp of navMesh.waypoints.values()) {
       const wpDist = distance(unitPos, { x: wp.x, y: wp.y });
       if (wpDist <= moveAllowance && wpDist > 2) {
-        // Check if this gives us a new angle
-        const pathResult = pathDistance(unitPos, { x: wp.x, y: wp.y }, navMesh, terrain);
+        // Check if this gives us a new angle (with unit type awareness)
+        const pathResult = pathDistance(unitPos, { x: wp.x, y: wp.y }, navMesh, terrain, unit);
         if (!pathResult.blocked && pathResult.distance <= moveAllowance) {
           // Only add if not too close to existing candidates
           const tooClose = candidates.some(c =>

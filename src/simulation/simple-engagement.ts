@@ -22,7 +22,7 @@ import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
 import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
-import { planMovement, type StrategyProfile, generateNavMesh } from './planner';
+import { planMovement, type StrategyProfile, generateNavMesh, isUnitInfantry, isUnitLargeModel, getUnitBaseRadius } from './planner';
 import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
@@ -30,8 +30,8 @@ import {
   getMissionScoringConfig,
   type ObjectiveScoringConfig
 } from './objective-scoring';
-import type { TerrainFeature, TerrainLayout } from './terrain';
-import { createGTLayout, isMovementBlocked, checkLineOfSight, getTerrainCover } from './terrain';
+import type { TerrainFeature, TerrainLayout, Point } from './terrain';
+import { createGTLayout, isMovementBlocked, checkLineOfSight, getTerrainCover, isPositionBlockedByTerrain } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint } from './pathfinding';
 import type { NavMesh } from './pathfinding';
 
@@ -1374,7 +1374,8 @@ export function runSimpleEngagement(
   }
 
   // Ensure units don't overlap after Scout moves
-  clampAllSpacing(stateA, stateB);
+  clampAllSpacing(stateA, stateB, terrain);
+  validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
 
   // Log Scout moves if any occurred
   if (scoutMovements.length > 0) {
@@ -1486,15 +1487,89 @@ export function runSimpleEngagement(
       );
 
       const movementDetails: MovementDetail[] = [];
-      movements.forEach(({ unit, to }) => {
+      movements.forEach(({ unit, to, path }) => {
         const startPos = { x: unit.position.x, y: unit.position.y };
-        const dx = to.x - unit.position.x;
-        const dy = to.y - unit.position.y;
-        unit.position = { x: to.x, y: to.y };
+        const isInfantry = isUnitInfantry(unit);
+        const isLarge = isUnitLargeModel(unit);
+        const baseRadius = getUnitBaseRadius(unit);
+
+        let actualDistance = 0;
+        let finalPos = to;
+
+        // If we have a path with waypoints, follow it to avoid terrain
+        if (path && path.length > 2 && terrain.length > 0) {
+          // Move along path, checking each segment for terrain collisions
+          let currentPos = startPos;
+          for (let i = 1; i < path.length; i++) {
+            const nextWaypoint = path[i];
+
+            // Check if this segment is blocked (accounting for base size)
+            const blocked = isMovementBlocked(
+              currentPos,
+              nextWaypoint,
+              terrain,
+              isInfantry,
+              isLarge,
+              baseRadius
+            );
+
+            if (blocked.blocked) {
+              // Stop at current position if blocked
+              finalPos = currentPos;
+              break;
+            }
+
+            // Check if destination waypoint is inside terrain
+            const posBlocked = isPositionBlockedByTerrain(
+              nextWaypoint,
+              baseRadius,
+              terrain,
+              isInfantry,
+              isLarge
+            );
+
+            if (posBlocked.blocked) {
+              // Stop at current position if next waypoint is inside terrain
+              finalPos = currentPos;
+              break;
+            }
+
+            // Add segment distance
+            const segmentDist = Math.sqrt(
+              (nextWaypoint.x - currentPos.x) ** 2 + (nextWaypoint.y - currentPos.y) ** 2
+            );
+            actualDistance += segmentDist;
+            currentPos = nextWaypoint;
+            finalPos = nextWaypoint;
+          }
+        } else {
+          // Direct movement (no path or no terrain)
+          actualDistance = Math.sqrt((to.x - startPos.x) ** 2 + (to.y - startPos.y) ** 2);
+
+          // Even for direct movement, check if blocked
+          if (terrain.length > 0) {
+            const blocked = isMovementBlocked(startPos, to, terrain, isInfantry, isLarge, baseRadius);
+            if (blocked.blocked) {
+              // If direct path is blocked, don't move
+              finalPos = startPos;
+              actualDistance = 0;
+            }
+          }
+        }
+
+        // Apply final position
+        const dx = finalPos.x - startPos.x;
+        const dy = finalPos.y - startPos.y;
+        unit.position = { x: finalPos.x, y: finalPos.y };
         shiftModelPositions(unit, dx, dy);
         clampToBoard(unit, battlefield.width, battlefield.height);
-        const actualDistance = Math.sqrt((unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2);
+
+        // Recalculate actual distance after clamping
+        actualDistance = Math.sqrt(
+          (unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2
+        );
         unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
+
         if (actualDistance > 0.05) {
           movementDetails.push({
             unitId: unit.unit.id,
@@ -1508,7 +1583,8 @@ export function runSimpleEngagement(
         }
       });
 
-      clampAllSpacing(stateA, stateB);
+      clampAllSpacing(stateA, stateB, terrain);
+      validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
       const postMoveDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       const advancedUnits = active.units.filter(u => u.advanced).map(u => u.unit.name);
       logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.${strategyExplanation}`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined));
@@ -1524,7 +1600,8 @@ export function runSimpleEngagement(
 
       const chargeActions: ActionLog[] = [];
       performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh);
-      clampAllSpacing(stateA, stateB);
+      clampAllSpacing(stateA, stateB, terrain);
+      validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       logs.push(summarizePhase('charge', round, active.tag, `Round ${round}: ${active.tag} charges.`, undefined, postChargeDistance, chargeActions));
@@ -1715,62 +1792,192 @@ function setEngagements(stateA: ArmyState, stateB: ArmyState): void {
   });
 }
 
-function clampAllSpacing(stateA: ArmyState, stateB: ArmyState): void {
-  clampArmySpacing(stateA);
-  clampArmySpacing(stateB);
-  clampInterArmySpacing(stateA, stateB);
+function clampAllSpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = []): void {
+  clampArmySpacing(stateA, terrain);
+  clampArmySpacing(stateB, terrain);
+  clampInterArmySpacing(stateA, stateB, terrain);
 }
 
-function clampArmySpacing(state: ArmyState): void {
+function clampArmySpacing(state: ArmyState, terrain: TerrainFeature[] = []): void {
   const units = state.units.filter(u => u.remainingModels > 0 && !u.inReserves);
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
       const a = units[i];
       const b = units[j];
-      resolveOverlap(a, b);
+      resolveOverlap(a, b, terrain);
     }
   }
 }
 
-function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState): void {
+function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = []): void {
   stateA.units
     .filter(a => a.remainingModels > 0 && !a.inReserves)
     .forEach(a => {
       stateB.units
         .filter(b => b.remainingModels > 0 && !b.inReserves)
         .forEach(b => {
-          resolveOverlap(a, b);
+          resolveOverlap(a, b, terrain);
         });
     });
 }
 
 /**
- * Resolve overlap between two units by pushing them apart (immutable position updates)
+ * Check if a unit's position is blocked by terrain
  */
-function resolveOverlap(a: UnitState, b: UnitState): void {
+function isUnitPositionBlockedByTerrain(
+  unit: UnitState,
+  position: Point,
+  terrain: TerrainFeature[]
+): boolean {
+  if (terrain.length === 0) return false;
+  const isInfantry = isUnitInfantry(unit);
+  const isLarge = isUnitLargeModel(unit);
+  const baseRadius = getUnitBaseRadius(unit);
+  const result = isPositionBlockedByTerrain(position, baseRadius, terrain, isInfantry, isLarge);
+  return result.blocked;
+}
+
+/**
+ * Resolve overlap between two units by pushing them apart (immutable position updates)
+ * Now checks for terrain collisions and adjusts push direction if needed
+ */
+function resolveOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = []): void {
   if (a.remainingModels <= 0 || b.remainingModels <= 0) return;
   const minDist = unitCollisionRadius(a) + unitCollisionRadius(b) + 0.1;
   const dx = b.position.x - a.position.x;
   const dy = b.position.y - a.position.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
   if (dist >= minDist && dist > 0.001) return;
-  
+
   const primaryDx = dist > 0.001 ? dx : (a.position.x <= b.position.x ? -0.01 : 0.01);
   const primaryDy = dist > 0.001 ? dy : 0;
   const actualDist = dist > 0.001 ? dist : Math.sqrt(primaryDx * primaryDx + primaryDy * primaryDy);
   const scale = (minDist - actualDist) / Math.max(actualDist, 0.001) / 2;
-  const adjustAx = -primaryDx * scale;
-  const adjustAy = -primaryDy * scale;
-  const adjustBx = primaryDx * scale;
-  const adjustBy = primaryDy * scale;
-  
-  // Update positions immutably
-  a.position = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
-  b.position = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
-  
-  // Update model positions immutably
-  shiftModelPositions(a, adjustAx, adjustAy);
-  shiftModelPositions(b, adjustBx, adjustBy);
+
+  let adjustAx = -primaryDx * scale;
+  let adjustAy = -primaryDy * scale;
+  let adjustBx = primaryDx * scale;
+  let adjustBy = primaryDy * scale;
+
+  // Calculate proposed new positions
+  const newPosA = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
+  const newPosB = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
+
+  // Check if new positions are blocked by terrain
+  const aBlocked = isUnitPositionBlockedByTerrain(a, newPosA, terrain);
+  const bBlocked = isUnitPositionBlockedByTerrain(b, newPosB, terrain);
+
+  if (aBlocked && !bBlocked) {
+    // Unit A would be pushed into terrain - push B twice as much instead
+    adjustAx = 0;
+    adjustAy = 0;
+    adjustBx *= 2;
+    adjustBy *= 2;
+  } else if (!aBlocked && bBlocked) {
+    // Unit B would be pushed into terrain - push A twice as much instead
+    adjustAx *= 2;
+    adjustAy *= 2;
+    adjustBx = 0;
+    adjustBy = 0;
+  } else if (aBlocked && bBlocked) {
+    // Both blocked - try perpendicular direction
+    const perpX = -primaryDy;
+    const perpY = primaryDx;
+    const perpLen = Math.sqrt(perpX * perpX + perpY * perpY);
+    if (perpLen > 0.001) {
+      const perpScale = scale / perpLen;
+      // Try perpendicular push
+      const perpPosA = { x: a.position.x + perpX * perpScale, y: a.position.y + perpY * perpScale };
+      const perpPosB = { x: b.position.x - perpX * perpScale, y: b.position.y - perpY * perpScale };
+
+      if (!isUnitPositionBlockedByTerrain(a, perpPosA, terrain)) {
+        adjustAx = perpX * perpScale;
+        adjustAy = perpY * perpScale;
+      } else {
+        adjustAx = 0;
+        adjustAy = 0;
+      }
+      if (!isUnitPositionBlockedByTerrain(b, perpPosB, terrain)) {
+        adjustBx = -perpX * perpScale;
+        adjustBy = -perpY * perpScale;
+      } else {
+        adjustBx = 0;
+        adjustBy = 0;
+      }
+    }
+  }
+
+  // Apply final adjustments
+  if (adjustAx !== 0 || adjustAy !== 0) {
+    a.position = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
+    shiftModelPositions(a, adjustAx, adjustAy);
+  }
+  if (adjustBx !== 0 || adjustBy !== 0) {
+    b.position = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
+    shiftModelPositions(b, adjustBx, adjustBy);
+  }
+}
+
+/**
+ * Validate and fix unit positions that are inside terrain
+ * Pushes units out of terrain to the nearest valid position
+ */
+function validateTerrainPositions(
+  stateA: ArmyState,
+  stateB: ArmyState,
+  terrain: TerrainFeature[],
+  battlefieldWidth: number,
+  battlefieldHeight: number
+): void {
+  if (terrain.length === 0) return;
+
+  const allUnits = [...stateA.units, ...stateB.units].filter(u => u.remainingModels > 0 && !u.inReserves);
+
+  for (const unit of allUnits) {
+    const isInfantry = isUnitInfantry(unit);
+    const isLarge = isUnitLargeModel(unit);
+    const baseRadius = getUnitBaseRadius(unit);
+
+    // Check if current position is blocked
+    const blocked = isPositionBlockedByTerrain(unit.position, baseRadius, terrain, isInfantry, isLarge);
+
+    if (blocked.blocked && blocked.blockedBy) {
+      // Find direction away from terrain center
+      const terrainCenter = { x: blocked.blockedBy.x, y: blocked.blockedBy.y };
+      let dx = unit.position.x - terrainCenter.x;
+      let dy = unit.position.y - terrainCenter.y;
+      const len = Math.sqrt(dx * dx + dy * dy);
+
+      if (len < 0.001) {
+        // Unit is at terrain center - push in any direction
+        dx = 1;
+        dy = 0;
+      } else {
+        dx /= len;
+        dy /= len;
+      }
+
+      // Calculate how far to push based on terrain size and base radius
+      const terrainRadius = Math.max(blocked.blockedBy.width, blocked.blockedBy.height) / 2;
+      const pushDistance = terrainRadius + baseRadius + 0.5;
+
+      // Calculate new position
+      let newX = terrainCenter.x + dx * pushDistance;
+      let newY = terrainCenter.y + dy * pushDistance;
+
+      // Clamp to battlefield bounds
+      const halfW = battlefieldWidth / 2;
+      const halfH = battlefieldHeight / 2;
+      newX = Math.max(-halfW + baseRadius, Math.min(halfW - baseRadius, newX));
+      newY = Math.max(-halfH + baseRadius, Math.min(halfH - baseRadius, newY));
+
+      // Apply the position change
+      const moveX = newX - unit.position.x;
+      const moveY = newY - unit.position.y;
+      unit.position = { x: newX, y: newY };
+      shiftModelPositions(unit, moveX, moveY);
+    }
+  }
 }
 
 function parseRangeStr(rangeValue?: string): number {

@@ -378,27 +378,112 @@ function onSegment(p1: Point, p2: Point, p: Point): boolean {
 // ============================================================================
 
 /**
+ * Check if a circular base at a position overlaps with terrain
+ * This accounts for the unit's base size, not just its center point
+ */
+export function baseOverlapsTerrain(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature,
+  isInfantry: boolean = true
+): boolean {
+  // Breachable terrain allows infantry to be inside
+  if (terrain.traits.breachable && isInfantry) {
+    return false;
+  }
+
+  // Only check blocking terrain
+  if (!terrain.impassable && !terrain.traits.obscuring && !terrain.infantryOnly && !terrain.blocksLargeModels) {
+    return false;
+  }
+
+  const bounds = getTerrainBounds(terrain);
+
+  if (terrain.shape === 'circle') {
+    // Circle-circle overlap: distance between centers <= sum of radii
+    const terrainRadius = terrain.radius || terrain.width / 2;
+    const dx = position.x - terrain.x;
+    const dy = position.y - terrain.y;
+    const distSquared = dx * dx + dy * dy;
+    const combinedRadius = terrainRadius + baseRadius;
+    return distSquared < combinedRadius * combinedRadius;
+  }
+
+  // Rectangle: check if circle overlaps rectangle
+  // Find closest point on rectangle to circle center
+  const closestX = Math.max(bounds.minX, Math.min(position.x, bounds.maxX));
+  const closestY = Math.max(bounds.minY, Math.min(position.y, bounds.maxY));
+
+  const dx = position.x - closestX;
+  const dy = position.y - closestY;
+  const distSquared = dx * dx + dy * dy;
+
+  return distSquared < baseRadius * baseRadius;
+}
+
+/**
+ * Check if a unit's base at a position overlaps any impassable terrain
+ */
+export function isPositionBlockedByTerrain(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature[],
+  isInfantry: boolean = true,
+  isLargeModel: boolean = false
+): { blocked: boolean; blockedBy?: TerrainFeature } {
+  for (const t of terrain) {
+    // Skip non-blocking terrain for this unit type
+    if (!t.impassable && !t.traits.obscuring) {
+      if (t.infantryOnly && !isInfantry) {
+        if (baseOverlapsTerrain(position, baseRadius, { ...t, impassable: true }, isInfantry)) {
+          return { blocked: true, blockedBy: t };
+        }
+      }
+      if (t.blocksLargeModels && isLargeModel) {
+        if (baseOverlapsTerrain(position, baseRadius, { ...t, impassable: true }, isInfantry)) {
+          return { blocked: true, blockedBy: t };
+        }
+      }
+      continue;
+    }
+
+    // Breachable terrain allows infantry through
+    if (t.traits.breachable && isInfantry) {
+      continue;
+    }
+
+    if (baseOverlapsTerrain(position, baseRadius, t, isInfantry)) {
+      return { blocked: true, blockedBy: t };
+    }
+  }
+
+  return { blocked: false };
+}
+
+/**
  * Check if movement between two points is blocked by any terrain
+ * Now supports optional base radius for more accurate collision detection
  */
 export function isMovementBlocked(
   from: Point,
   to: Point,
   terrain: TerrainFeature[],
   isInfantry: boolean = true,
-  isLargeModel: boolean = false
+  isLargeModel: boolean = false,
+  baseRadius: number = 0
 ): { blocked: boolean; blockedBy?: TerrainFeature } {
   for (const t of terrain) {
     // Skip non-blocking terrain
     if (!t.impassable && !t.traits.obscuring) {
       // Check infantry-only terrain
       if (t.infantryOnly && !isInfantry) {
-        if (lineIntersectsTerrain(from, to, t)) {
+        if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
           return { blocked: true, blockedBy: t };
         }
       }
       // Check large model blocking
       if (t.blocksLargeModels && isLargeModel) {
-        if (lineIntersectsTerrain(from, to, t)) {
+        if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
           return { blocked: true, blockedBy: t };
         }
       }
@@ -406,7 +491,7 @@ export function isMovementBlocked(
     }
 
     // Check if path crosses impassable/obscuring terrain
-    if (lineIntersectsTerrain(from, to, t)) {
+    if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
       // Breachable terrain allows infantry through
       if (t.traits.breachable && isInfantry) {
         continue;
@@ -416,6 +501,31 @@ export function isMovementBlocked(
   }
 
   return { blocked: false };
+}
+
+/**
+ * Check if a path (with base width) crosses terrain
+ * For baseRadius > 0, expands the terrain bounds by the base radius
+ */
+function pathCrossesTerrainWithBase(
+  from: Point,
+  to: Point,
+  terrain: TerrainFeature,
+  baseRadius: number
+): boolean {
+  if (baseRadius <= 0) {
+    return lineIntersectsTerrain(from, to, terrain);
+  }
+
+  // Create expanded terrain for collision check
+  const expandedTerrain: TerrainFeature = {
+    ...terrain,
+    width: terrain.width + baseRadius * 2,
+    height: terrain.height + baseRadius * 2,
+    radius: terrain.radius ? terrain.radius + baseRadius : undefined,
+  };
+
+  return lineIntersectsTerrain(from, to, expandedTerrain);
 }
 
 /**
