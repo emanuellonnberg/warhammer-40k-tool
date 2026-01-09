@@ -504,8 +504,8 @@ export function isMovementBlocked(
 }
 
 /**
- * Check if a path (with base width) crosses terrain
- * For baseRadius > 0, expands the terrain bounds by the base radius
+ * Check if a path (swept circle/capsule) crosses terrain
+ * Uses Minkowski sum logic: checks if line segment comes within baseRadius of terrain
  */
 function pathCrossesTerrainWithBase(
   from: Point,
@@ -517,16 +517,102 @@ function pathCrossesTerrainWithBase(
     return lineIntersectsTerrain(from, to, terrain);
   }
 
-  // Create expanded terrain for collision check
-  const expandedTerrain: TerrainFeature = {
-    ...terrain,
-    width: terrain.width + baseRadius * 2,
-    height: terrain.height + baseRadius * 2,
-    radius: terrain.radius ? terrain.radius + baseRadius : undefined,
-  };
+  // For circles: check if line segment comes within (terrainRadius + baseRadius)
+  if (terrain.shape === 'circle') {
+    const terrainRadius = terrain.radius || terrain.width / 2;
+    const combinedRadius = terrainRadius + baseRadius;
+    return lineSegmentToPointDistance(from, to, { x: terrain.x, y: terrain.y }) < combinedRadius;
+  }
 
-  return lineIntersectsTerrain(from, to, expandedTerrain);
+  // For rectangles: check if line segment comes within baseRadius of the rectangle
+  // This is the Minkowski sum approach - the "rounded rectangle"
+  const bounds = getTerrainBounds(terrain);
+  return lineSegmentToRectangleDistance(from, to, bounds) < baseRadius;
 }
+
+/**
+ * Calculate minimum distance from a line segment to a point
+ */
+function lineSegmentToPointDistance(segStart: Point, segEnd: Point, point: Point): number {
+  const dx = segEnd.x - segStart.x;
+  const dy = segEnd.y - segStart.y;
+  const lengthSquared = dx * dx + dy * dy;
+
+  if (lengthSquared === 0) {
+    // Segment is a point
+    const px = point.x - segStart.x;
+    const py = point.y - segStart.y;
+    return Math.sqrt(px * px + py * py);
+  }
+
+  // Project point onto line, clamped to segment
+  const t = Math.max(0, Math.min(1,
+    ((point.x - segStart.x) * dx + (point.y - segStart.y) * dy) / lengthSquared
+  ));
+
+  const closestX = segStart.x + t * dx;
+  const closestY = segStart.y + t * dy;
+
+  const distX = point.x - closestX;
+  const distY = point.y - closestY;
+  return Math.sqrt(distX * distX + distY * distY);
+}
+
+/**
+ * Calculate minimum distance from a line segment to an axis-aligned rectangle
+ * Returns 0 if the segment intersects the rectangle
+ */
+function lineSegmentToRectangleDistance(segStart: Point, segEnd: Point, rect: BoundingBox): number {
+  // Check if segment intersects the rectangle (distance = 0)
+  if (lineIntersectsRect(segStart, segEnd, rect)) {
+    return 0;
+  }
+
+  // Find minimum distance to all 4 edges
+  let minDist = Infinity;
+
+  // Distance to each edge (as line segments)
+  const corners = [
+    { x: rect.minX, y: rect.minY }, // bottom-left
+    { x: rect.maxX, y: rect.minY }, // bottom-right
+    { x: rect.maxX, y: rect.maxY }, // top-right
+    { x: rect.minX, y: rect.maxY }, // top-left
+  ];
+
+  // Check distance to each edge
+  for (let i = 0; i < 4; i++) {
+    const edgeStart = corners[i];
+    const edgeEnd = corners[(i + 1) % 4];
+    const dist = segmentToSegmentDistance(segStart, segEnd, edgeStart, edgeEnd);
+    minDist = Math.min(minDist, dist);
+  }
+
+  return minDist;
+}
+
+/**
+ * Calculate minimum distance between two line segments
+ */
+function segmentToSegmentDistance(
+  a1: Point, a2: Point,
+  b1: Point, b2: Point
+): number {
+  // Check if segments intersect
+  if (lineSegmentsIntersect(a1, a2, b1, b2)) {
+    return 0;
+  }
+
+  // Otherwise, minimum distance is the smallest of:
+  // - distance from each endpoint of A to segment B
+  // - distance from each endpoint of B to segment A
+  return Math.min(
+    lineSegmentToPointDistance(b1, b2, a1),
+    lineSegmentToPointDistance(b1, b2, a2),
+    lineSegmentToPointDistance(a1, a2, b1),
+    lineSegmentToPointDistance(a1, a2, b2)
+  );
+}
+
 
 /**
  * Calculate movement cost penalty from terrain
