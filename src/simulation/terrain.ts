@@ -689,18 +689,38 @@ export function getTerrainCover(
 /**
  * Check line of sight between two positions
  * Returns whether LoS is blocked and by what
+ *
+ * @param from - Shooter position
+ * @param to - Target position
+ * @param terrain - Terrain features to check
+ * @param shooterIgnoresObscuring - If true, shooter is Towering/Aircraft and ignores Obscuring
+ * @param targetIgnoresObscuring - If true, target is Towering/Aircraft and ignores Obscuring
  */
 export function checkLineOfSight(
   from: Point,
   to: Point,
-  terrain: TerrainFeature[]
+  terrain: TerrainFeature[],
+  shooterIgnoresObscuring: boolean = false,
+  targetIgnoresObscuring: boolean = false
 ): { hasLoS: boolean; blockedBy?: TerrainFeature; throughDense: boolean } {
   let throughDense = false;
+
+  // If either shooter OR target ignores Obscuring, LoS is not blocked by Obscuring terrain
+  const eitherIgnoresObscuring = shooterIgnoresObscuring || targetIgnoresObscuring;
 
   for (const t of terrain) {
     // Only obscuring terrain blocks LoS
     if (!t.traits.obscuring) {
       // Check for dense cover penalty
+      if (t.traits.denseCover && lineIntersectsTerrain(from, to, t)) {
+        throughDense = true;
+      }
+      continue;
+    }
+
+    // Towering/Aircraft models ignore Obscuring terrain entirely
+    if (eitherIgnoresObscuring) {
+      // Still check for dense cover even if Obscuring is ignored
       if (t.traits.denseCover && lineIntersectsTerrain(from, to, t)) {
         throughDense = true;
       }

@@ -22,7 +22,7 @@ import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
 import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
-import { planMovement, type StrategyProfile, generateNavMesh, isUnitInfantry, isUnitLargeModel, getUnitBaseRadius } from './planner';
+import { planMovement, type StrategyProfile, generateNavMesh, isUnitInfantry, isUnitLargeModel, getUnitBaseRadius, unitIgnoresObscuring } from './planner';
 import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
@@ -2099,8 +2099,15 @@ function expectedShootingDamageBatch(
           const range = parseRangeStr(weapon.characteristics?.range);
 
           // Check line of sight through terrain
+          // Towering and Aircraft units ignore Obscuring terrain
           const losCheck = terrain.length > 0
-            ? checkLineOfSight(attacker.position, def.position, terrain)
+            ? checkLineOfSight(
+                attacker.position,
+                def.position,
+                terrain,
+                unitIgnoresObscuring(attacker),
+                unitIgnoresObscuring(def)
+              )
             : { hasLoS: true, throughDense: false };
 
           // If LoS is blocked, can't shoot this target

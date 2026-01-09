@@ -35,6 +35,63 @@ export function isUnitLargeModel(unit: UnitState): boolean {
 }
 
 /**
+ * Determine if a unit has the Towering keyword
+ * Towering models can see and be seen over Obscuring terrain
+ */
+export function isUnitTowering(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  const name = unit.unit.name?.toLowerCase() || '';
+
+  // Check type for Titanic (which typically includes Towering)
+  if (type.includes('titanic')) return true;
+
+  // Check for common Towering units by name patterns
+  if (name.includes('knight') && !name.includes('armiger')) return true;
+  if (name.includes('titan')) return true;
+  if (name.includes('baneblade')) return true;
+  if (name.includes('stormlord')) return true;
+  if (name.includes('shadowsword')) return true;
+  if (name.includes('wraithknight')) return true;
+  if (name.includes('riptide')) return true;
+  if (name.includes('stormsurge')) return true;
+  if (name.includes('hierophant')) return true;
+  if (name.includes('harridan')) return true;
+
+  // Check keywords/rules if available
+  const rules = unit.unit.rules || [];
+  const abilities = unit.unit.abilities || [];
+  const allKeywords = [...rules, ...abilities].map(k => k.toLowerCase());
+
+  return allKeywords.some(k => k.includes('towering'));
+}
+
+/**
+ * Determine if a unit is an Aircraft
+ * Aircraft can see and be seen over Obscuring terrain
+ */
+export function isUnitAircraft(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+
+  // Direct type check
+  if (type.includes('aircraft')) return true;
+  if (type.includes('flyer')) return true;
+
+  // Check keywords/rules if available
+  const rules = unit.unit.rules || [];
+  const abilities = unit.unit.abilities || [];
+  const allKeywords = [...rules, ...abilities].map(k => k.toLowerCase());
+
+  return allKeywords.some(k => k.includes('aircraft') || k.includes('hover'));
+}
+
+/**
+ * Determine if a unit ignores Obscuring terrain for visibility
+ */
+export function unitIgnoresObscuring(unit: UnitState): boolean {
+  return isUnitTowering(unit) || isUnitAircraft(unit);
+}
+
+/**
  * Get the base radius for a unit in inches
  */
 export function getUnitBaseRadius(unit: UnitState): number {
