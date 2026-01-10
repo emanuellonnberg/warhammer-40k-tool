@@ -378,25 +378,46 @@ function onSegment(p1: Point, p2: Point, p: Point): boolean {
 // ============================================================================
 
 /**
- * Check if a circular base at a position overlaps with terrain
- * This accounts for the unit's base size, not just its center point
+ * Check if terrain should block a specific unit type
+ * Centralizes the blocking logic for different terrain/unit combinations
  */
-export function baseOverlapsTerrain(
-  position: Point,
-  baseRadius: number,
+export function isTerrainBlockingForUnit(
   terrain: TerrainFeature,
-  isInfantry: boolean = true
+  isInfantry: boolean,
+  isLargeModel: boolean
 ): boolean {
-  // Breachable terrain allows infantry to be inside
+  // Breachable terrain allows infantry through
   if (terrain.traits.breachable && isInfantry) {
     return false;
   }
 
-  // Only check blocking terrain
-  if (!terrain.impassable && !terrain.traits.obscuring && !terrain.infantryOnly && !terrain.blocksLargeModels) {
-    return false;
+  // Impassable and obscuring always block (unless breachable for infantry, handled above)
+  if (terrain.impassable || terrain.traits.obscuring) {
+    return true;
   }
 
+  // Infantry-only terrain blocks non-infantry
+  if (terrain.infantryOnly && !isInfantry) {
+    return true;
+  }
+
+  // Large model blocking terrain blocks large models
+  if (terrain.blocksLargeModels && isLargeModel) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check if a circular base at a position geometrically overlaps with terrain
+ * This is a pure geometry check - does not consider unit types or blocking rules
+ */
+function baseOverlapsTerrainGeometry(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature
+): boolean {
   const bounds = getTerrainBounds(terrain);
 
   if (terrain.shape === 'circle') {
@@ -422,7 +443,27 @@ export function baseOverlapsTerrain(
 }
 
 /**
- * Check if a unit's base at a position overlaps any impassable terrain
+ * Check if a circular base at a position overlaps with blocking terrain
+ * This accounts for the unit's base size and type-specific blocking rules
+ */
+export function baseOverlapsTerrain(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature,
+  isInfantry: boolean = true,
+  isLargeModel: boolean = false
+): boolean {
+  // Check if this terrain blocks this unit type
+  if (!isTerrainBlockingForUnit(terrain, isInfantry, isLargeModel)) {
+    return false;
+  }
+
+  return baseOverlapsTerrainGeometry(position, baseRadius, terrain);
+}
+
+/**
+ * Check if a unit's base at a position overlaps any blocking terrain
+ * Uses the centralized blocking logic from isTerrainBlockingForUnit
  */
 export function isPositionBlockedByTerrain(
   position: Point,
@@ -432,27 +473,8 @@ export function isPositionBlockedByTerrain(
   isLargeModel: boolean = false
 ): { blocked: boolean; blockedBy?: TerrainFeature } {
   for (const t of terrain) {
-    // Skip non-blocking terrain for this unit type
-    if (!t.impassable && !t.traits.obscuring) {
-      if (t.infantryOnly && !isInfantry) {
-        if (baseOverlapsTerrain(position, baseRadius, { ...t, impassable: true }, isInfantry)) {
-          return { blocked: true, blockedBy: t };
-        }
-      }
-      if (t.blocksLargeModels && isLargeModel) {
-        if (baseOverlapsTerrain(position, baseRadius, { ...t, impassable: true }, isInfantry)) {
-          return { blocked: true, blockedBy: t };
-        }
-      }
-      continue;
-    }
-
-    // Breachable terrain allows infantry through
-    if (t.traits.breachable && isInfantry) {
-      continue;
-    }
-
-    if (baseOverlapsTerrain(position, baseRadius, t, isInfantry)) {
+    // baseOverlapsTerrain now handles all unit-type-specific blocking rules internally
+    if (baseOverlapsTerrain(position, baseRadius, t, isInfantry, isLargeModel)) {
       return { blocked: true, blockedBy: t };
     }
   }

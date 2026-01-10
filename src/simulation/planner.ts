@@ -6,6 +6,14 @@ import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain } fro
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+// Default base radii in inches (approximate conversions from mm)
+const DEFAULT_LARGE_MODEL_BASE_RADIUS = 2.5; // ~130mm oval base
+const DEFAULT_INFANTRY_BASE_RADIUS = 0.5; // ~25mm round base
+
+// ============================================================================
 // UNIT TYPE HELPERS
 // ============================================================================
 
@@ -100,9 +108,9 @@ export function getUnitBaseRadius(unit: UnitState): number {
   }
   // Default fallback based on unit type
   if (isUnitLargeModel(unit)) {
-    return 2.5; // ~130mm base
+    return DEFAULT_LARGE_MODEL_BASE_RADIUS;
   }
-  return 0.5; // ~25mm base
+  return DEFAULT_INFANTRY_BASE_RADIUS;
 }
 
 export interface PlannerWeights {
@@ -200,9 +208,13 @@ function pathDistance(
   terrain: TerrainFeature[],
   unit?: UnitState
 ): { distance: number; path: Point[]; blocked: boolean } {
+  // Defaults when unit is not provided:
+  // - isInfantry=true: allows breachable terrain passage (conservative, infantry is most common)
+  // - isLarge=false: won't trigger large model blocking (safe default)
+  // - baseRadius=0: point-based collision only (may allow clipping, but won't reject valid paths)
   const isInfantry = unit ? isUnitInfantry(unit) : true;
   const isLarge = unit ? isUnitLargeModel(unit) : false;
-  const baseRadius = unit ? getUnitBaseRadius(unit) : 0;
+  const baseRadius = unit ? getUnitBaseRadius(unit) : DEFAULT_INFANTRY_BASE_RADIUS;
 
   if (!navMesh || terrain.length === 0) {
     // Even without navmesh, check if direct path is blocked

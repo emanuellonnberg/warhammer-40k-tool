@@ -40,6 +40,7 @@ const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
 const DEFAULT_MODEL_SPACING = 1.25;
 const INCHES_PER_MM = 1 / 25.4;
 const MODEL_PER_ROW = 5;
+const TERRAIN_PUSH_BUFFER = 0.5; // extra clearance when pushing units out of terrain
 const BASE_RADII: { match: RegExp; radius: number }[] = [
   { match: /(knight|lord of|baneblade|wraithknight)/i, radius: 3 },
   { match: /(land raider|predator|hammerhead|riptide|monolith|castigator)/i, radius: 2.5 },
@@ -1564,12 +1565,18 @@ export function runSimpleEngagement(
         unit.position = { x: finalPos.x, y: finalPos.y };
         unit.position = { x: finalPos.x, y: finalPos.y };
         shiftModelPositions(unit, dx, dy);
+
+        // Store position before clamping to check if it changed
+        const preclampPos = { x: unit.position.x, y: unit.position.y };
         clampToBoard(unit, battlefield.width, battlefield.height);
 
-        // Recalculate actual distance after clamping
-        actualDistance = Math.sqrt(
-          (unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2
-        );
+        // Only recalculate distance if clamping moved the unit (use straight-line from start)
+        // Otherwise preserve the accumulated path distance which accounts for terrain navigation
+        if (unit.position.x !== preclampPos.x || unit.position.y !== preclampPos.y) {
+          actualDistance = Math.sqrt(
+            (unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2
+          );
+        }
         unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
 
         if (actualDistance > 0.05) {
@@ -1961,7 +1968,7 @@ function validateTerrainPositions(
 
       // Calculate how far to push based on terrain size and base radius
       const terrainRadius = Math.max(blocked.blockedBy.width, blocked.blockedBy.height) / 2;
-      const pushDistance = terrainRadius + baseRadius + 0.5;
+      const pushDistance = terrainRadius + baseRadius + TERRAIN_PUSH_BUFFER;
 
       // Calculate new position
       let newX = terrainCenter.x + dx * pushDistance;

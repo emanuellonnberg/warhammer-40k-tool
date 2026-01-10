@@ -380,19 +380,19 @@ function findNearestAccessibleWaypoints(
 
   for (const wp of navMesh.waypoints.values()) {
     // Check if the waypoint itself is accessible (not too close to terrain for this base size)
-    // Waypoints are generated with clearance, but large bases may need more
-    const wpInTerrain = terrain.some(t => {
-      if (!t.impassable && !t.traits.obscuring) return false;
-      if (t.traits.breachable && isInfantry) return false;
-      const bounds = getTerrainBounds(t);
-      const closestX = Math.max(bounds.minX, Math.min(wp.x, bounds.maxX));
-      const closestY = Math.max(bounds.minY, Math.min(wp.y, bounds.maxY));
-      const dx = wp.x - closestX;
-      const dy = wp.y - closestY;
-      return (dx * dx + dy * dy) < baseRadius * baseRadius;
-    });
+    // Use isPositionBlockedByTerrain which properly handles:
+    // - Actual terrain shapes (circle vs rectangle)
+    // - Infantry-only terrain
+    // - Large model blocking terrain
+    const wpBlocked = isPositionBlockedByTerrain(
+      { x: wp.x, y: wp.y },
+      baseRadius,
+      terrain,
+      isInfantry,
+      isLargeModel
+    );
 
-    if (wpInTerrain) continue;
+    if (wpBlocked.blocked) continue;
 
     // Check if we can reach this waypoint directly
     const blocked = isMovementBlocked(point, { x: wp.x, y: wp.y }, terrain, isInfantry, isLargeModel, baseRadius);
