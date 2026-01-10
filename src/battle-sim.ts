@@ -6,6 +6,7 @@
 import type { Army, AttachmentMap } from './types';
 import type { SimulationResult } from './simulation';
 import type { StrategyProfile } from './simulation/planner';
+import type { MovementIntent } from './simulation/types';
 import { runSimpleEngagement, pickStartingDistance } from './simulation';
 import {
   loadAppState,
@@ -26,6 +27,44 @@ let leaderAttachmentsA: AttachmentMap = {};
 let leaderAttachmentsB: AttachmentMap = {};
 let lastSimResult: SimulationResult | null = null;
 let currentPhaseIndex: number = -1;
+
+/**
+ * Get movement color based on army, intent, and whether it's an advance move.
+ * Color scheme:
+ * - Normal move: Army base color (blue/red)
+ * - Advance: Bright gold/orange (standout - high visibility)
+ * - Charge: Magenta/purple (aggressive)
+ * - Backstep/retreat: Cyan (defensive)
+ * - Flank: Green variants (tactical positioning)
+ * - Hold: Dim gray (no movement)
+ */
+function getMovementColor(army: 'armyA' | 'armyB', intent?: MovementIntent, advanced?: boolean): string {
+  // Advance moves get priority coloring (bright, easy to spot)
+  if (advanced) {
+    return '#ffa500'; // Orange for advance moves
+  }
+
+  // Intent-based coloring
+  switch (intent) {
+    case 'charge':
+      return '#e040fb'; // Magenta for charges
+    case 'backstep':
+      return '#00bcd4'; // Cyan for defensive retreats
+    case 'flank-up':
+    case 'flank-down':
+      return '#4caf50'; // Green for flanking maneuvers
+    case 'advance-obj':
+    case 'advance-obj-partial':
+      return '#8bc34a'; // Light green for objective movement
+    case 'waypoint':
+      return '#ff9800'; // Amber for pathfinding waypoints
+    case 'hold':
+      return '#9e9e9e'; // Gray for holding position
+    default:
+      // Default army colors for normal movement
+      return army === 'armyB' ? '#d62728' : '#1f77b4';
+  }
+}
 
 /**
  * Load army data from file or URL
@@ -301,7 +340,7 @@ function setupBattlefieldInteractions(): void {
   const movementEntries = document.querySelectorAll<HTMLElement>('.sim-move-entry');
   movementEntries.forEach(entry => {
     entry.addEventListener('mouseenter', () => {
-      const { fromX, fromY, toX, toY, army, path: pathEncoded } = entry.dataset;
+      const { fromX, fromY, toX, toY, army, path: pathEncoded, intent, advanced } = entry.dataset;
       if (fromX && fromY && toX && toY && army) {
         // Parse path if present
         let path: { x: number; y: number }[] | undefined;
@@ -318,7 +357,9 @@ function setupBattlefieldInteractions(): void {
           toX: parseFloat(toX),
           toY: parseFloat(toY),
           army: army as 'armyA' | 'armyB',
-          path
+          path,
+          intent: intent as MovementIntent | undefined,
+          advanced: advanced === 'true'
         }, scales);
       }
     });
@@ -351,13 +392,13 @@ function setupBattlefieldInteractions(): void {
 /**
  * Highlight movement on battlefield (hover-driven)
  */
-function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[] }, scales: ReturnType<typeof getScaleFactors>): void {
+function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[]; intent?: MovementIntent; advanced?: boolean }, scales: ReturnType<typeof getScaleFactors>): void {
   const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
   const overlay = svg?.querySelector('#movementHighlight') as SVGGElement | null;
   if (!overlay) return;
 
   overlay.innerHTML = '';
-  const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
+  const color = getMovementColor(detail.army, detail.intent, detail.advanced);
   const ns = 'http://www.w3.org/2000/svg';
 
   // If we have a path with waypoints, render as polyline; otherwise straight line
@@ -428,7 +469,7 @@ function renderPhaseMovementOverlay(phaseIndex: number, scales: ReturnType<typeo
     const distSq = dx * dx + dy * dy;
     if (distSq < 0.01) return;
 
-    const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
+    const color = getMovementColor(detail.army, detail.intent, detail.advanced);
 
     // If we have a path with waypoints, render as polyline; otherwise straight line
     if (detail.path && detail.path.length > 2) {

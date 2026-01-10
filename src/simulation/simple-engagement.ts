@@ -1488,7 +1488,7 @@ export function runSimpleEngagement(
       );
 
       const movementDetails: MovementDetail[] = [];
-      movements.forEach(({ unit, to, path }) => {
+      movements.forEach(({ unit, to, path, intent }) => {
         const startPos = { x: unit.position.x, y: unit.position.y };
         const isInfantry = isUnitInfantry(unit);
         const isLarge = isUnitLargeModel(unit);
@@ -1598,7 +1598,8 @@ export function runSimpleEngagement(
             distance: actualDistance,
             advanced: unit.advanced ?? false,
             // Only include path if it has intermediate waypoints (more than just start and end)
-            path: actualPath.length > 2 ? actualPath : undefined
+            path: actualPath.length > 2 ? actualPath : undefined,
+            intent
           });
         }
       });

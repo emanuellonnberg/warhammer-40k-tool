@@ -23,10 +23,26 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `Round ${log.turn} · ${playerLabel} · ${log.phase}`;
   };
 
-  const describeMovement = (detail: { unitName?: string; distance: number; to: { x: number; y: number }; advanced: boolean }) => {
+  // Intent label display mapping
+  const intentLabel = (intent?: string): string => {
+    switch (intent) {
+      case 'hold': return '';  // No label for holding
+      case 'advance-obj': return ' → objective';
+      case 'advance-obj-partial': return ' → objective (partial)';
+      case 'backstep': return ' ← retreat';
+      case 'flank-up': return ' ↑ flank';
+      case 'flank-down': return ' ↓ flank';
+      case 'waypoint': return ' ↝ via waypoint';
+      case 'charge': return ' ⚔ charge';
+      default: return '';
+    }
+  };
+
+  const describeMovement = (detail: { unitName?: string; distance: number; to: { x: number; y: number }; advanced: boolean; intent?: string }) => {
     const name = detail.unitName || 'Unit';
     const verb = detail.advanced ? 'advances' : 'moves';
-    return `${name} ${verb} ${detail.distance.toFixed(1)}" to (${detail.to.x.toFixed(1)}, ${detail.to.y.toFixed(1)})`;
+    const intent = intentLabel(detail.intent);
+    return `${name} ${verb} ${detail.distance.toFixed(1)}"${intent}`;
   };
 
   const renderObjectiveStates = (
@@ -55,7 +71,7 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
   };
 
-  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[] }[]) => {
+  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[]; intent?: string }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
       const label = describeMovement(detail);
@@ -63,7 +79,9 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
       const pathAttr = detail.path && detail.path.length > 2
         ? ` data-path="${encodeURIComponent(JSON.stringify(detail.path))}"`
         : '';
-      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}"${pathAttr}>${label}</span></li>`;
+      const intentAttr = detail.intent ? ` data-intent="${detail.intent}"` : '';
+      const advancedAttr = detail.advanced ? ' data-advanced="true"' : '';
+      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}"${pathAttr}${intentAttr}${advancedAttr}>${label}</span></li>`;
     }).join('');
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };

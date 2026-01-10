@@ -81,6 +81,18 @@ export interface ActionLog {
   devastatingWounds?: number;
 }
 
+/** Movement intent labels describing why a unit moved */
+export type MovementIntent =
+  | 'hold'
+  | 'advance-obj'
+  | 'advance-obj-partial'
+  | 'backstep'
+  | 'flank-up'
+  | 'flank-down'
+  | 'waypoint'
+  | 'charge'
+  | 'unknown';
+
 export interface MovementDetail {
   unitId: string;
   unitName: string;
@@ -91,6 +103,8 @@ export interface MovementDetail {
   advanced: boolean;
   /** The actual path taken (waypoints), if different from a straight line */
   path?: { x: number; y: number }[];
+  /** Movement intent/tactic describing why the unit moved */
+  intent?: MovementIntent;
 }
 
 export interface CasualtyLog {

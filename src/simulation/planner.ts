@@ -1,4 +1,4 @@
-import type { ArmyState, ObjectiveMarker, UnitState } from './types';
+import type { ArmyState, MovementIntent, ObjectiveMarker, UnitState } from './types';
 import type { Unit } from '../types';
 import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
@@ -468,6 +468,8 @@ export interface PlannedMovement {
   path?: Point[];
   /** Whether unit is advancing */
   advanced?: boolean;
+  /** Movement intent/tactic */
+  intent?: MovementIntent;
 }
 
 export function planGreedyMovement(
@@ -525,6 +527,7 @@ export function planGreedyMovement(
       to: { x: best.x, y: best.y },
       path: best.path,
       advanced: isAdvance,
+      intent: best.label as MovementIntent,
     });
   }
 
@@ -532,7 +535,7 @@ export function planGreedyMovement(
 }
 
 interface BeamState {
-  moves: Map<string, { x: number; y: number; path?: Point[] }>;
+  moves: Map<string, { x: number; y: number; path?: Point[]; label?: string }>;
   score: number;
 }
 
@@ -580,7 +583,7 @@ export function planBeamMovement(
     for (const state of beam) {
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
-        newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path });
+        newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path, label: candidate.label });
         const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag);
         nextStates.push({ moves: newMoves, score });
       }
@@ -596,13 +599,14 @@ export function planBeamMovement(
   const movements: PlannedMovement[] = [];
   for (const unit of sorted) {
     const mv = parseInt(unit.unit.stats.move || '0', 10) || 0;
-    const move = bestState.moves.get(unit.unit.id) || { x: unit.position.x, y: unit.position.y };
+    const move = bestState.moves.get(unit.unit.id) || { x: unit.position.x, y: unit.position.y, label: 'hold' };
     const actualDist = distance(unit.position, { x: move.x, y: move.y });
     movements.push({
       unit,
       to: { x: move.x, y: move.y },
       path: move.path,
       advanced: allowAdvance && actualDist > mv,
+      intent: (move.label || 'unknown') as MovementIntent,
     });
   }
 
