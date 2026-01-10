@@ -2,8 +2,116 @@ import type { ArmyState, ObjectiveMarker, UnitState } from './types';
 import type { Unit } from '../types';
 import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
-import { isMovementBlocked, getMovementPenalty } from './terrain';
+import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+// Default base radii in inches (approximate conversions from mm)
+const DEFAULT_LARGE_MODEL_BASE_RADIUS = 2.5; // ~130mm oval base
+const DEFAULT_INFANTRY_BASE_RADIUS = 0.5; // ~25mm round base
+
+// ============================================================================
+// UNIT TYPE HELPERS
+// ============================================================================
+
+/**
+ * Determine if a unit is infantry based on its type
+ */
+export function isUnitInfantry(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  // Infantry types that can move through breachable terrain
+  return type.includes('infantry') ||
+         type.includes('character') ||
+         type.includes('beast') ||
+         type.includes('swarm');
+}
+
+/**
+ * Determine if a unit is a large model (Vehicle/Monster) that may be blocked by certain terrain
+ */
+export function isUnitLargeModel(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  // Large model types
+  return type.includes('vehicle') ||
+         type.includes('monster') ||
+         type.includes('titanic') ||
+         type.includes('knight') ||
+         type.includes('walker');
+}
+
+/**
+ * Determine if a unit has the Towering keyword
+ * Towering models can see and be seen over Obscuring terrain
+ */
+export function isUnitTowering(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+  const name = unit.unit.name?.toLowerCase() || '';
+
+  // Check type for Titanic (which typically includes Towering)
+  if (type.includes('titanic')) return true;
+
+  // Check for common Towering units by name patterns
+  if (name.includes('knight') && !name.includes('armiger')) return true;
+  if (name.includes('titan')) return true;
+  if (name.includes('baneblade')) return true;
+  if (name.includes('stormlord')) return true;
+  if (name.includes('shadowsword')) return true;
+  if (name.includes('wraithknight')) return true;
+  if (name.includes('riptide')) return true;
+  if (name.includes('stormsurge')) return true;
+  if (name.includes('hierophant')) return true;
+  if (name.includes('harridan')) return true;
+
+  // Check keywords/rules if available
+  const rules = unit.unit.rules || [];
+  const abilities = unit.unit.abilities || [];
+  const allKeywords = [...rules, ...abilities].map(k => k.toLowerCase());
+
+  return allKeywords.some(k => k.includes('towering'));
+}
+
+/**
+ * Determine if a unit is an Aircraft
+ * Aircraft can see and be seen over Obscuring terrain
+ */
+export function isUnitAircraft(unit: UnitState): boolean {
+  const type = unit.unit.type?.toLowerCase() || '';
+
+  // Direct type check
+  if (type.includes('aircraft')) return true;
+  if (type.includes('flyer')) return true;
+
+  // Check keywords/rules if available
+  const rules = unit.unit.rules || [];
+  const abilities = unit.unit.abilities || [];
+  const allKeywords = [...rules, ...abilities].map(k => k.toLowerCase());
+
+  return allKeywords.some(k => k.includes('aircraft') || k.includes('hover'));
+}
+
+/**
+ * Determine if a unit ignores Obscuring terrain for visibility
+ */
+export function unitIgnoresObscuring(unit: UnitState): boolean {
+  return isUnitTowering(unit) || isUnitAircraft(unit);
+}
+
+/**
+ * Get the base radius for a unit in inches
+ */
+export function getUnitBaseRadius(unit: UnitState): number {
+  if (unit.baseSizeInches) {
+    return unit.baseSizeInches / 2;
+  }
+  // Default fallback based on unit type
+  if (isUnitLargeModel(unit)) {
+    return DEFAULT_LARGE_MODEL_BASE_RADIUS;
+  }
+  return DEFAULT_INFANTRY_BASE_RADIUS;
+}
 
 export interface PlannerWeights {
   objectiveValue: number;
@@ -91,18 +199,30 @@ function distance(a: { x: number; y: number }, b: { x: number; y: number }): num
 /**
  * Calculate path distance between two points, accounting for terrain obstacles.
  * Falls back to euclidean distance if no navmesh is provided.
+ * Now accepts unit information for proper terrain interaction.
  */
 function pathDistance(
   a: Point,
   b: Point,
   navMesh: NavMesh | undefined,
-  terrain: TerrainFeature[]
+  terrain: TerrainFeature[],
+  unit?: UnitState
 ): { distance: number; path: Point[]; blocked: boolean } {
+  // Defaults when unit is not provided:
+  // - isInfantry=true: allows breachable terrain passage (conservative, infantry is most common)
+  // - isLarge=false: won't trigger large model blocking (safe default)
+  // - baseRadius=0: point-based collision only (may allow clipping, but won't reject valid paths)
+  const isInfantry = unit ? isUnitInfantry(unit) : true;
+  const isLarge = unit ? isUnitLargeModel(unit) : false;
+  const baseRadius = unit ? getUnitBaseRadius(unit) : DEFAULT_INFANTRY_BASE_RADIUS;
+
   if (!navMesh || terrain.length === 0) {
-    return { distance: euclideanDistance(a, b), path: [a, b], blocked: false };
+    // Even without navmesh, check if direct path is blocked
+    const blocked = isMovementBlocked(a, b, terrain, isInfantry, isLarge, baseRadius);
+    return { distance: euclideanDistance(a, b), path: [a, b], blocked: blocked.blocked };
   }
 
-  const result = findPath(a, b, navMesh, terrain, true, false);
+  const result = findPath(a, b, navMesh, terrain, isInfantry, isLarge, baseRadius);
   return {
     distance: result.distance + result.movementPenalty,
     path: result.path,
@@ -190,8 +310,8 @@ function generateCandidates(
   const addCandidate = (targetX: number, targetY: number, label: string) => {
     const target: Point = { x: targetX, y: targetY };
 
-    // Calculate path to this candidate
-    const pathResult = pathDistance(unitPos, target, navMesh, terrain);
+    // Calculate path to this candidate (now with unit type awareness)
+    const pathResult = pathDistance(unitPos, target, navMesh, terrain, unit);
 
     if (pathResult.blocked && terrain.length > 0) {
       // Try to find a reachable point along the path
@@ -258,8 +378,8 @@ function generateCandidates(
     for (const wp of navMesh.waypoints.values()) {
       const wpDist = distance(unitPos, { x: wp.x, y: wp.y });
       if (wpDist <= moveAllowance && wpDist > 2) {
-        // Check if this gives us a new angle
-        const pathResult = pathDistance(unitPos, { x: wp.x, y: wp.y }, navMesh, terrain);
+        // Check if this gives us a new angle (with unit type awareness)
+        const pathResult = pathDistance(unitPos, { x: wp.x, y: wp.y }, navMesh, terrain, unit);
         if (!pathResult.blocked && pathResult.distance <= moveAllowance) {
           // Only add if not too close to existing candidates
           const tooClose = candidates.some(c =>

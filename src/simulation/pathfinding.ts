@@ -13,6 +13,7 @@ import {
   pointInTerrain,
   isMovementBlocked,
   getMovementPenalty,
+  isPositionBlockedByTerrain,
 } from './terrain';
 
 // ============================================================================
@@ -270,6 +271,7 @@ interface AStarNode {
 
 /**
  * Find a path between two points using A* algorithm
+ * Now supports base radius for more accurate collision detection
  */
 export function findPath(
   from: Point,
@@ -277,10 +279,11 @@ export function findPath(
   navMesh: NavMesh,
   terrain: TerrainFeature[],
   isInfantry: boolean = true,
-  isLargeModel: boolean = false
+  isLargeModel: boolean = false,
+  baseRadius: number = 0
 ): PathResult {
   // First, check if direct path is possible
-  const directBlocked = isMovementBlocked(from, to, terrain, isInfantry, isLargeModel);
+  const directBlocked = isMovementBlocked(from, to, terrain, isInfantry, isLargeModel, baseRadius);
   if (!directBlocked.blocked) {
     const directDist = euclideanDistance(from, to);
     const penalty = getMovementPenalty(from, to, terrain);
@@ -295,8 +298,8 @@ export function findPath(
 
   // Need to pathfind through NavMesh
   // Find nearest accessible waypoints to start and end
-  const startWaypoints = findNearestAccessibleWaypoints(from, navMesh, terrain, 3);
-  const endWaypoints = findNearestAccessibleWaypoints(to, navMesh, terrain, 3);
+  const startWaypoints = findNearestAccessibleWaypoints(from, navMesh, terrain, 3, isInfantry, isLargeModel, baseRadius);
+  const endWaypoints = findNearestAccessibleWaypoints(to, navMesh, terrain, 3, isInfantry, isLargeModel, baseRadius);
 
   if (startWaypoints.length === 0 || endWaypoints.length === 0) {
     // No accessible waypoints - return direct path (will be blocked but that's the best we can do)
@@ -362,18 +365,37 @@ export function findPath(
 
 /**
  * Find nearest waypoints that can be accessed from a point
+ * Now accepts unit type and base radius for accurate collision detection
  */
 function findNearestAccessibleWaypoints(
   point: Point,
   navMesh: NavMesh,
   terrain: TerrainFeature[],
-  count: number
+  count: number,
+  isInfantry: boolean = true,
+  isLargeModel: boolean = false,
+  baseRadius: number = 0
 ): NavWaypoint[] {
   const candidates: { waypoint: NavWaypoint; distance: number }[] = [];
 
   for (const wp of navMesh.waypoints.values()) {
+    // Check if the waypoint itself is accessible (not too close to terrain for this base size)
+    // Use isPositionBlockedByTerrain which properly handles:
+    // - Actual terrain shapes (circle vs rectangle)
+    // - Infantry-only terrain
+    // - Large model blocking terrain
+    const wpBlocked = isPositionBlockedByTerrain(
+      { x: wp.x, y: wp.y },
+      baseRadius,
+      terrain,
+      isInfantry,
+      isLargeModel
+    );
+
+    if (wpBlocked.blocked) continue;
+
     // Check if we can reach this waypoint directly
-    const blocked = isMovementBlocked(point, { x: wp.x, y: wp.y }, terrain, true, false);
+    const blocked = isMovementBlocked(point, { x: wp.x, y: wp.y }, terrain, isInfantry, isLargeModel, baseRadius);
     if (!blocked.blocked) {
       candidates.push({
         waypoint: wp,

@@ -378,27 +378,134 @@ function onSegment(p1: Point, p2: Point, p: Point): boolean {
 // ============================================================================
 
 /**
+ * Check if terrain should block a specific unit type
+ * Centralizes the blocking logic for different terrain/unit combinations
+ */
+export function isTerrainBlockingForUnit(
+  terrain: TerrainFeature,
+  isInfantry: boolean,
+  isLargeModel: boolean
+): boolean {
+  // Breachable terrain allows infantry through
+  if (terrain.traits.breachable && isInfantry) {
+    return false;
+  }
+
+  // Impassable and obscuring always block (unless breachable for infantry, handled above)
+  if (terrain.impassable || terrain.traits.obscuring) {
+    return true;
+  }
+
+  // Infantry-only terrain blocks non-infantry
+  if (terrain.infantryOnly && !isInfantry) {
+    return true;
+  }
+
+  // Large model blocking terrain blocks large models
+  if (terrain.blocksLargeModels && isLargeModel) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Check if a circular base at a position geometrically overlaps with terrain
+ * This is a pure geometry check - does not consider unit types or blocking rules
+ */
+function baseOverlapsTerrainGeometry(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature
+): boolean {
+  const bounds = getTerrainBounds(terrain);
+
+  if (terrain.shape === 'circle') {
+    // Circle-circle overlap: distance between centers <= sum of radii
+    const terrainRadius = terrain.radius || terrain.width / 2;
+    const dx = position.x - terrain.x;
+    const dy = position.y - terrain.y;
+    const distSquared = dx * dx + dy * dy;
+    const combinedRadius = terrainRadius + baseRadius;
+    return distSquared < combinedRadius * combinedRadius;
+  }
+
+  // Rectangle: check if circle overlaps rectangle
+  // Find closest point on rectangle to circle center
+  const closestX = Math.max(bounds.minX, Math.min(position.x, bounds.maxX));
+  const closestY = Math.max(bounds.minY, Math.min(position.y, bounds.maxY));
+
+  const dx = position.x - closestX;
+  const dy = position.y - closestY;
+  const distSquared = dx * dx + dy * dy;
+
+  return distSquared < baseRadius * baseRadius;
+}
+
+/**
+ * Check if a circular base at a position overlaps with blocking terrain
+ * This accounts for the unit's base size and type-specific blocking rules
+ */
+export function baseOverlapsTerrain(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature,
+  isInfantry: boolean = true,
+  isLargeModel: boolean = false
+): boolean {
+  // Check if this terrain blocks this unit type
+  if (!isTerrainBlockingForUnit(terrain, isInfantry, isLargeModel)) {
+    return false;
+  }
+
+  return baseOverlapsTerrainGeometry(position, baseRadius, terrain);
+}
+
+/**
+ * Check if a unit's base at a position overlaps any blocking terrain
+ * Uses the centralized blocking logic from isTerrainBlockingForUnit
+ */
+export function isPositionBlockedByTerrain(
+  position: Point,
+  baseRadius: number,
+  terrain: TerrainFeature[],
+  isInfantry: boolean = true,
+  isLargeModel: boolean = false
+): { blocked: boolean; blockedBy?: TerrainFeature } {
+  for (const t of terrain) {
+    // baseOverlapsTerrain now handles all unit-type-specific blocking rules internally
+    if (baseOverlapsTerrain(position, baseRadius, t, isInfantry, isLargeModel)) {
+      return { blocked: true, blockedBy: t };
+    }
+  }
+
+  return { blocked: false };
+}
+
+/**
  * Check if movement between two points is blocked by any terrain
+ * Now supports optional base radius for more accurate collision detection
  */
 export function isMovementBlocked(
   from: Point,
   to: Point,
   terrain: TerrainFeature[],
   isInfantry: boolean = true,
-  isLargeModel: boolean = false
+  isLargeModel: boolean = false,
+  baseRadius: number = 0
 ): { blocked: boolean; blockedBy?: TerrainFeature } {
   for (const t of terrain) {
     // Skip non-blocking terrain
     if (!t.impassable && !t.traits.obscuring) {
       // Check infantry-only terrain
       if (t.infantryOnly && !isInfantry) {
-        if (lineIntersectsTerrain(from, to, t)) {
+        if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
           return { blocked: true, blockedBy: t };
         }
       }
       // Check large model blocking
       if (t.blocksLargeModels && isLargeModel) {
-        if (lineIntersectsTerrain(from, to, t)) {
+        if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
           return { blocked: true, blockedBy: t };
         }
       }
@@ -406,7 +513,7 @@ export function isMovementBlocked(
     }
 
     // Check if path crosses impassable/obscuring terrain
-    if (lineIntersectsTerrain(from, to, t)) {
+    if (pathCrossesTerrainWithBase(from, to, t, baseRadius)) {
       // Breachable terrain allows infantry through
       if (t.traits.breachable && isInfantry) {
         continue;
@@ -417,6 +524,117 @@ export function isMovementBlocked(
 
   return { blocked: false };
 }
+
+/**
+ * Check if a path (swept circle/capsule) crosses terrain
+ * Uses Minkowski sum logic: checks if line segment comes within baseRadius of terrain
+ */
+function pathCrossesTerrainWithBase(
+  from: Point,
+  to: Point,
+  terrain: TerrainFeature,
+  baseRadius: number
+): boolean {
+  if (baseRadius <= 0) {
+    return lineIntersectsTerrain(from, to, terrain);
+  }
+
+  // For circles: check if line segment comes within (terrainRadius + baseRadius)
+  if (terrain.shape === 'circle') {
+    const terrainRadius = terrain.radius || terrain.width / 2;
+    const combinedRadius = terrainRadius + baseRadius;
+    return lineSegmentToPointDistance(from, to, { x: terrain.x, y: terrain.y }) < combinedRadius;
+  }
+
+  // For rectangles: check if line segment comes within baseRadius of the rectangle
+  // This is the Minkowski sum approach - the "rounded rectangle"
+  const bounds = getTerrainBounds(terrain);
+  return lineSegmentToRectangleDistance(from, to, bounds) < baseRadius;
+}
+
+/**
+ * Calculate minimum distance from a line segment to a point
+ */
+function lineSegmentToPointDistance(segStart: Point, segEnd: Point, point: Point): number {
+  const dx = segEnd.x - segStart.x;
+  const dy = segEnd.y - segStart.y;
+  const lengthSquared = dx * dx + dy * dy;
+
+  if (lengthSquared === 0) {
+    // Segment is a point
+    const px = point.x - segStart.x;
+    const py = point.y - segStart.y;
+    return Math.sqrt(px * px + py * py);
+  }
+
+  // Project point onto line, clamped to segment
+  const t = Math.max(0, Math.min(1,
+    ((point.x - segStart.x) * dx + (point.y - segStart.y) * dy) / lengthSquared
+  ));
+
+  const closestX = segStart.x + t * dx;
+  const closestY = segStart.y + t * dy;
+
+  const distX = point.x - closestX;
+  const distY = point.y - closestY;
+  return Math.sqrt(distX * distX + distY * distY);
+}
+
+/**
+ * Calculate minimum distance from a line segment to an axis-aligned rectangle
+ * Returns 0 if the segment intersects the rectangle
+ */
+function lineSegmentToRectangleDistance(segStart: Point, segEnd: Point, rect: BoundingBox): number {
+  // Check if segment intersects the rectangle (distance = 0)
+  if (lineIntersectsRect(segStart, segEnd, rect)) {
+    return 0;
+  }
+
+  // Find minimum distance to all 4 edges
+  let minDist = Infinity;
+
+  // Distance to each edge (as line segments)
+  const corners = [
+    { x: rect.minX, y: rect.minY }, // bottom-left
+    { x: rect.maxX, y: rect.minY }, // bottom-right
+    { x: rect.maxX, y: rect.maxY }, // top-right
+    { x: rect.minX, y: rect.maxY }, // top-left
+  ];
+
+  // Check distance to each edge
+  for (let i = 0; i < 4; i++) {
+    const edgeStart = corners[i];
+    const edgeEnd = corners[(i + 1) % 4];
+    const dist = segmentToSegmentDistance(segStart, segEnd, edgeStart, edgeEnd);
+    minDist = Math.min(minDist, dist);
+  }
+
+  return minDist;
+}
+
+/**
+ * Calculate minimum distance between two line segments
+ */
+function segmentToSegmentDistance(
+  a1: Point, a2: Point,
+  b1: Point, b2: Point
+): number {
+  // Check if segments intersect
+  if (lineSegmentsIntersect(a1, a2, b1, b2)) {
+    return 0;
+  }
+
+  // Otherwise, minimum distance is the smallest of:
+  // - distance from each endpoint of A to segment B
+  // - distance from each endpoint of B to segment A
+  return Math.min(
+    lineSegmentToPointDistance(b1, b2, a1),
+    lineSegmentToPointDistance(b1, b2, a2),
+    lineSegmentToPointDistance(a1, a2, b1),
+    lineSegmentToPointDistance(a1, a2, b2)
+  );
+}
+
 
 /**
  * Calculate movement cost penalty from terrain
@@ -493,18 +711,38 @@ export function getTerrainCover(
 /**
  * Check line of sight between two positions
  * Returns whether LoS is blocked and by what
+ *
+ * @param from - Shooter position
+ * @param to - Target position
+ * @param terrain - Terrain features to check
+ * @param shooterIgnoresObscuring - If true, shooter is Towering/Aircraft and ignores Obscuring
+ * @param targetIgnoresObscuring - If true, target is Towering/Aircraft and ignores Obscuring
  */
 export function checkLineOfSight(
   from: Point,
   to: Point,
-  terrain: TerrainFeature[]
+  terrain: TerrainFeature[],
+  shooterIgnoresObscuring: boolean = false,
+  targetIgnoresObscuring: boolean = false
 ): { hasLoS: boolean; blockedBy?: TerrainFeature; throughDense: boolean } {
   let throughDense = false;
+
+  // If either shooter OR target ignores Obscuring, LoS is not blocked by Obscuring terrain
+  const eitherIgnoresObscuring = shooterIgnoresObscuring || targetIgnoresObscuring;
 
   for (const t of terrain) {
     // Only obscuring terrain blocks LoS
     if (!t.traits.obscuring) {
       // Check for dense cover penalty
+      if (t.traits.denseCover && lineIntersectsTerrain(from, to, t)) {
+        throughDense = true;
+      }
+      continue;
+    }
+
+    // Towering/Aircraft models ignore Obscuring terrain entirely
+    if (eitherIgnoresObscuring) {
+      // Still check for dense cover even if Obscuring is ignored
       if (t.traits.denseCover && lineIntersectsTerrain(from, to, t)) {
         throughDense = true;
       }
