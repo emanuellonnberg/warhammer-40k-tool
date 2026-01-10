@@ -301,14 +301,24 @@ function setupBattlefieldInteractions(): void {
   const movementEntries = document.querySelectorAll<HTMLElement>('.sim-move-entry');
   movementEntries.forEach(entry => {
     entry.addEventListener('mouseenter', () => {
-      const { fromX, fromY, toX, toY, army } = entry.dataset;
+      const { fromX, fromY, toX, toY, army, path: pathEncoded } = entry.dataset;
       if (fromX && fromY && toX && toY && army) {
+        // Parse path if present
+        let path: { x: number; y: number }[] | undefined;
+        if (pathEncoded) {
+          try {
+            path = JSON.parse(decodeURIComponent(pathEncoded));
+          } catch {
+            // Ignore parse errors, just use straight line
+          }
+        }
         highlightMovement({
           fromX: parseFloat(fromX),
           fromY: parseFloat(fromY),
           toX: parseFloat(toX),
           toY: parseFloat(toY),
-          army: army as 'armyA' | 'armyB'
+          army: army as 'armyA' | 'armyB',
+          path
         }, scales);
       }
     });
@@ -341,7 +351,7 @@ function setupBattlefieldInteractions(): void {
 /**
  * Highlight movement on battlefield (hover-driven)
  */
-function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB' }, scales: ReturnType<typeof getScaleFactors>): void {
+function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[] }, scales: ReturnType<typeof getScaleFactors>): void {
   const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
   const overlay = svg?.querySelector('#movementHighlight') as SVGGElement | null;
   if (!overlay) return;
@@ -350,16 +360,31 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
   const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
   const ns = 'http://www.w3.org/2000/svg';
 
-  const line = document.createElementNS(ns, 'line');
-  line.setAttribute('x1', scales.toSvgX(detail.fromX).toFixed(1));
-  line.setAttribute('y1', scales.toSvgY(detail.fromY).toFixed(1));
-  line.setAttribute('x2', scales.toSvgX(detail.toX).toFixed(1));
-  line.setAttribute('y2', scales.toSvgY(detail.toY).toFixed(1));
-  line.setAttribute('stroke', color);
-  line.setAttribute('stroke-width', '3');
-  line.setAttribute('stroke-dasharray', '6 3');
-  line.setAttribute('opacity', '0.85');
-  overlay.appendChild(line);
+  // If we have a path with waypoints, render as polyline; otherwise straight line
+  if (detail.path && detail.path.length > 2) {
+    const polyline = document.createElementNS(ns, 'polyline');
+    const points = detail.path.map(p =>
+      `${scales.toSvgX(p.x).toFixed(1)},${scales.toSvgY(p.y).toFixed(1)}`
+    ).join(' ');
+    polyline.setAttribute('points', points);
+    polyline.setAttribute('stroke', color);
+    polyline.setAttribute('stroke-width', '3');
+    polyline.setAttribute('stroke-dasharray', '6 3');
+    polyline.setAttribute('opacity', '0.85');
+    polyline.setAttribute('fill', 'none');
+    overlay.appendChild(polyline);
+  } else {
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', scales.toSvgX(detail.fromX).toFixed(1));
+    line.setAttribute('y1', scales.toSvgY(detail.fromY).toFixed(1));
+    line.setAttribute('x2', scales.toSvgX(detail.toX).toFixed(1));
+    line.setAttribute('y2', scales.toSvgY(detail.toY).toFixed(1));
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '3');
+    line.setAttribute('stroke-dasharray', '6 3');
+    line.setAttribute('opacity', '0.85');
+    overlay.appendChild(line);
+  }
 
   const start = document.createElementNS(ns, 'circle');
   start.setAttribute('cx', scales.toSvgX(detail.fromX).toFixed(1));
@@ -404,16 +429,32 @@ function renderPhaseMovementOverlay(phaseIndex: number, scales: ReturnType<typeo
     if (distSq < 0.01) return;
 
     const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
-    const line = document.createElementNS(ns, 'line');
-    line.setAttribute('x1', scales.toSvgX(detail.from.x).toFixed(1));
-    line.setAttribute('y1', scales.toSvgY(detail.from.y).toFixed(1));
-    line.setAttribute('x2', scales.toSvgX(detail.to.x).toFixed(1));
-    line.setAttribute('y2', scales.toSvgY(detail.to.y).toFixed(1));
-    line.setAttribute('stroke', color);
-    line.setAttribute('stroke-width', '2');
-    line.setAttribute('stroke-dasharray', '4 4');
-    line.setAttribute('opacity', '0.25');
-    layer.appendChild(line);
+
+    // If we have a path with waypoints, render as polyline; otherwise straight line
+    if (detail.path && detail.path.length > 2) {
+      const polyline = document.createElementNS(ns, 'polyline');
+      const points = detail.path.map(p =>
+        `${scales.toSvgX(p.x).toFixed(1)},${scales.toSvgY(p.y).toFixed(1)}`
+      ).join(' ');
+      polyline.setAttribute('points', points);
+      polyline.setAttribute('stroke', color);
+      polyline.setAttribute('stroke-width', '2');
+      polyline.setAttribute('stroke-dasharray', '4 4');
+      polyline.setAttribute('opacity', '0.25');
+      polyline.setAttribute('fill', 'none');
+      layer.appendChild(polyline);
+    } else {
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', scales.toSvgX(detail.from.x).toFixed(1));
+      line.setAttribute('y1', scales.toSvgY(detail.from.y).toFixed(1));
+      line.setAttribute('x2', scales.toSvgX(detail.to.x).toFixed(1));
+      line.setAttribute('y2', scales.toSvgY(detail.to.y).toFixed(1));
+      line.setAttribute('stroke', color);
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-dasharray', '4 4');
+      line.setAttribute('opacity', '0.25');
+      layer.appendChild(line);
+    }
 
     const start = document.createElementNS(ns, 'circle');
     start.setAttribute('cx', scales.toSvgX(detail.from.x).toFixed(1));

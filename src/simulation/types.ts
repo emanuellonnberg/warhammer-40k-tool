@@ -89,6 +89,8 @@ export interface MovementDetail {
   to: { x: number; y: number };
   distance: number;
   advanced: boolean;
+  /** The actual path taken (waypoints), if different from a straight line */
+  path?: { x: number; y: number }[];
 }
 
 export interface CasualtyLog {

@@ -1496,6 +1496,8 @@ export function runSimpleEngagement(
 
         let actualDistance = 0;
         let finalPos = to;
+        // Track the actual path taken (waypoints visited)
+        const actualPath: { x: number; y: number }[] = [startPos];
 
         // If we have a path with waypoints, follow it to avoid terrain
         if (path && path.length > 2 && terrain.length > 0) {
@@ -1542,6 +1544,7 @@ export function runSimpleEngagement(
             actualDistance += segmentDist;
             currentPos = nextWaypoint;
             finalPos = nextWaypoint;
+            actualPath.push({ x: nextWaypoint.x, y: nextWaypoint.y });
           }
         } else {
           // Direct movement (no path or no terrain)
@@ -1559,10 +1562,8 @@ export function runSimpleEngagement(
         }
 
         // Apply final position
-        // Apply final position
         const dx = finalPos.x - startPos.x;
         const dy = finalPos.y - startPos.y;
-        unit.position = { x: finalPos.x, y: finalPos.y };
         unit.position = { x: finalPos.x, y: finalPos.y };
         shiftModelPositions(unit, dx, dy);
 
@@ -1580,14 +1581,24 @@ export function runSimpleEngagement(
         unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
 
         if (actualDistance > 0.05) {
+          // Add final position to path if different from last waypoint
+          const finalX = unit.position.x;
+          const finalY = unit.position.y;
+          const lastWp = actualPath[actualPath.length - 1];
+          if (Math.abs(lastWp.x - finalX) > 0.01 || Math.abs(lastWp.y - finalY) > 0.01) {
+            actualPath.push({ x: finalX, y: finalY });
+          }
+
           movementDetails.push({
             unitId: unit.unit.id,
             unitName: unit.unit.name,
             army: active.tag,
             from: startPos,
-            to: { x: unit.position.x, y: unit.position.y },
+            to: { x: finalX, y: finalY },
             distance: actualDistance,
-            advanced: unit.advanced ?? false
+            advanced: unit.advanced ?? false,
+            // Only include path if it has intermediate waypoints (more than just start and end)
+            path: actualPath.length > 2 ? actualPath : undefined
           });
         }
       });

@@ -55,11 +55,15 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
   };
 
-  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB' }[]) => {
+  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[] }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
       const label = describeMovement(detail);
-      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}">${label}</span></li>`;
+      // Include path as JSON data attribute for visualization
+      const pathAttr = detail.path && detail.path.length > 2
+        ? ` data-path="${encodeURIComponent(JSON.stringify(detail.path))}"`
+        : '';
+      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}"${pathAttr}>${label}</span></li>`;
     }).join('');
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };
