@@ -406,6 +406,11 @@ function clamp(val: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, val));
 }
 
+interface ScoreResult {
+  total: number;
+  breakdown: MovementScoreBreakdown;
+}
+
 function scoreCandidate(
   unit: UnitState,
   candidate: CandidateMove,
@@ -413,7 +418,7 @@ function scoreCandidate(
   threatMap: Map<string, ThreatEstimate>,
   weights: PlannerWeights,
   activeTag: 'armyA' | 'armyB' = 'armyA'
-): number {
+): ScoreResult {
   const nearestObj = findNearestObjective({ ...unit, position: { x: candidate.x, y: candidate.y } } as UnitState, objectives);
   const distToObj = nearestObj ? distance({ x: candidate.x, y: candidate.y }, { x: nearestObj.x, y: nearestObj.y }) : 0;
 
@@ -437,7 +442,7 @@ function scoreCandidate(
 
   const threat = threatMap.get(unit.unit.id);
   let threatPenalty = (threat?.incoming || 0) * weights.threatPenalty;
-  
+
   // Increase penalty if in close range or under charge threat
   if (threat?.closeRange) {
     threatPenalty *= 1.3; // 30% more weight to close range threats
@@ -456,8 +461,31 @@ function scoreCandidate(
   }
 
   const moveCost = weights.distancePenalty * Math.abs(candidate.x - unit.position.x);
+  const total = objValue + distanceBias - threatPenalty - moveCost;
 
-  return objValue + distanceBias - threatPenalty - moveCost;
+  return {
+    total,
+    breakdown: {
+      total,
+      objectiveValue: objValue,
+      distanceBias,
+      threatPenalty,
+      moveCost,
+      nearestObjective: nearestObj?.name,
+      nearestObjectiveDist: distToObj
+    }
+  };
+}
+
+/** Scoring breakdown for movement decisions */
+export interface MovementScoreBreakdown {
+  total: number;
+  objectiveValue: number;
+  distanceBias: number;
+  threatPenalty: number;
+  moveCost: number;
+  nearestObjective?: string;
+  nearestObjectiveDist?: number;
 }
 
 /** Movement plan for a single unit */
@@ -470,6 +498,8 @@ export interface PlannedMovement {
   advanced?: boolean;
   /** Movement intent/tactic */
   intent?: MovementIntent;
+  /** Scoring breakdown for why this position was chosen */
+  scoreBreakdown?: MovementScoreBreakdown;
 }
 
 export function planGreedyMovement(
@@ -509,11 +539,11 @@ export function planGreedyMovement(
     const moveAllowance = allowAdvance ? mv + 3 : mv;
     const candidates = generateCandidates(u, objectives, moveAllowance, battlefieldWidth, battlefieldHeight, terrain, navMesh);
     let best: CandidateMoveWithPath = candidates[0];
-    let bestScore = -Infinity;
+    let bestScoreResult: ScoreResult = { total: -Infinity, breakdown: { total: -Infinity, objectiveValue: 0, distanceBias: 0, threatPenalty: 0, moveCost: 0 } };
     for (const c of candidates) {
-      const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag);
-      if (score > bestScore) {
-        bestScore = score;
+      const scoreResult = scoreCandidate(u, c, objectives, threatMap, weights, activeTag);
+      if (scoreResult.total > bestScoreResult.total) {
+        bestScoreResult = scoreResult;
         best = c;
       }
     }
@@ -528,6 +558,7 @@ export function planGreedyMovement(
       path: best.path,
       advanced: isAdvance,
       intent: best.label as MovementIntent,
+      scoreBreakdown: bestScoreResult.breakdown,
     });
   }
 
@@ -584,8 +615,8 @@ export function planBeamMovement(
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
         newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path, label: candidate.label });
-        const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag);
-        nextStates.push({ moves: newMoves, score });
+        const scoreResult = scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag);
+        nextStates.push({ moves: newMoves, score: state.score + scoreResult.total });
       }
     }
 
@@ -601,12 +632,17 @@ export function planBeamMovement(
     const mv = parseInt(unit.unit.stats.move || '0', 10) || 0;
     const move = bestState.moves.get(unit.unit.id) || { x: unit.position.x, y: unit.position.y, label: 'hold' };
     const actualDist = distance(unit.position, { x: move.x, y: move.y });
+
+    // Recalculate score breakdown for the final position
+    const scoreResult = scoreCandidate(unit, { x: move.x, y: move.y, label: move.label || 'hold' }, objectives, threatMap, weights, activeTag);
+
     movements.push({
       unit,
       to: { x: move.x, y: move.y },
       path: move.path,
       advanced: allowAdvance && actualDist > mv,
       intent: (move.label || 'unknown') as MovementIntent,
+      scoreBreakdown: scoreResult.breakdown,
     });
   }
 

@@ -93,6 +93,17 @@ export type MovementIntent =
   | 'charge'
   | 'unknown';
 
+/** Scoring breakdown for movement decisions */
+export interface MovementScoreBreakdown {
+  total: number;
+  objectiveValue: number;
+  distanceBias: number;
+  threatPenalty: number;
+  moveCost: number;
+  nearestObjective?: string;
+  nearestObjectiveDist?: number;
+}
+
 export interface MovementDetail {
   unitId: string;
   unitName: string;
@@ -105,6 +116,8 @@ export interface MovementDetail {
   path?: { x: number; y: number }[];
   /** Movement intent/tactic describing why the unit moved */
   intent?: MovementIntent;
+  /** Score breakdown explaining why this position was chosen */
+  scoreBreakdown?: MovementScoreBreakdown;
 }
 
 export interface CasualtyLog {
@@ -124,6 +137,12 @@ export interface PhaseLog {
   actions?: ActionLog[];
   advancedUnits?: string[];
   movementDetails?: MovementDetail[];
+  /** Strategy context for movement phases */
+  strategy?: {
+    profile: string;  // Current strategy profile (e.g., 'aggressive', 'defensive')
+    reason?: string;  // Why this strategy was chosen (for adaptive strategy)
+    isAdaptive?: boolean;  // Whether this was an adaptive strategy change
+  };
   objectiveStates?: Array<{
     id: string;
     name: string;

@@ -1119,9 +1119,10 @@ function summarizePhase(
   actions?: ActionLog[],
   advancedUnits?: string[],
   movementDetails?: MovementDetail[],
-  objectiveStates?: PhaseLog['objectiveStates']
+  objectiveStates?: PhaseLog['objectiveStates'],
+  strategy?: PhaseLog['strategy']
 ): PhaseLog {
-  return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails, objectiveStates };
+  return { phase, turn, actor, description, damageDealt, distanceAfter, actions, advancedUnits, movementDetails, objectiveStates, strategy };
 }
 
 /**
@@ -1458,17 +1459,21 @@ export function runSimpleEngagement(
       // Adaptive strategy: Evaluate battle state and potentially switch strategy
       let currentStrategy = strategyProfile;
       let strategyExplanation = '';
-      
+      let strategyReason: string | undefined;
+      let isAdaptiveChange = false;
+
       if (useAdaptiveStrategy) {
         const ourVP = active.tag === 'armyA' ? victoryPoints.armyA : victoryPoints.armyB;
         const enemyVP = active.tag === 'armyA' ? victoryPoints.armyB : victoryPoints.armyA;
-        
+
         const battleState = evaluateBattleState(active, opponent, objectives, ourVP, enemyVP);
         const recommendedStrategy = recommendStrategy(battleState, round, maxRounds);
-        
+
         if (recommendedStrategy) {
           currentStrategy = recommendedStrategy;
-          strategyExplanation = ` [AI: ${recommendedStrategy} - ${explainStrategyChoice(battleState, recommendedStrategy, round)}]`;
+          strategyReason = explainStrategyChoice(battleState, recommendedStrategy, round);
+          strategyExplanation = ` [AI: ${recommendedStrategy} - ${strategyReason}]`;
+          isAdaptiveChange = recommendedStrategy !== strategyProfile;
         }
       }
 
@@ -1488,7 +1493,7 @@ export function runSimpleEngagement(
       );
 
       const movementDetails: MovementDetail[] = [];
-      movements.forEach(({ unit, to, path, intent }) => {
+      movements.forEach(({ unit, to, path, intent, scoreBreakdown }) => {
         const startPos = { x: unit.position.x, y: unit.position.y };
         const isInfantry = isUnitInfantry(unit);
         const isLarge = isUnitLargeModel(unit);
@@ -1599,7 +1604,8 @@ export function runSimpleEngagement(
             advanced: unit.advanced ?? false,
             // Only include path if it has intermediate waypoints (more than just start and end)
             path: actualPath.length > 2 ? actualPath : undefined,
-            intent
+            intent,
+            scoreBreakdown
           });
         }
       });
@@ -1608,7 +1614,12 @@ export function runSimpleEngagement(
       validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
       const postMoveDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       const advancedUnits = active.units.filter(u => u.advanced).map(u => u.unit.name);
-      logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.${strategyExplanation}`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined));
+      const strategyContext = {
+        profile: currentStrategy,
+        reason: strategyReason,
+        isAdaptive: isAdaptiveChange
+      };
+      logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined, undefined, strategyContext));
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const shootActions: ActionLog[] = [];

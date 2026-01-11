@@ -2,11 +2,64 @@
  * SVG battlefield rendering for battle simulator
  */
 
-import type { SimulationResult, TerrainFeature } from '../simulation';
+import type { SimulationResult, TerrainFeature, ArmyState } from '../simulation';
 
 const SIM_SVG_WIDTH = 800;
 const SIM_SVG_HEIGHT = 400;
 const SIM_SVG_PAD = 20;
+
+/** Parse weapon range string to inches (e.g., "24\"" -> 24, "Melee" -> 0) */
+function parseRange(rangeStr?: string): number {
+  if (!rangeStr || rangeStr.toLowerCase() === 'melee') return 0;
+  const match = rangeStr.match(/(\d+)/);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
+/** Calculate threat data for a unit */
+interface UnitThreatData {
+  unitId: string;
+  unitName: string;
+  x: number;
+  y: number;
+  army: 'armyA' | 'armyB';
+  maxShootingRange: number;
+  chargeRange: number; // movement + average charge (6")
+  moveDistance: number;
+  alive: boolean;
+}
+
+/** Extract threat data from army state */
+function extractThreatData(
+  armyState: ArmyState,
+  armyTag: 'armyA' | 'armyB'
+): UnitThreatData[] {
+  return armyState.units.map(unit => {
+    // Get max shooting range from all weapons
+    const weapons = unit.unit.weapons || [];
+    const maxShootingRange = weapons.reduce((max, w) => {
+      const range = parseRange(w.characteristics?.range);
+      return range > max ? range : max;
+    }, 0);
+
+    // Get movement distance
+    const moveDistance = parseInt(unit.unit.stats?.move || '0', 10) || 0;
+
+    // Charge threat = movement + average charge distance (2D6 avg = 7")
+    const chargeRange = moveDistance + 7;
+
+    return {
+      unitId: unit.unit.id,
+      unitName: unit.unit.name,
+      x: unit.position.x,
+      y: unit.position.y,
+      army: armyTag,
+      maxShootingRange,
+      chargeRange,
+      moveDistance,
+      alive: unit.remainingModels > 0
+    };
+  });
+}
 
 /** Color palette for different terrain types */
 const TERRAIN_COLORS: Record<string, { fill: string; stroke: string; opacity: number }> = {
@@ -155,6 +208,60 @@ function renderTerrainFeatures(
   }).join('');
 }
 
+/**
+ * Render threat range circles for units
+ * Shows shooting range (solid) and charge threat range (dashed)
+ */
+function renderThreatRanges(
+  threatData: UnitThreatData[],
+  sx: (x: number) => number,
+  sy: (y: number) => number,
+  avgScale: number,
+  showArmyA: boolean,
+  showArmyB: boolean
+): string {
+  return threatData
+    .filter(unit => unit.alive && ((unit.army === 'armyA' && showArmyA) || (unit.army === 'armyB' && showArmyB)))
+    .map(unit => {
+      const cx = sx(unit.x);
+      const cy = sy(unit.y);
+      const baseColor = unit.army === 'armyA' ? '#1f77b4' : '#d62728';
+      const chargeColor = unit.army === 'armyA' ? '#ff7f0e' : '#ff6b6b';
+
+      const elements: string[] = [];
+
+      // Shooting range circle (filled, low opacity)
+      if (unit.maxShootingRange > 0) {
+        const shootRadius = unit.maxShootingRange * avgScale;
+        elements.push(`
+          <circle class="threat-shooting" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${shootRadius.toFixed(1)}"
+            fill="${baseColor}" fill-opacity="0.08"
+            stroke="${baseColor}" stroke-width="1" stroke-opacity="0.3" />
+        `);
+      }
+
+      // Charge threat range circle (dashed outline only)
+      if (unit.chargeRange > 0) {
+        const chargeRadius = unit.chargeRange * avgScale;
+        elements.push(`
+          <circle class="threat-charge" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${chargeRadius.toFixed(1)}"
+            fill="none"
+            stroke="${chargeColor}" stroke-width="1.5" stroke-dasharray="4 3" stroke-opacity="0.5" />
+        `);
+      }
+
+      // Tooltip with threat info
+      const tooltip = `${unit.unitName}: Shooting ${unit.maxShootingRange}\\", Charge threat ${unit.chargeRange}\\" (Move ${unit.moveDistance}\\" + 7\\" avg charge)`;
+
+      return `
+        <g class="unit-threat-range" data-unit-id="${unit.unitId}" data-army="${unit.army}">
+          ${elements.join('')}
+          <title>${tooltip}</title>
+        </g>
+      `;
+    }).join('');
+}
+
 export function renderBattlefield(result: SimulationResult, phaseIndex?: number): string {
   const field = result.battlefield || { width: 44, height: 60 };
 
@@ -289,7 +396,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     escapeAttr
   );
 
-  // Render objective markers
+  // Render objective markers with enhanced indicators
   const objectiveMarkers = (result.objectives || []).map(obj => {
     const cx = sx(obj.x);
     const cy = sy(obj.y);
@@ -317,13 +424,92 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
       fillOpacity = Math.min(1.0, fillOpacity + 0.15);
     }
 
-    const primaryLabel = obj.priority === 'primary' ? ' [PRIMARY]' : '';
-    const tooltipText = `${obj.id}${primaryLabel}: ${obj.controlledBy === 'contested' ? 'Contested' : (obj.controlledBy === 'armyA' ? 'Army A' : 'Army B')} (A: ${obj.levelOfControlA} OC, B: ${obj.levelOfControlB} OC) Hold: A=${obj.heldByA}, B=${obj.heldByB}`;
-
     const markerRadius = objRadius * radiusMultiplier;
+
+    // Build extra visual indicators
+    let extraElements = '';
+
+    // Hold progress arc (shows how close to scoring)
+    const holdNeeded = obj.holdNeeded || 0;
+    if (holdNeeded > 0 && obj.controlledBy !== 'contested') {
+      const currentHold = obj.controlledBy === 'armyA' ? obj.heldByA : obj.heldByB;
+      const holdProgress = Math.min(1, currentHold / holdNeeded);
+      if (holdProgress > 0 && holdProgress < 1) {
+        // Draw progress arc
+        const arcRadius = markerRadius + 6;
+        const startAngle = -90; // Start from top
+        const endAngle = startAngle + (holdProgress * 360);
+        const startRad = (startAngle * Math.PI) / 180;
+        const endRad = (endAngle * Math.PI) / 180;
+        const x1 = cx + arcRadius * Math.cos(startRad);
+        const y1 = cy + arcRadius * Math.sin(startRad);
+        const x2 = cx + arcRadius * Math.cos(endRad);
+        const y2 = cy + arcRadius * Math.sin(endRad);
+        const largeArc = holdProgress > 0.5 ? 1 : 0;
+        const arcColor = obj.controlledBy === 'armyA' ? '#4fc3f7' : '#ff8a65';
+        extraElements += `
+          <path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} A ${arcRadius} ${arcRadius} 0 ${largeArc} 1 ${x2.toFixed(1)} ${y2.toFixed(1)}"
+            fill="none" stroke="${arcColor}" stroke-width="3" stroke-linecap="round" opacity="0.9" />
+        `;
+      }
+    }
+
+    // "Ready to score" glow effect
+    if (obj.readyFor) {
+      const glowColor = obj.readyFor === 'armyA' ? '#64b5f6' : '#ef5350';
+      extraElements += `
+        <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(markerRadius + 10).toFixed(1)}"
+          fill="none" stroke="${glowColor}" stroke-width="2" opacity="0.6">
+          <animate attributeName="r" values="${(markerRadius + 8).toFixed(1)};${(markerRadius + 12).toFixed(1)};${(markerRadius + 8).toFixed(1)}" dur="1.5s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.6;0.3;0.6" dur="1.5s" repeatCount="indefinite" />
+        </circle>
+      `;
+    }
+
+    // VP badge (top-right corner)
+    const vpValue = obj.baseVp || 0;
+    if (vpValue > 0) {
+      const badgeX = cx + markerRadius * 0.7;
+      const badgeY = cy - markerRadius * 0.7;
+      const badgeColor = obj.readyFor ? '#ffd700' : '#fff';
+      extraElements += `
+        <circle cx="${badgeX.toFixed(1)}" cy="${badgeY.toFixed(1)}" r="6" fill="#333" stroke="${badgeColor}" stroke-width="1" />
+        <text x="${badgeX.toFixed(1)}" y="${(badgeY + 3).toFixed(1)}" text-anchor="middle" font-size="7" font-weight="bold" fill="${badgeColor}">${vpValue}</text>
+      `;
+    }
+
+    // OC comparison indicator (bottom, shows which army has more OC)
+    const ocA = obj.levelOfControlA || 0;
+    const ocB = obj.levelOfControlB || 0;
+    if (ocA > 0 || ocB > 0) {
+      const ocY = cy + markerRadius + 10;
+      let ocText = '';
+      let ocColor = '#666';
+      if (ocA > ocB) {
+        ocText = `A:${ocA}`;
+        ocColor = '#1f77b4';
+      } else if (ocB > ocA) {
+        ocText = `B:${ocB}`;
+        ocColor = '#d62728';
+      } else if (ocA > 0) {
+        ocText = `${ocA}=${ocB}`;
+        ocColor = '#888';
+      }
+      if (ocText) {
+        extraElements += `
+          <text x="${cx.toFixed(1)}" y="${ocY.toFixed(1)}" text-anchor="middle" font-size="7" fill="${ocColor}" font-weight="bold">${ocText}</text>
+        `;
+      }
+    }
+
+    const primaryLabel = obj.priority === 'primary' ? ' [PRIMARY]' : '';
+    const readyText = obj.readyFor ? ` READY for ${obj.readyFor === 'armyA' ? 'A' : 'B'} (+${vpValue}VP)` : '';
+    const holdText = holdNeeded > 0 ? ` Hold: A=${obj.heldByA}/${holdNeeded}, B=${obj.heldByB}/${holdNeeded}` : '';
+    const tooltipText = `${obj.id}${primaryLabel}: ${obj.controlledBy === 'contested' ? 'Contested' : (obj.controlledBy === 'armyA' ? 'Army A' : 'Army B')} (A: ${ocA} OC, B: ${ocB} OC)${holdText}${readyText}`;
 
     return `
       <g class="objective-marker" data-obj-id="${escapeAttr(obj.id)}" data-priority="${obj.priority}">
+        ${extraElements}
         <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${(markerRadius + 3).toFixed(1)}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-dasharray="3 2" opacity="0.5" />
         <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${markerRadius.toFixed(1)}" fill="${fillColor}" fill-opacity="${fillOpacity}" stroke="${strokeColor}" stroke-width="2" />
         <text x="${cx.toFixed(1)}" y="${(cy + 3).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff" stroke="#000" stroke-width="0.5">${obj.priority === 'primary' ? '★' : '⬢'}</text>
@@ -340,6 +526,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
       <line x1="${sx(0).toFixed(1)}" y1="0" x2="${sx(0).toFixed(1)}" y2="${height}" stroke="#888" stroke-dasharray="4 4" />
       <text x="${4}" y="${12}" font-size="10" fill="#1f77b4">Army A zone</text>
       <text x="${width - field.deployDepth * scaleX + 4}" y="${12}" font-size="10" fill="#d62728">Army B zone</text>
+      <g id="threatRangesLayer" style="display: none;"></g>
       <g id="terrainLayer">${terrainLayer}</g>
       ${objectiveMarkers}
       ${startCircles}
@@ -363,6 +550,64 @@ export function getScaleFactors(result: SimulationResult) {
     toSvgX: (val: number) => pad + (val + field.width / 2) * scaleX,
     toSvgY: (val: number) => pad + (val + field.height / 2) * scaleY,
     scaleX,
-    scaleY
+    scaleY,
+    avgScale: (scaleX + scaleY) / 2
   };
+}
+
+/**
+ * Update threat ranges display on the battlefield
+ * Call this to show/hide or refresh threat range circles
+ */
+export function updateThreatRanges(
+  result: SimulationResult,
+  options: {
+    visible: boolean;
+    showArmyA?: boolean;
+    showArmyB?: boolean;
+    showShooting?: boolean;
+    showCharge?: boolean;
+  }
+): void {
+  const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
+  const layer = svg?.querySelector('#threatRangesLayer') as SVGGElement | null;
+  if (!layer) return;
+
+  // Toggle visibility
+  layer.style.display = options.visible ? '' : 'none';
+  if (!options.visible) return;
+
+  // Get scale factors
+  const scales = getScaleFactors(result);
+
+  // Extract threat data from current army states
+  const threatData = [
+    ...extractThreatData(result.armyAState, 'armyA'),
+    ...extractThreatData(result.armyBState, 'armyB')
+  ];
+
+  // Render threat ranges
+  const showArmyA = options.showArmyA ?? true;
+  const showArmyB = options.showArmyB ?? true;
+
+  layer.innerHTML = renderThreatRanges(
+    threatData,
+    scales.toSvgX,
+    scales.toSvgY,
+    scales.avgScale,
+    showArmyA,
+    showArmyB
+  );
+
+  // Apply shooting/charge visibility
+  if (options.showShooting === false) {
+    layer.querySelectorAll('.threat-shooting').forEach(el => {
+      (el as SVGElement).style.display = 'none';
+    });
+  }
+  if (options.showCharge === false) {
+    layer.querySelectorAll('.threat-charge').forEach(el => {
+      (el as SVGElement).style.display = 'none';
+    });
+  }
 }

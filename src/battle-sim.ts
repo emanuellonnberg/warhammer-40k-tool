@@ -18,7 +18,7 @@ import {
   returnToAnalyzer
 } from './utils/app-state';
 import { applyLeaderAttachments } from './utils/leader';
-import { renderBattlefield, getScaleFactors } from './sim-ui/battlefield-renderer';
+import { renderBattlefield, getScaleFactors, updateThreatRanges } from './sim-ui/battlefield-renderer';
 import { renderBattleLog, renderBattleSummary, renderUnitStatesTable } from './sim-ui/results-display';
 
 let armyA: Army | null = null;
@@ -27,6 +27,15 @@ let leaderAttachmentsA: AttachmentMap = {};
 let leaderAttachmentsB: AttachmentMap = {};
 let lastSimResult: SimulationResult | null = null;
 let currentPhaseIndex: number = -1;
+
+// Threat range visualization state
+let threatRangeOptions = {
+  visible: false,
+  showArmyA: true,
+  showArmyB: true,
+  showShooting: true,
+  showCharge: true
+};
 
 /**
  * Get movement color based on army, intent, and whether it's an advance move.
@@ -273,11 +282,35 @@ function renderSimulationResult(): void {
   const battlefieldViz = document.getElementById('battlefieldVisualization');
   if (battlefieldViz) {
     battlefieldViz.innerHTML = renderBattlefield(lastSimResult, currentPhaseIndex);
+
+    // Add threat range controls if not already present
+    if (!document.getElementById('threatRangeControls')) {
+      const controlsHtml = `
+        <div id="threatRangeControls" class="mt-2 d-flex flex-wrap gap-2 align-items-center" style="font-size: 0.85rem;">
+          <button id="toggleThreatRanges" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-bullseye"></i> Threat Ranges
+          </button>
+          <div class="btn-group btn-group-sm" role="group" style="display: none;" id="threatRangeFilters">
+            <button type="button" class="btn btn-outline-primary active" id="threatArmyA" title="Show Army A threats">A</button>
+            <button type="button" class="btn btn-outline-danger active" id="threatArmyB" title="Show Army B threats">B</button>
+            <button type="button" class="btn btn-outline-warning active" id="threatShooting" title="Show shooting ranges">🎯</button>
+            <button type="button" class="btn btn-outline-info active" id="threatCharge" title="Show charge ranges">⚔️</button>
+          </div>
+        </div>
+      `;
+      battlefieldViz.insertAdjacentHTML('afterend', controlsHtml);
+      setupThreatRangeControls();
+    }
   }
 
   // Draw passive movement overlays for current movement phase (low opacity)
   const scales = getScaleFactors(lastSimResult);
   renderPhaseMovementOverlay(currentPhaseIndex, scales);
+
+  // Update threat ranges if visible
+  if (threatRangeOptions.visible && lastSimResult) {
+    updateThreatRanges(lastSimResult, threatRangeOptions);
+  }
 
   // Render unit states table
   const unitStatesTable = document.getElementById('unitStatesTable');
@@ -325,6 +358,76 @@ function updatePhaseIndicator(): void {
     if (currentLog) {
       phaseIndicator.textContent = `Round ${currentLog.turn} · ${currentLog.actor === 'armyA' ? 'Army A' : 'Army B'} · ${currentLog.phase} (${currentPhaseIndex + 1}/${totalPhases})`;
     }
+  }
+}
+
+/**
+ * Setup threat range toggle controls
+ */
+function setupThreatRangeControls(): void {
+  const toggleBtn = document.getElementById('toggleThreatRanges');
+  const filtersDiv = document.getElementById('threatRangeFilters');
+
+  if (toggleBtn && filtersDiv) {
+    toggleBtn.addEventListener('click', () => {
+      threatRangeOptions.visible = !threatRangeOptions.visible;
+      toggleBtn.classList.toggle('active', threatRangeOptions.visible);
+
+      // Show/hide filter buttons
+      filtersDiv.style.display = threatRangeOptions.visible ? 'flex' : 'none';
+
+      if (lastSimResult) {
+        updateThreatRanges(lastSimResult, threatRangeOptions);
+      }
+    });
+  }
+
+  // Army A toggle
+  const armyABtn = document.getElementById('threatArmyA');
+  if (armyABtn) {
+    armyABtn.addEventListener('click', () => {
+      threatRangeOptions.showArmyA = !threatRangeOptions.showArmyA;
+      armyABtn.classList.toggle('active', threatRangeOptions.showArmyA);
+      if (lastSimResult && threatRangeOptions.visible) {
+        updateThreatRanges(lastSimResult, threatRangeOptions);
+      }
+    });
+  }
+
+  // Army B toggle
+  const armyBBtn = document.getElementById('threatArmyB');
+  if (armyBBtn) {
+    armyBBtn.addEventListener('click', () => {
+      threatRangeOptions.showArmyB = !threatRangeOptions.showArmyB;
+      armyBBtn.classList.toggle('active', threatRangeOptions.showArmyB);
+      if (lastSimResult && threatRangeOptions.visible) {
+        updateThreatRanges(lastSimResult, threatRangeOptions);
+      }
+    });
+  }
+
+  // Shooting toggle
+  const shootingBtn = document.getElementById('threatShooting');
+  if (shootingBtn) {
+    shootingBtn.addEventListener('click', () => {
+      threatRangeOptions.showShooting = !threatRangeOptions.showShooting;
+      shootingBtn.classList.toggle('active', threatRangeOptions.showShooting);
+      if (lastSimResult && threatRangeOptions.visible) {
+        updateThreatRanges(lastSimResult, threatRangeOptions);
+      }
+    });
+  }
+
+  // Charge toggle
+  const chargeBtn = document.getElementById('threatCharge');
+  if (chargeBtn) {
+    chargeBtn.addEventListener('click', () => {
+      threatRangeOptions.showCharge = !threatRangeOptions.showCharge;
+      chargeBtn.classList.toggle('active', threatRangeOptions.showCharge);
+      if (lastSimResult && threatRangeOptions.visible) {
+        updateThreatRanges(lastSimResult, threatRangeOptions);
+      }
+    });
   }
 }
 

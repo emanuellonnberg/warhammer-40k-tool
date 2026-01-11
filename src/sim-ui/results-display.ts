@@ -71,7 +71,23 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
   };
 
-  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[]; intent?: string }[]) => {
+  // Format score breakdown for tooltip
+  const formatScoreTooltip = (breakdown?: { total: number; objectiveValue: number; distanceBias: number; threatPenalty: number; moveCost: number; nearestObjective?: string; nearestObjectiveDist?: number }): string => {
+    if (!breakdown) return '';
+    const parts = [
+      `Score: ${breakdown.total.toFixed(1)}`,
+      `Objective: +${breakdown.objectiveValue.toFixed(1)}`,
+      `Role bias: +${breakdown.distanceBias.toFixed(1)}`,
+      `Threat: -${breakdown.threatPenalty.toFixed(1)}`,
+      `Move cost: -${breakdown.moveCost.toFixed(1)}`
+    ];
+    if (breakdown.nearestObjective) {
+      parts.push(`Near: ${breakdown.nearestObjective} (${breakdown.nearestObjectiveDist?.toFixed(1)}")`);
+    }
+    return parts.join(' | ');
+  };
+
+  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; path?: { x: number; y: number }[]; intent?: string; scoreBreakdown?: { total: number; objectiveValue: number; distanceBias: number; threatPenalty: number; moveCost: number; nearestObjective?: string; nearestObjectiveDist?: number } }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
       const label = describeMovement(detail);
@@ -81,7 +97,9 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
         : '';
       const intentAttr = detail.intent ? ` data-intent="${detail.intent}"` : '';
       const advancedAttr = detail.advanced ? ' data-advanced="true"' : '';
-      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}"${pathAttr}${intentAttr}${advancedAttr}>${label}</span></li>`;
+      const scoreTooltip = formatScoreTooltip(detail.scoreBreakdown);
+      const titleAttr = scoreTooltip ? ` title="${scoreTooltip}"` : '';
+      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}"${pathAttr}${intentAttr}${advancedAttr}${titleAttr}>${label}</span></li>`;
     }).join('');
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };
@@ -202,6 +220,28 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<ul class="sim-attack-list mb-1 ps-3">${items}</ul>`;
   };
 
+  // Strategy profile badge styling
+  const getStrategyBadge = (strategy?: { profile: string; reason?: string; isAdaptive?: boolean }): string => {
+    if (!strategy) return '';
+    const profileColors: Record<string, string> = {
+      aggressive: '#dc3545',  // red
+      defensive: '#17a2b8',   // cyan
+      'objective-focused': '#28a745',  // green
+      greedy: '#ffc107'       // yellow
+    };
+    const color = profileColors[strategy.profile] || '#6c757d';
+    const adaptiveIcon = strategy.isAdaptive ? '🔄 ' : '';
+    const reasonTooltip = strategy.reason ? ` title="${strategy.reason}"` : '';
+    return `
+      <div class="mb-2">
+        <span class="badge" style="background-color: ${color}; color: ${color === '#ffc107' ? '#212529' : '#fff'};"${reasonTooltip}>
+          ${adaptiveIcon}Strategy: ${strategy.profile}
+        </span>
+        ${strategy.reason ? `<span class="small text-muted ms-2">${strategy.reason}</span>` : ''}
+      </div>
+    `;
+  };
+
   const sequentialLogs = activeTabs.map((entry, idx) => {
     const log = entry.log;
     const stats: string[] = [];
@@ -209,16 +249,19 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     if (typeof log.distanceAfter === 'number') stats.push(`Distance ${log.distanceAfter.toFixed(1)}"`);
     if (log.advancedUnits?.length) stats.push(`Advanced: ${log.advancedUnits.join(', ')}`);
     const statsText = stats.length ? `<div class="small text-muted mb-2">${stats.join(' | ')}</div>` : '';
-    
+
     const casualtiesText = log.casualties?.length
       ? `<div class="mb-2"><em>Casualties:</em> ${log.casualties.map(c => `${c.unitName} -${c.modelsLost}`).join(', ')}</div>`
       : '';
-    
+
+    // Strategy context for movement phases
+    const strategyBadge = log.phase === 'movement' ? getStrategyBadge(log.strategy) : '';
+
     const movementList = log.phase === 'movement' ? renderMovementDetails(log.movementDetails) : '';
     const objectiveList = log.phase === 'command' ? renderObjectiveStates(log.objectiveStates, armyALabel, armyBLabel) : '';
     const attackList = (log.phase === 'shooting' || log.phase === 'melee') ? renderAttackDetails(log.actions, entry.index) : '';
-    
-    const description = `<div class="mb-2"><strong>${formatPhaseHeader(log)}</strong></div><p>${log.description}</p>`;
+
+    const description = `<div class="mb-2"><strong>${formatPhaseHeader(log)}</strong></div>${strategyBadge}<p>${log.description}</p>`;
     
     const paneId = `log-pane-${entry.index}`;
     const tabId = `log-tab-${entry.index}`;
