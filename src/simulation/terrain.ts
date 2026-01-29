@@ -1058,10 +1058,10 @@ export function createGTLayout(
     createContainer(halfW - 7, -14, true, 'Army B Container South'),
 
     // Mid-field scatter
-    createCrater(-7, 22, 2.5, 'North Crater'),
-    createCrater(7, -22, 2.5, 'South Crater'),
-    createDebris(0, 20, 3, 3, 'North Debris'),
-    createDebris(0, -20, 3, 3, 'South Debris'),
+    createCrater(-7, 18, 2.5, 'North Crater'),
+    createCrater(7, -18, 2.5, 'South Crater'),
+    createDebris(0, 16, 3, 3, 'North Debris'),
+    createDebris(0, -16, 3, 3, 'South Debris'),
   ];
 
   return {
@@ -1100,14 +1100,14 @@ export function createCityFightLayout(
     // Street barricades
     createBarricade(-5, 8, 4, true, 'North Barricade'),
     createBarricade(5, -8, 4, true, 'South Barricade'),
-    createBarricade(0, 22, 5, true, 'Far North Barricade'),
-    createBarricade(0, -22, 5, true, 'Far South Barricade'),
+    createBarricade(0, 18, 5, true, 'Far North Barricade'),
+    createBarricade(0, -18, 5, true, 'Far South Barricade'),
 
     // Scatter debris
     createDebris(-15, 5, 3, 3, 'West Debris 1'),
     createDebris(15, -5, 3, 3, 'East Debris 1'),
-    createDebris(-3, 25, 2, 2, 'North Debris'),
-    createDebris(3, -25, 2, 2, 'South Debris'),
+    createDebris(-3, 19, 2, 2, 'North Debris'),
+    createDebris(3, -19, 2, 2, 'South Debris'),
   ];
 
   return {
