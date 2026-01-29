@@ -261,14 +261,14 @@ function createObjectiveMarkers(
 
   return [
     // Center objective (primary - most contested)
-    { 
-      id: 'obj-center', 
+    {
+      id: 'obj-center',
       name: 'Center Objective',
-      x: 0, 
-      y: 0, 
+      x: 0,
+      y: 0,
       priority: 'primary',
-      controlledBy: 'contested', 
-      levelOfControlA: 0, 
+      controlledBy: 'contested',
+      levelOfControlA: 0,
       levelOfControlB: 0,
       heldByA: 0,
       heldByB: 0,
@@ -279,14 +279,14 @@ function createObjectiveMarkers(
     },
 
     // No-man's land objectives (between deployment zones, left and right) - secondary
-    { 
-      id: 'obj-nml-left', 
+    {
+      id: 'obj-nml-left',
       name: 'Left Flank Objective',
-      x: 0, 
-      y: -halfH / 2, 
+      x: 0,
+      y: -halfH / 2,
       priority: 'secondary',
-      controlledBy: 'contested', 
-      levelOfControlA: 0, 
+      controlledBy: 'contested',
+      levelOfControlA: 0,
       levelOfControlB: 0,
       heldByA: 0,
       heldByB: 0,
@@ -295,14 +295,14 @@ function createObjectiveMarkers(
       scoringUnitsA: [],
       scoringUnitsB: []
     },
-    { 
-      id: 'obj-nml-right', 
+    {
+      id: 'obj-nml-right',
       name: 'Right Flank Objective',
-      x: 0, 
-      y: halfH / 2, 
+      x: 0,
+      y: halfH / 2,
       priority: 'secondary',
-      controlledBy: 'contested', 
-      levelOfControlA: 0, 
+      controlledBy: 'contested',
+      levelOfControlA: 0,
       levelOfControlB: 0,
       heldByA: 0,
       heldByB: 0,
@@ -313,14 +313,14 @@ function createObjectiveMarkers(
     },
 
     // Deployment zone objectives (one in each DZ, positioned 9" from edge) - primary
-    { 
-      id: 'obj-dz-armyA', 
+    {
+      id: 'obj-dz-armyA',
       name: "Army A's Objective",
-      x: -halfW + 9, 
-      y: 0, 
+      x: -halfW + 9,
+      y: 0,
       priority: 'primary',
-      controlledBy: 'contested', 
-      levelOfControlA: 0, 
+      controlledBy: 'contested',
+      levelOfControlA: 0,
       levelOfControlB: 0,
       heldByA: 0,
       heldByB: 0,
@@ -329,14 +329,14 @@ function createObjectiveMarkers(
       scoringUnitsA: [],
       scoringUnitsB: []
     },
-    { 
-      id: 'obj-dz-armyB', 
+    {
+      id: 'obj-dz-armyB',
       name: "Army B's Objective",
-      x: halfW - 9, 
-      y: 0, 
+      x: halfW - 9,
+      y: 0,
       priority: 'primary',
-      controlledBy: 'contested', 
-      levelOfControlA: 0, 
+      controlledBy: 'contested',
+      levelOfControlA: 0,
       levelOfControlB: 0,
       heldByA: 0,
       heldByB: 0,
@@ -385,19 +385,19 @@ function updateObjectiveControl(
     for (const u of stateA.units) {
       // Skip units with no remaining models or units in reserves (not on battlefield)
       if (u.remainingModels <= 0 || u.inReserves) continue;
-      
+
       // Battle-shocked units have OC of 0 per 40K rules
       if (u.battleShocked) continue;
-      
+
       const dx = Math.abs(u.position.x - obj.x);
       const dy = Math.abs(u.position.y - obj.y);
-      
+
       // Check if unit is within control range
       if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
         const oc = parseInt(u.unit.stats.objectiveControl || '0', 10);
         const contribution = oc * u.remainingModels;
         levelOfControlA += contribution;
-        
+
         // Track which units contribute for debugging
         if (oc > 0) {
           unitsControllingA.push(`${u.unit.name} (${u.remainingModels} models × OC${oc} = ${contribution})`);
@@ -409,19 +409,19 @@ function updateObjectiveControl(
     for (const u of stateB.units) {
       // Skip units with no remaining models or units in reserves (not on battlefield)
       if (u.remainingModels <= 0 || u.inReserves) continue;
-      
+
       // Battle-shocked units have OC of 0 per 40K rules
       if (u.battleShocked) continue;
-      
+
       const dx = Math.abs(u.position.x - obj.x);
       const dy = Math.abs(u.position.y - obj.y);
-      
+
       // Check if unit is within control range
       if (dx <= CONTROL_RANGE_HORIZONTAL && dy <= CONTROL_RANGE_VERTICAL) {
         const oc = parseInt(u.unit.stats.objectiveControl || '0', 10);
         const contribution = oc * u.remainingModels;
         levelOfControlB += contribution;
-        
+
         // Track which units contribute for debugging
         if (oc > 0) {
           unitsControllingB.push(`${u.unit.name} (${u.remainingModels} models × OC${oc} = ${contribution})`);
@@ -442,11 +442,11 @@ function updateObjectiveControl(
 
     // Determine control and update hold time
     const previousController = obj.controlledBy;
-    
+
     // Update hold timers
     let heldByA = obj.heldByA || 0;
     let heldByB = obj.heldByB || 0;
-    
+
     if (controlledBy === 'armyA') {
       heldByA = (previousController === 'armyA' ? heldByA : 0) + 1;
       heldByB = 0;
@@ -933,8 +933,8 @@ function deployArmiesAlternating(
 
   const validateReserves = (
     army: Army,
-    reserves: typeof reservesA,
-    normalDeploy: typeof unitsToDeployA,
+    reserves: any[],
+    normalDeploy: any[],
     armyLabel: string
   ) => {
     const totalPoints = army.pointsTotal || army.units.reduce((sum, u) => sum + (u.points || 0), 0);
@@ -1207,7 +1207,7 @@ function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog
   const woundsPerModel = parseInt(target.unit.stats.wounds || '1', 10);
   const beforeModels = target.remainingModels;
   const beforeWounds = target.remainingWounds;
-  
+
   // Calculate new state
   let woundsRemaining = beforeWounds - damage;
   woundsRemaining = Math.max(0, woundsRemaining);
@@ -1218,7 +1218,7 @@ function applyDamage(target: UnitState, damage: number, casualties?: CasualtyLog
   // Update state atomically
   target.remainingWounds = woundsRemaining;
   target.remainingModels = Math.max(0, modelsRemaining);
-  
+
   // Update model alive status
   updateModelLife(target);
 
@@ -1434,13 +1434,13 @@ export function runSimpleEngagement(
       updateObjectiveControl(objectives, stateA, stateB);
       const objSummary = getObjectiveSummary(objectives);
       const objectiveStatesForLog = mapObjectiveStatesForLog(objectives, missionScoring);
-      
+
       // Resolve Battle Shock tests
       const battleShockResults = resolveBattleShock(active, round);
       const battleShockSummary = battleShockResults.length > 0
         ? battleShockResults.map(r => formatBattleShockResult(r)).join('; ')
         : 'No Battle Shock tests required.';
-      
+
       logs.push(summarizePhase(
         'command',
         round,
@@ -1458,14 +1458,14 @@ export function runSimpleEngagement(
       // Adaptive strategy: Evaluate battle state and potentially switch strategy
       let currentStrategy = strategyProfile;
       let strategyExplanation = '';
-      
+
       if (useAdaptiveStrategy) {
         const ourVP = active.tag === 'armyA' ? victoryPoints.armyA : victoryPoints.armyB;
         const enemyVP = active.tag === 'armyA' ? victoryPoints.armyB : victoryPoints.armyA;
-        
+
         const battleState = evaluateBattleState(active, opponent, objectives, ourVP, enemyVP);
         const recommendedStrategy = recommendStrategy(battleState, round, maxRounds);
-        
+
         if (recommendedStrategy) {
           currentStrategy = recommendedStrategy;
           strategyExplanation = ` [AI: ${recommendedStrategy} - ${explainStrategyChoice(battleState, recommendedStrategy, round)}]`;
@@ -2000,7 +2000,7 @@ function parseRangeStr(rangeValue?: string): number {
 function battlefieldFromPoints(maxPoints: number) {
   // Short edge 44", long edge 60" for Strike Force/Onslaught; smaller for Incursion
   if (maxPoints >= 1500) {
-    return { width: 44, height: 60, deployDepth: 12 };
+    return { width: 60, height: 44, deployDepth: 12 };
   }
   return { width: 44, height: 30, deployDepth: 9 };
 }
@@ -2012,10 +2012,10 @@ function clampToBoard(u: UnitState, battlefieldWidth: number, battlefieldHeight:
   const beforeY = u.position.y;
   const clampedX = Math.max(-halfW, Math.min(halfW, u.position.x));
   const clampedY = Math.max(-halfH, Math.min(halfH, u.position.y));
-  
+
   // Update position immutably
   u.position = { x: clampedX, y: clampedY };
-  
+
   const dx = clampedX - beforeX;
   const dy = clampedY - beforeY;
   shiftModelPositions(u, dx, dy);
@@ -2113,12 +2113,12 @@ function expectedShootingDamageBatch(
           // Towering and Aircraft units ignore Obscuring terrain
           const losCheck = terrain.length > 0
             ? checkLineOfSight(
-                attacker.position,
-                def.position,
-                terrain,
-                unitIgnoresObscuring(attacker),
-                unitIgnoresObscuring(def)
-              )
+              attacker.position,
+              def.position,
+              terrain,
+              unitIgnoresObscuring(attacker),
+              unitIgnoresObscuring(def)
+            )
             : { hasLoS: true, throughDense: false };
 
           // If LoS is blocked, can't shoot this target
@@ -2144,20 +2144,20 @@ function expectedShootingDamageBatch(
           // Calculate damage with terrain modifiers
           const dmg = dist <= range
             ? calculateWeaponDamage(
-                weapon,
-                parseInt(def.unit.stats.toughness || '4', 10),
-                false, // useOvercharge
-                includeOneTimeWeapons,
-                true, // optimalRange
-                [], // targetKeywords
-                1, // targetUnitSize
-                false, // isCharging
-                effectiveSave,
-                undefined, // unitRerolls
-                undefined, // scenarioRerolls
-                undefined, // targetFNP
-                densePenalty !== 0 ? { hit: densePenalty } : undefined // unitModifiers for dense cover
-              )
+              weapon,
+              parseInt(def.unit.stats.toughness || '4', 10),
+              false, // useOvercharge
+              includeOneTimeWeapons,
+              true, // optimalRange
+              [], // targetKeywords
+              1, // targetUnitSize
+              false, // isCharging
+              effectiveSave,
+              undefined, // unitRerolls
+              undefined, // scenarioRerolls
+              undefined, // targetFNP
+              densePenalty !== 0 ? { hit: densePenalty } : undefined // unitModifiers for dense cover
+            )
             : 0;
 
           return {

@@ -164,7 +164,7 @@ function renderTerrainFeatures(
 }
 
 export function renderBattlefield(result: SimulationResult, phaseIndex?: number): string {
-  const field = result.battlefield || { width: 44, height: 60 };
+  const field = result.battlefield || { width: 60, height: 44 };
 
   const findSnapshot = () => {
     if (typeof phaseIndex === 'number' && result.positionsTimeline?.length) {

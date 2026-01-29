@@ -1031,8 +1031,8 @@ function createRotatedRuins(
 }
 
 export function createGTLayout(
-  battlefieldWidth: number = 44,
-  battlefieldHeight: number = 60
+  battlefieldWidth: number = 60,
+  battlefieldHeight: number = 44
 ): TerrainLayout {
   const halfW = battlefieldWidth / 2;
   const halfH = battlefieldHeight / 2;
@@ -1075,8 +1075,8 @@ export function createGTLayout(
  * Create a city fight / dense urban terrain layout
  */
 export function createCityFightLayout(
-  battlefieldWidth: number = 44,
-  battlefieldHeight: number = 60
+  battlefieldWidth: number = 60,
+  battlefieldHeight: number = 44
 ): TerrainLayout {
   const halfW = battlefieldWidth / 2;
 
@@ -1121,8 +1121,8 @@ export function createCityFightLayout(
  * Create an open field with minimal terrain
  */
 export function createOpenFieldLayout(
-  battlefieldWidth: number = 44,
-  battlefieldHeight: number = 60
+  battlefieldWidth: number = 60,
+  battlefieldHeight: number = 44
 ): TerrainLayout {
   const halfW = battlefieldWidth / 2;
 
