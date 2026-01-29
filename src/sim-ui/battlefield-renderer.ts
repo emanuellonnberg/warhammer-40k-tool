@@ -63,9 +63,14 @@ function renderTerrainFeatures(
   scaleY: number,
   escapeAttr: (s?: string) => string
 ): string {
-  if (!terrain || terrain.length === 0) return '';
+  if (!terrain || terrain.length === 0) {
+    console.log('renderTerrainFeatures: No terrain to render');
+    return '';
+  }
 
-  return terrain.map(t => {
+  console.log('renderTerrainFeatures: Rendering', terrain.length, 'features');
+  console.log('Sample terrain feature:', terrain[0]);
+  const result = terrain.map(t => {
     const colors = TERRAIN_COLORS[t.type] || TERRAIN_COLORS.custom;
     const cx = sx(t.x);
     const cy = sy(t.y);
@@ -153,6 +158,9 @@ function renderTerrainFeatures(
       </g>
     `;
   }).join('');
+
+  console.log('Generated terrain SVG length:', result.length, 'characters');
+  return result;
 }
 
 export function renderBattlefield(result: SimulationResult, phaseIndex?: number): string {
@@ -179,11 +187,18 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
 
   const width = SIM_SVG_WIDTH;
   const height = SIM_SVG_HEIGHT;
-  const pad = SIM_SVG_PAD;
-  const scaleX = (width - pad * 2) / field.width;
-  const scaleY = (height - pad * 2) / field.height;
-  const sx = (x: number) => pad + (x + field.width / 2) * scaleX;
-  const sy = (y: number) => pad + (y + field.height / 2) * scaleY;
+  // Use uniform scaling to prevent skewing
+  const rawScaleX = (width - SIM_SVG_PAD * 2) / field.width;
+  const rawScaleY = (height - SIM_SVG_PAD * 2) / field.height;
+  const scaleX = Math.min(rawScaleX, rawScaleY);
+  const scaleY = scaleX; // Uniform scaling
+
+  // Center the battlefield
+  const offsetX = (width - field.width * scaleX) / 2;
+  const offsetY = (height - field.height * scaleY) / 2;
+
+  const sx = (x: number) => offsetX + (x + field.width / 2) * scaleX;
+  const sy = (y: number) => offsetY + (y + field.height / 2) * scaleY;
   const escapeAttr = (value?: string) => (value || '').replace(/"/g, '&quot;');
   const avgScale = (scaleX + scaleY) / 2;
 
@@ -280,6 +295,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
   }).join('');
 
   // Render terrain features
+  console.log('Rendering terrain features:', result.terrain?.length || 0, 'features');
   const terrainLayer = renderTerrainFeatures(
     result.terrain || [],
     sx,
@@ -356,13 +372,19 @@ export function getScaleFactors(result: SimulationResult) {
   const width = SIM_SVG_WIDTH;
   const height = SIM_SVG_HEIGHT;
   const pad = SIM_SVG_PAD;
-  const scaleX = (width - pad * 2) / field.width;
-  const scaleY = (height - pad * 2) / field.height;
+  // Use uniform scaling to prevent skewing
+  const rawScaleX = (width - pad * 2) / field.width;
+  const rawScaleY = (height - pad * 2) / field.height;
+  const scale = Math.min(rawScaleX, rawScaleY);
+
+  // Center the battlefield
+  const offsetX = (width - field.width * scale) / 2;
+  const offsetY = (height - field.height * scale) / 2;
 
   return {
-    toSvgX: (val: number) => pad + (val + field.width / 2) * scaleX,
-    toSvgY: (val: number) => pad + (val + field.height / 2) * scaleY,
-    scaleX,
-    scaleY
+    toSvgX: (val: number) => offsetX + (val + field.width / 2) * scale,
+    toSvgY: (val: number) => offsetY + (val + field.height / 2) * scale,
+    scaleX: scale,
+    scaleY: scale
   };
 }

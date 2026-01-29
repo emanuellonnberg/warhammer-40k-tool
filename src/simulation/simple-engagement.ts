@@ -1667,6 +1667,8 @@ export function runSimpleEngagement(
   // Final objective control update
   updateObjectiveControl(objectives, stateA, stateB);
 
+  console.log('Simulation complete. Terrain features in result:', terrain.length);
+
   return {
     startingDistance,
     initiative,

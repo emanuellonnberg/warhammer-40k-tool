@@ -348,7 +348,7 @@ function lineSegmentsIntersect(a1: Point, a2: Point, b1: Point, b2: Point): bool
   const d4 = direction(a1, a2, b2);
 
   if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
-      ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
+    ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) {
     return true;
   }
 
@@ -979,9 +979,57 @@ export function createDebris(
 // ============================================================================
 
 /**
- * Create a GT-style terrain layout for Strike Force games
- * Standard competitive layout with balanced cover
+ * Helper to create rotated rectangular ruins using polygon shape
  */
+function createRotatedRuins(
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  rotationDegrees: number,
+  name: string
+): TerrainFeature {
+  const rad = (rotationDegrees * Math.PI) / 180;
+  const cos = Math.cos(rad);
+  const sin = Math.sin(rad);
+
+  const hw = width / 2;
+  const hh = height / 2;
+
+  // Four corners of rectangle, rotated
+  const vertices: Point[] = [
+    { x: -hw * cos + hh * sin, y: -hw * sin - hh * cos },
+    { x: hw * cos + hh * sin, y: hw * sin - hh * cos },
+    { x: hw * cos - hh * sin, y: hw * sin + hh * cos },
+    { x: -hw * cos - hh * sin, y: -hw * sin + hh * cos },
+  ];
+
+  return {
+    id: generateTerrainId(),
+    name,
+    type: 'ruins',
+    x,
+    y,
+    width,
+    height,
+    shape: 'polygon',
+    vertices,
+    traits: {
+      coverLight: true,
+      obscuring: true,
+      breachable: true,
+      difficultGround: true,
+      coverHeavy: false,
+      denseCover: false,
+      defensible: true,
+      scalable: true,
+    },
+    impassable: false,
+    infantryOnly: false,
+    blocksLargeModels: false,
+  };
+}
+
 export function createGTLayout(
   battlefieldWidth: number = 44,
   battlefieldHeight: number = 60
@@ -990,35 +1038,35 @@ export function createGTLayout(
   const halfH = battlefieldHeight / 2;
 
   const features: TerrainFeature[] = [
-    // Center piece - large ruins
+    // Center piece - large ruins (no rotation for central landmark)
     createRuins(0, 0, 8, 8, 'Central Ruins'),
 
-    // Flanking ruins (left/right of center)
-    createRuins(-12, 10, 6, 6, 'North-West Ruins'),
-    createRuins(12, 10, 6, 6, 'North-East Ruins'),
-    createRuins(-12, -10, 6, 6, 'South-West Ruins'),
-    createRuins(12, -10, 6, 6, 'South-East Ruins'),
+    // Flanking ruins with rotation for variety (rotated 30 degrees)
+    createRotatedRuins(-13, 12, 6, 5, 30, 'North-West Ruins'),
+    createRotatedRuins(13, 12, 6, 5, -30, 'North-East Ruins'),
+    createRotatedRuins(-13, -12, 6, 5, -30, 'South-West Ruins'),
+    createRotatedRuins(13, -12, 6, 5, 30, 'South-East Ruins'),
 
     // Deployment zone cover (Army A side - negative X)
-    createRuins(-halfW + 8, 0, 5, 5, 'Army A Ruins'),
-    createContainer(-halfW + 6, 12, true, 'Army A Container North'),
-    createContainer(-halfW + 6, -12, true, 'Army A Container South'),
+    createRotatedRuins(-halfW + 9, 0, 5, 5, 15, 'Army A Ruins'),
+    createContainer(-halfW + 7, 14, true, 'Army A Container North'),
+    createContainer(-halfW + 7, -14, true, 'Army A Container South'),
 
     // Deployment zone cover (Army B side - positive X)
-    createRuins(halfW - 8, 0, 5, 5, 'Army B Ruins'),
-    createContainer(halfW - 6, 12, true, 'Army B Container North'),
-    createContainer(halfW - 6, -12, true, 'Army B Container South'),
+    createRotatedRuins(halfW - 9, 0, 5, 5, -15, 'Army B Ruins'),
+    createContainer(halfW - 7, 14, true, 'Army B Container North'),
+    createContainer(halfW - 7, -14, true, 'Army B Container South'),
 
     // Mid-field scatter
-    createCrater(-6, 20, 2.5, 'North Crater'),
-    createCrater(6, -20, 2.5, 'South Crater'),
-    createDebris(0, 18, 3, 3, 'North Debris'),
-    createDebris(0, -18, 3, 3, 'South Debris'),
+    createCrater(-7, 22, 2.5, 'North Crater'),
+    createCrater(7, -22, 2.5, 'South Crater'),
+    createDebris(0, 20, 3, 3, 'North Debris'),
+    createDebris(0, -20, 3, 3, 'South Debris'),
   ];
 
   return {
     name: 'GT Standard',
-    description: 'Standard GT-style competitive terrain layout',
+    description: 'Standard GT-style competitive terrain layout with rotated features',
     features,
   };
 }

@@ -19,6 +19,7 @@ import {
 import { applyLeaderAttachments } from './utils/leader';
 import { renderBattlefield, getScaleFactors } from './sim-ui/battlefield-renderer';
 import { renderBattleLog, renderBattleSummary, renderUnitStatesTable } from './sim-ui/results-display';
+import { createGTLayout, createCityFightLayout, createOpenFieldLayout } from './simulation/terrain';
 
 let armyA: Army | null = null;
 let armyB: Army | null = null;
@@ -161,11 +162,27 @@ function runBattle(): void {
   const useBeamSearchInput = document.getElementById('useBeamSearch') as HTMLInputElement;
   const beamWidthInput = document.getElementById('beamWidth') as HTMLInputElement;
   const missionScoringSelect = document.getElementById('missionScoring') as HTMLSelectElement;
+  const terrainLayoutSelect = document.getElementById('terrainLayout') as HTMLSelectElement;
 
   const manualDistance = parseFloat(startingDistanceInput.value);
   const startingDistance = !isNaN(manualDistance) && manualDistance > 0
     ? manualDistance
     : pickStartingDistance(armyA, armyB);
+
+  // Generate terrain based on selection
+  const terrainLayout = terrainLayoutSelect?.value || 'none';
+  let terrain = null;
+  if (terrainLayout === 'gt-standard') {
+    terrain = createGTLayout().features;
+    console.log('Generated GT Standard terrain:', terrain);
+  } else if (terrainLayout === 'city-fight') {
+    terrain = createCityFightLayout().features;
+    console.log('Generated City Fight terrain:', terrain);
+  } else if (terrainLayout === 'open-field') {
+    terrain = createOpenFieldLayout().features;
+    console.log('Generated Open Field terrain:', terrain);
+  }
+  console.log('Terrain layout selected:', terrainLayout, 'Terrain features:', terrain?.length || 0);
 
   const config = {
     startingDistance,
@@ -179,7 +196,8 @@ function runBattle(): void {
     useAdaptiveStrategy: useAdaptiveStrategyInput?.checked ?? false,
     useBeamSearch: useBeamSearchInput?.checked ?? false,
     beamWidth: parseInt(beamWidthInput?.value || '3', 10) || 3,
-    missionScoring: (missionScoringSelect?.value as 'matched-play' | 'hold-2' | 'high-stakes') || 'matched-play'
+    missionScoring: (missionScoringSelect?.value as 'matched-play' | 'hold-2' | 'high-stakes') || 'matched-play',
+    terrain: terrain || undefined
   };
 
   // Save config
