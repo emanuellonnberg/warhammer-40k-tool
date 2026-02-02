@@ -4,6 +4,7 @@ import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
 import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain, getTerrainCover, checkLineOfSight } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
+import { abilityParser } from './ability-parser';
 
 export interface NavMeshSet {
   default: NavMesh;
@@ -251,7 +252,29 @@ function buildThreatMap(active: ArmyState, opponent: ArmyState): Map<string, Thr
       const d = distance(enemy.position, ally.position);
 
       // Base threat from range + movement
-      const baseThreat = Math.max(0, threatRadius - d) / Math.max(1, threatRadius);
+      let baseThreat = Math.max(0, threatRadius - d) / Math.max(1, threatRadius);
+
+      // === DEFENSIVE ABILITY MODIFIERS ===
+      // Stealth reduces incoming ranged threat (-1 to hit = ~16% reduction)
+      if (abilityParser.hasStealth(ally.unit)) {
+        baseThreat *= 0.83;
+      }
+
+      // Feel No Pain reduces effective threat (5+ FNP = ~33% damage reduction)
+      if (abilityParser.hasFeelNoPain(ally.unit)) {
+        const fnpValue = abilityParser.getFeelNoPainValue(ally.unit);
+        // FNP 5+ = 0.67, FNP 6+ = 0.83, FNP 4+ = 0.5
+        const fnpReduction = (7 - fnpValue) / 6;
+        baseThreat *= (1 - fnpReduction);
+      }
+
+      // Invulnerable save makes unit more resilient (4++ = ~50% better vs AP)
+      if (abilityParser.hasInvulnerableSave(ally.unit)) {
+        const invulnValue = abilityParser.getInvulnerableSaveValue(ally.unit);
+        // Better invuln = more threat reduction (4++ = 0.85, 3++ = 0.75)
+        const invulnFactor = 0.7 + (invulnValue * 0.05);
+        baseThreat *= invulnFactor;
+      }
 
       // Boost threat if within close engagement range
       const inCloseRange = d <= 6;

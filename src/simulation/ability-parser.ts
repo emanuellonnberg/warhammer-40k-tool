@@ -270,9 +270,11 @@ export class AbilityParser {
                     rawText: match[0]
                 };
 
-                // Extract numeric value if present
+                // Extract numeric value if present (check both capture groups for patterns with alternation)
                 if (match[1]) {
                     parsed.value = parseInt(match[1], 10);
+                } else if (match[2]) {
+                    parsed.value = parseInt(match[2], 10);
                 } else if ('defaultValue' in def) {
                     parsed.value = def.defaultValue;
                 }
