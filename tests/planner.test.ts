@@ -394,5 +394,46 @@ describe('Planner - Terrain-Aware Movement', () => {
     expect(result.movements).toHaveLength(1);
     expect(result.movements[0].to).toBeDefined();
   });
+
+  it('should prioritize finding cover when using Defensive strategy (Tactical Behavior)', () => {
+    // Unit at (0,0) - Infantry
+    const testUnit = createMockUnit('unit-def', '12', '10');
+    testUnit.type = 'Infantry';
+    const allyState = createMockUnitState(testUnit, 0, 0);
+    const active = createMockArmyState([allyState]);
+
+    // Threat at (30,0)
+    const enemyUnit = createMockUnit('enemy-1', '24', '6');
+    const enemyState = createMockUnitState(enemyUnit, 30, 0);
+    const opponent = createMockArmyState([enemyState]);
+
+    const objectives: ObjectiveMarker[] = [{ x: 30, y: 0, id: 'obj-1' }];
+
+    // Ruins CLOSE to unit (Center 3,0), ensuring unit can enter despite pathfinding limits
+    const ruins = createRuins(3, 0, 4, 4);
+    const terrain = [ruins];
+    const navMesh = generateNavMesh(terrain, 48, 48, 1.5);
+
+    const weights = getStrategyWeights('defensive');
+
+    const result = planGreedyMovement(
+      active,
+      opponent,
+      objectives,
+      true,
+      48, 48,
+      weights,
+      terrain,
+      navMesh
+    );
+
+    const pos = result.movements[0].to;
+
+    // Expect unit to settle IN the ruins (X >= 1) rather than running to open ground (X > 10)
+    // Even if it stops at the edge (1,0), it counts as cover
+    const inRuins = pos.x >= 1 && pos.x <= 5 && pos.y >= -2 && pos.y <= 2;
+
+    expect(inRuins).toBe(true);
+  });
 });
 

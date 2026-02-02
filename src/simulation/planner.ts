@@ -5,6 +5,12 @@ import type { NavMesh, PathResult } from './pathfinding';
 import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain, getTerrainCover, checkLineOfSight } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
 
+export interface NavMeshSet {
+  default: NavMesh;
+  infantry?: NavMesh;
+  vehicle?: NavMesh;
+}
+
 // ============================================================================
 // CONSTANTS
 // ============================================================================
@@ -296,8 +302,22 @@ function generateCandidates(
   battlefieldWidth: number,
   battlefieldHeight: number,
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh
+  navMeshOrSet?: NavMesh | NavMeshSet
 ): CandidateMoveWithPath[] {
+  // Resolve correct NavMesh
+  let navMesh: NavMesh | undefined;
+  if (navMeshOrSet) {
+    if ('default' in navMeshOrSet && !('waypoints' in navMeshOrSet)) {
+      const set = navMeshOrSet as NavMeshSet;
+      if (isUnitInfantry(unit) && set.infantry) {
+        navMesh = set.infantry;
+      } else {
+        navMesh = set.default;
+      }
+    } else {
+      navMesh = navMeshOrSet as NavMesh;
+    }
+  }
   const candidates: CandidateMoveWithPath[] = [];
   const halfW = battlefieldWidth / 2;
   const halfH = battlefieldHeight / 2;
@@ -566,7 +586,7 @@ export function planGreedyMovement(
   battlefieldHeight: number,
   weights: PlannerWeights = DEFAULT_WEIGHTS,
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh
+  navMesh?: NavMesh | NavMeshSet
 ): { movements: PlannedMovement[] } {
   const threatMap = buildThreatMap(active, opponent);
   const movements: PlannedMovement[] = [];
@@ -633,7 +653,7 @@ export function planBeamMovement(
   weights: PlannerWeights = DEFAULT_WEIGHTS,
   beamWidth: number = 3,
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh
+  navMesh?: NavMesh | NavMeshSet
 ): { movements: PlannedMovement[] } {
   const threatMap = buildThreatMap(active, opponent);
   const activeTag = (active as any).tag ?? 'armyA';
@@ -707,7 +727,7 @@ export function planMovement(
   useBeamSearch: boolean = false,
   beamWidth: number = 3,
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh
+  navMesh?: NavMesh | NavMeshSet
 ): { movements: PlannedMovement[] } {
   const weights = getStrategyWeights(strategy);
   if (useBeamSearch) {

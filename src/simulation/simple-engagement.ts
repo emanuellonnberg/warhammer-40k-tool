@@ -22,7 +22,7 @@ import { resolveBattleShock, formatBattleShockResult } from './battle-shock';
 import { evaluateBattleState, recommendStrategy, explainStrategyChoice } from './battle-evaluator';
 import { rollMultipleD6 } from './dice';
 import { parseNumeric } from '../utils/numeric';
-import { planMovement, type StrategyProfile, generateNavMesh, isUnitInfantry, isUnitLargeModel, getUnitBaseRadius, unitIgnoresObscuring } from './planner';
+import { planMovement, type StrategyProfile, generateNavMesh, isUnitInfantry, isUnitLargeModel, getUnitBaseRadius, unitIgnoresObscuring, type NavMeshSet } from './planner';
 import {
   calculateVictoryPoints as calculateVictoryPointsEnhanced,
   getObjectiveSummary as getObjectiveSummaryEnhanced,
@@ -1285,9 +1285,15 @@ export function runSimpleEngagement(
     terrain = config.terrainLayout.features;
   }
   // Generate navigation mesh if we have terrain
-  const navMesh: NavMesh | undefined = terrain.length > 0
-    ? generateNavMesh(terrain, battlefield.width, battlefield.height)
-    : undefined;
+  let navMesh: NavMesh | NavMeshSet | undefined;
+  if (terrain.length > 0) {
+    const defaultMesh = generateNavMesh(terrain, battlefield.width, battlefield.height);
+    const infantryMesh = generateNavMesh(terrain, battlefield.width, battlefield.height, 1.5, ['breachable']);
+    navMesh = {
+      default: defaultMesh,
+      infantry: infantryMesh
+    };
+  }
 
   const perTurnPositions: SimulationResult['positionsPerTurn'] = [];
   const timeline: NonNullable<SimulationResult['positionsTimeline']> = [];
@@ -2431,23 +2437,35 @@ function performCharges(
   randomCharge: boolean,
   actions?: ActionLog[],
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh
+  navMesh?: NavMesh | NavMeshSet
 ): void {
   const ENGAGE_RANGE = 1.0;
   const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
 
   const attemptCharge = (attacker: UnitState, targets: UnitState[]) => {
     if (attacker.remainingModels <= 0 || attacker.inReserves) return; // Skip units in reserves
+
+    // Resolve NavMesh for this unit
+    let effectiveNavMesh: NavMesh | undefined;
+    if (navMesh) {
+      if ('default' in navMesh && !('waypoints' in navMesh)) {
+        const set = navMesh as NavMeshSet;
+        if (isUnitInfantry(attacker) && set.infantry) effectiveNavMesh = set.infantry;
+        else effectiveNavMesh = set.default;
+      } else {
+        effectiveNavMesh = navMesh as NavMesh;
+      }
+    }
     const targetsAlive = targets.filter(t => t.remainingModels > 0 && !t.inReserves); // Only charge units on table
     if (!targetsAlive.length) return;
     // Closest target (using path distance if terrain exists)
     targetsAlive.sort((a, b) => {
-      if (terrain.length === 0 || !navMesh) {
+      if (terrain.length === 0 || !effectiveNavMesh) {
         return distanceBetween(attacker, a) - distanceBetween(attacker, b);
       }
       // Use pathfinding distance for sorting
-      const pathA = findPath(attacker.position, a.position, navMesh, terrain);
-      const pathB = findPath(attacker.position, b.position, navMesh, terrain);
+      const pathA = findPath(attacker.position, a.position, effectiveNavMesh, terrain);
+      const pathB = findPath(attacker.position, b.position, effectiveNavMesh, terrain);
       return pathA.distance - pathB.distance;
     });
     const target = targetsAlive[0];
@@ -2474,8 +2492,8 @@ function performCharges(
     let chargePath: { x: number; y: number }[] = [attacker.position, target.position];
     let pathDist = straightDist;
 
-    if (terrain.length > 0 && navMesh) {
-      const pathResult = findPath(attacker.position, target.position, navMesh, terrain);
+    if (terrain.length > 0 && effectiveNavMesh) {
+      const pathResult = findPath(attacker.position, target.position, effectiveNavMesh, terrain);
       if (pathResult.found) {
         chargePath = pathResult.path;
         pathDist = pathResult.distance;

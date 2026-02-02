@@ -98,8 +98,13 @@ export function euclideanDistance(a: Point, b: Point): number {
  */
 function generateCornerWaypoints(
   terrain: TerrainFeature,
-  clearance: number
+  clearance: number,
+  ignoreTraits: string[] = []
 ): NavWaypoint[] {
+  // Check if ignored
+  if (ignoreTraits.length > 0 && ignoreTraits.some(tr => (terrain.traits as any)[tr])) {
+    return [];
+  }
   const waypoints: NavWaypoint[] = [];
   const bounds = getTerrainBounds(terrain);
 
@@ -138,9 +143,11 @@ function isConnectionClear(
   from: Point,
   to: Point,
   terrain: TerrainFeature[],
-  clearance: number
+  clearance: number,
+  ignoreTraits: string[] = []
 ): boolean {
   for (const t of terrain) {
+    if (ignoreTraits.length > 0 && ignoreTraits.some(tr => (t.traits as any)[tr])) continue;
     // Only check blocking terrain
     if (!t.impassable && !t.traits.obscuring) continue;
 
@@ -166,7 +173,8 @@ export function generateNavMesh(
   terrain: TerrainFeature[],
   battlefieldWidth: number,
   battlefieldHeight: number,
-  clearance: number = 1.5 // Default 1.5" clearance for base sizes
+  clearance: number = 1.5, // Default 1.5" clearance for base sizes
+  ignoreTraits: string[] = []
 ): NavMesh {
   const bounds: BoundingBox = {
     minX: -battlefieldWidth / 2,
@@ -179,7 +187,7 @@ export function generateNavMesh(
 
   // Generate corner waypoints for each terrain feature
   for (const t of terrain) {
-    const corners = generateCornerWaypoints(t, clearance);
+    const corners = generateCornerWaypoints(t, clearance, ignoreTraits);
 
     // Filter out waypoints outside battlefield or inside other terrain
     for (const wp of corners) {
@@ -191,6 +199,7 @@ export function generateNavMesh(
       for (const other of terrain) {
         if (other.id === t.id) continue;
         if (pointInTerrain({ x: wp.x, y: wp.y }, other)) {
+          if (ignoreTraits.length > 0 && ignoreTraits.some(tr => (other.traits as any)[tr])) continue;
           insideTerrain = true;
           break;
         }
@@ -229,7 +238,7 @@ export function generateNavMesh(
       const wpB = waypointsArray[j];
 
       // Check if connection is clear
-      if (isConnectionClear({ x: wpA.x, y: wpA.y }, { x: wpB.x, y: wpB.y }, terrain, clearance / 2)) {
+      if (isConnectionClear({ x: wpA.x, y: wpA.y }, { x: wpB.x, y: wpB.y }, terrain, clearance / 2, ignoreTraits)) {
         const dist = euclideanDistance({ x: wpA.x, y: wpA.y }, { x: wpB.x, y: wpB.y });
 
         // Only connect if reasonably close (avoid very long connections)
@@ -463,8 +472,8 @@ function aStarSearch(
       if (!neighbor) continue;
 
       const edgeCost = current.waypoint.distances.get(neighborId) ||
-                       euclideanDistance({ x: current.waypoint.x, y: current.waypoint.y },
-                                        { x: neighbor.x, y: neighbor.y });
+        euclideanDistance({ x: current.waypoint.x, y: current.waypoint.y },
+          { x: neighbor.x, y: neighbor.y });
       const tentativeG = current.g + edgeCost;
 
       const existingNode = openSet.get(neighborId);
