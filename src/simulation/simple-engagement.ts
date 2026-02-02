@@ -16,6 +16,7 @@ import { classifyArmyRoles } from './role-classifier';
 import { pickStartingDistance } from './distance';
 import { calculateUnitDamage, calculateWeaponDamage } from '../calculators';
 import type { Weapon, Unit } from '../types';
+import { RerollType } from '../types';
 import { getWeaponType } from '../utils/weapon';
 import { lookupBaseSizeMM } from '../data/base-sizes';
 import { calculateUnitDamageWithDice, calculateWeaponDamageWithDice } from './dice-damage';
@@ -35,6 +36,7 @@ import type { TerrainFeature, TerrainLayout, Point } from './terrain';
 import { createGTLayout, isMovementBlocked, checkLineOfSight, getTerrainCover, isPositionBlockedByTerrain } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint } from './pathfinding';
 import type { NavMesh } from './pathfinding';
+import { detectAuras, getAppliedAuraEffects, type AuraAbility } from './ability-registry';
 
 const DEFAULT_INITIATIVE: 'armyA' | 'armyB' = 'armyA';
 const DEPLOY_SPREAD_Y = 3; // inches between unit centers vertically
@@ -2025,6 +2027,49 @@ function applyCoverToSave(baseSave: string | null, coverBonus: number): string |
   return `${improvedSave}+`;
 }
 
+/**
+ * Collect all aura abilities from friendly units
+ * Returns an array of auras that can be checked against attacker positions
+ */
+function collectFriendlyAuras(army: ArmyState): AuraAbility[] {
+  const auras: AuraAbility[] = [];
+  for (const unitState of army.units) {
+    if (unitState.remainingModels <= 0 || unitState.inReserves) continue;
+    const unitAuras = detectAuras(unitState.unit, unitState.position);
+    auras.push(...unitAuras);
+  }
+  return auras;
+}
+
+/**
+ * Get combined rerolls for a unit including aura effects
+ */
+function getCombinedRerolls(
+  unitPosition: { x: number; y: number },
+  baseRerolls: { hits?: RerollType; wounds?: RerollType } | undefined,
+  friendlyAuras: AuraAbility[]
+): { hits?: RerollType; wounds?: RerollType } {
+  const auraEffects = getAppliedAuraEffects(unitPosition, friendlyAuras, true);
+
+  // Merge base rerolls with aura effects, preferring stronger effects
+  const result: { hits?: RerollType; wounds?: RerollType } = { ...baseRerolls };
+
+  if (auraEffects.hitRerolls) {
+    // Prefer FAILED over ONES
+    if (!result.hits || auraEffects.hitRerolls === RerollType.FAILED) {
+      result.hits = auraEffects.hitRerolls;
+    }
+  }
+
+  if (auraEffects.woundRerolls) {
+    if (!result.wounds || auraEffects.woundRerolls === RerollType.FAILED) {
+      result.wounds = auraEffects.woundRerolls;
+    }
+  }
+
+  return result;
+}
+
 function expectedShootingDamageBatch(
   attackerArmy: ArmyState,
   defenderArmy: ArmyState,
@@ -2038,6 +2083,9 @@ function expectedShootingDamageBatch(
   const attackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves);
   const defenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
   const fired = new Set<string>();
+
+  // Collect all auras from friendly units for this army
+  const friendlyAuras = collectFriendlyAuras(attackerArmy);
 
   for (const attacker of attackers) {
     if (fired.has(attacker.unit.id)) continue; // ensure each unit fires once
@@ -2106,7 +2154,7 @@ function expectedShootingDamageBatch(
               1, // targetUnitSize
               false, // isCharging
               effectiveSave,
-              undefined, // unitRerolls
+              getCombinedRerolls(attacker.position, attacker.unit.unitRerolls, friendlyAuras), // unitRerolls with aura effects
               undefined, // scenarioRerolls
               undefined, // targetFNP
               densePenalty !== 0 ? { hit: densePenalty } : undefined // unitModifiers for dense cover
@@ -2145,7 +2193,7 @@ function expectedShootingDamageBatch(
           false, // useOvercharge
           includeOneTimeWeapons,
           false, // isCharging
-          attacker.unit.unitRerolls,
+          getCombinedRerolls(attacker.position, attacker.unit.unitRerolls, friendlyAuras), // aura-enhanced rerolls
           undefined, // targetFNP
           best.densePenalty || 0 // hit modifier for dense cover
         );
@@ -2204,6 +2252,9 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
   const meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves && (u.engaged || u.role.primary === 'melee-missile'));
   const defenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
 
+  // Collect auras from friendly units for melee as well
+  const friendlyAuras = collectFriendlyAuras(attackerArmy);
+
   for (const attacker of meleeAttackers) {
     if (!defenders.length) break;
 
@@ -2235,7 +2286,7 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
             false, // useOvercharge
             includeOneTimeWeapons,
             true, // isCharging
-            attacker.unit.unitRerolls,
+            getCombinedRerolls(attacker.position, attacker.unit.unitRerolls, friendlyAuras), // aura-enhanced rerolls
             undefined // targetFNP
           );
 
