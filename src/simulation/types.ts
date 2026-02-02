@@ -37,6 +37,8 @@ export interface UnitState {
   inReserves?: boolean;
   reserveType?: 'deep-strike' | 'strategic-reserves';
   arrivedTurn?: number; // Track which turn the unit arrived from reserves
+  // Charge tracking for Fights First
+  chargedThisTurn?: boolean;
 }
 
 export interface ArmyState {

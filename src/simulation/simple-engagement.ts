@@ -1387,6 +1387,9 @@ export function runSimpleEngagement(
     for (const active of turnOrder) {
       const opponent = active === stateA ? stateB : stateA;
 
+      // Reset chargedThisTurn at the start of each player's turn
+      active.units.forEach(u => { u.chargedThisTurn = false; });
+
       // COMMAND PHASE: Objective control and battle shock
       updateObjectiveControl(objectives, stateA, stateB);
       const objSummary = getObjectiveSummary(objectives);
@@ -2262,7 +2265,24 @@ function expectedShootingDamageBatch(
 function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmyState, includeOneTimeWeapons: boolean, useDiceRolls: boolean, actions?: ActionLog[], casualties?: CasualtyLog[]): number {
   let total = 0;
 
-  const meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves && (u.engaged || u.role.primary === 'melee-missile'));
+  // Filter eligible melee attackers
+  let meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves && (u.engaged || u.role.primary === 'melee-missile'));
+
+  // Sort by combat priority: Fights First/Chargers → Normal → Fights Last
+  // Per 10th edition: Fights First step includes units that charged this turn
+  meleeAttackers = meleeAttackers.sort((a, b) => {
+    const aFightsFirst = abilityParser.hasFightsFirst(a.unit) || a.chargedThisTurn;
+    const bFightsFirst = abilityParser.hasFightsFirst(b.unit) || b.chargedThisTurn;
+    const aFightsLast = abilityParser.hasFightsLast(a.unit);
+    const bFightsLast = abilityParser.hasFightsLast(b.unit);
+
+    // Priority: Fights First (0) > Normal (1) > Fights Last (2)
+    const aPriority = aFightsFirst ? 0 : (aFightsLast ? 2 : 1);
+    const bPriority = bFightsFirst ? 0 : (bFightsLast ? 2 : 1);
+
+    return aPriority - bPriority;
+  });
+
   const defenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
 
   // Collect auras from friendly units for melee as well
@@ -2553,6 +2573,7 @@ function performCharges(
     const succeeded = newDist <= ENGAGE_RANGE;
     if (succeeded) {
       attacker.engaged = true;
+      attacker.chargedThisTurn = true; // For Fights First priority
       target.engaged = true;
     }
     actions?.push({

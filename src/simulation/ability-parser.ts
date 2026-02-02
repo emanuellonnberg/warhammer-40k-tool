@@ -67,6 +67,10 @@ export interface UnitAbilityCache {
     // Objective
     hasObjectiveSecured: boolean;
 
+    // Combat Sequencing
+    hasFightsFirst: boolean;
+    hasFightsLast: boolean;
+
     // All parsed abilities
     allAbilities: ParsedAbility[];
 }
@@ -166,11 +170,22 @@ const ABILITY_PATTERNS = {
         defaultValue: 1
     },
 
-    // Objective abilities
     objectiveSecured: {
         pattern: /objective\s*secured|ob\s*sec/i,
         category: 'objective' as AbilityCategory,
         effect: 'objective-secured'
+    },
+
+    // Combat Sequencing abilities
+    fightsFirst: {
+        pattern: /fights?\s*first/i,
+        category: 'combat' as AbilityCategory,
+        effect: 'fights-first'
+    },
+    fightsLast: {
+        pattern: /fights?\s*last/i,
+        category: 'combat' as AbilityCategory,
+        effect: 'fights-last'
     }
 };
 
@@ -255,6 +270,10 @@ export class AbilityParser {
 
             // Objective
             hasObjectiveSecured: false,
+
+            // Combat Sequencing
+            hasFightsFirst: false,
+            hasFightsLast: false,
 
             allAbilities: []
         };
@@ -347,6 +366,12 @@ export class AbilityParser {
             case 'objectiveSecured':
                 cache.hasObjectiveSecured = true;
                 break;
+            case 'fightsFirst':
+                cache.hasFightsFirst = true;
+                break;
+            case 'fightsLast':
+                cache.hasFightsLast = true;
+                break;
         }
     }
 
@@ -424,6 +449,14 @@ export class AbilityParser {
 
     getModifiers(unit: Unit, army?: Army): AttackModifiers {
         return this.parseUnit(unit, army).modifiers;
+    }
+
+    hasFightsFirst(unit: Unit, army?: Army): boolean {
+        return this.parseUnit(unit, army).hasFightsFirst;
+    }
+
+    hasFightsLast(unit: Unit, army?: Army): boolean {
+        return this.parseUnit(unit, army).hasFightsLast;
     }
 }
 
