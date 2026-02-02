@@ -2070,6 +2070,14 @@ function getCombinedRerolls(
   return result;
 }
 
+/**
+ * Check if a unit provides aura abilities (making it a priority target)
+ */
+function isAuraProvider(unit: UnitState): boolean {
+  const auras = detectAuras(unit.unit, unit.position);
+  return auras.length > 0;
+}
+
 function expectedShootingDamageBatch(
   attackerArmy: ArmyState,
   defenderArmy: ArmyState,
@@ -2173,7 +2181,12 @@ function expectedShootingDamageBatch(
           };
         })
         .filter(c => c.dmg > 0 && c.hasLoS)
-        .sort((a, b) => b.dmg - a.dmg);
+        .sort((a, b) => {
+          // Boost effective damage score for aura providers (priority targets)
+          const aPriority = isAuraProvider(a.def) ? a.dmg * 1.5 : a.dmg;
+          const bPriority = isAuraProvider(b.def) ? b.dmg * 1.5 : b.dmg;
+          return bPriority - aPriority;
+        });
 
       if (!candidates.length) return;
       const best = candidates[0];

@@ -5,6 +5,7 @@ import type { NavMesh, PathResult } from './pathfinding';
 import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain, getTerrainCover, checkLineOfSight } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
 import { abilityParser } from './ability-parser';
+import { detectAuras, type AuraAbility } from './ability-registry';
 
 export interface NavMeshSet {
   default: NavMesh;
@@ -473,7 +474,8 @@ function scoreCandidate(
   weights: PlannerWeights,
   activeTag: 'armyA' | 'armyB' = 'armyA',
   terrain: TerrainFeature[] = [],
-  opponent?: ArmyState // Optional opponent to check LoS
+  opponent?: ArmyState, // Optional opponent to check LoS
+  friendlyAuras: AuraAbility[] = [] // Aura sources from friendly characters
 ): number {
   const nearestObj = findNearestObjective({ ...unit, position: { x: candidate.x, y: candidate.y } } as UnitState, objectives);
   const distToObj = nearestObj ? distance({ x: candidate.x, y: candidate.y }, { x: nearestObj.x, y: nearestObj.y }) : 0;
@@ -587,7 +589,35 @@ function scoreCandidate(
     }
   }
 
-  return objValue + closingBonus + distanceBias - threatPenalty - moveCost + movementBonus + tacticalScore;
+  // AURA AWARENESS: Bonus for positions within friendly aura range
+  let auraBonus = 0;
+  if (friendlyAuras.length > 0) {
+    const candidatePos = { x: candidate.x, y: candidate.y };
+    for (const aura of friendlyAuras) {
+      // Skip if this is the unit's own aura
+      if (aura.sourceUnitId === unit.unit.id) continue;
+
+      const distToAura = distance(candidatePos, aura.sourcePosition);
+      if (distToAura <= aura.range) {
+        // Within aura range - add bonus based on effect type
+        // Re-roll auras are very valuable
+        if (aura.effect.type === 'reroll-hits' || aura.effect.type === 'reroll-wounds') {
+          auraBonus += 0.15; // Significant bonus for combat buffs
+        } else if (aura.effect.type === 'cover') {
+          auraBonus += 0.1; // Defensive bonus
+        } else {
+          auraBonus += 0.05; // Other auras
+        }
+      } else if (distToAura <= aura.range + 3) {
+        // Close to aura range - small bonus to encourage moving into range
+        auraBonus += 0.02;
+      }
+    }
+    // Cap aura bonus to prevent it from dominating
+    auraBonus = Math.min(auraBonus, 0.4);
+  }
+
+  return objValue + closingBonus + distanceBias - threatPenalty - moveCost + movementBonus + tacticalScore + auraBonus;
 }
 
 /** Movement plan for a single unit */
@@ -615,6 +645,15 @@ export function planGreedyMovement(
   const movements: PlannedMovement[] = [];
   const activeTag = (active as any).tag ?? 'armyA';
 
+  // Collect friendly auras for positioning decisions
+  const friendlyAuras: AuraAbility[] = [];
+  for (const unitState of active.units) {
+    if (unitState.remainingModels > 0 && !unitState.inReserves) {
+      const unitAuras = detectAuras(unitState.unit, unitState.position);
+      friendlyAuras.push(...unitAuras);
+    }
+  }
+
   // Higher impact units move first: melee > mobile > others
   const priority = (u: UnitState) => {
     switch (u.role?.primary) {
@@ -639,7 +678,7 @@ export function planGreedyMovement(
     let best: CandidateMoveWithPath = candidates[0];
     let bestScore = -Infinity;
     for (const c of candidates) {
-      const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag, terrain, opponent);
+      const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag, terrain, opponent, friendlyAuras);
       if (score > bestScore) {
         bestScore = score;
         best = c;
@@ -680,6 +719,16 @@ export function planBeamMovement(
 ): { movements: PlannedMovement[] } {
   const threatMap = buildThreatMap(active, opponent);
   const activeTag = (active as any).tag ?? 'armyA';
+
+  // Collect friendly auras for positioning decisions
+  const friendlyAuras: AuraAbility[] = [];
+  for (const unitState of active.units) {
+    if (unitState.remainingModels > 0 && !unitState.inReserves) {
+      const unitAuras = detectAuras(unitState.unit, unitState.position);
+      friendlyAuras.push(...unitAuras);
+    }
+  }
+
   const sorted = [...active.units]
     .filter(u => u.remainingModels > 0 && !u.inReserves)
     .sort((a, b) => {
@@ -711,7 +760,7 @@ export function planBeamMovement(
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
         newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path });
-        const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag, terrain, opponent);
+        const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag, terrain, opponent, friendlyAuras);
         nextStates.push({ moves: newMoves, score });
       }
     }
