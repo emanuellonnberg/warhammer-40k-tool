@@ -37,3 +37,7 @@ rules/*.pdf
 
 # Downloaded node binaries
 node-v*/
+
+test-results/
+playwright-report/
+

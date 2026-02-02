@@ -804,6 +804,7 @@ export function createRuins(
       breachable: true,
       defensible: true,
       scalable: true,
+      difficultGround: true,
     },
     infantryOnly: false, // Infantry can move through via breachable
   };

@@ -2,7 +2,7 @@ import type { ArmyState, ObjectiveMarker, UnitState } from './types';
 import type { Unit } from '../types';
 import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
-import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain } from './terrain';
+import { isMovementBlocked, getMovementPenalty, isPositionBlockedByTerrain, getTerrainCover, checkLineOfSight } from './terrain';
 import { findPath, euclideanDistance, getMaxTravelPoint, generateNavMesh } from './pathfinding';
 
 // ============================================================================
@@ -24,9 +24,9 @@ export function isUnitInfantry(unit: UnitState): boolean {
   const type = unit.unit.type?.toLowerCase() || '';
   // Infantry types that can move through breachable terrain
   return type.includes('infantry') ||
-         type.includes('character') ||
-         type.includes('beast') ||
-         type.includes('swarm');
+    type.includes('character') ||
+    type.includes('beast') ||
+    type.includes('swarm');
 }
 
 /**
@@ -36,10 +36,10 @@ export function isUnitLargeModel(unit: UnitState): boolean {
   const type = unit.unit.type?.toLowerCase() || '';
   // Large model types
   return type.includes('vehicle') ||
-         type.includes('monster') ||
-         type.includes('titanic') ||
-         type.includes('knight') ||
-         type.includes('walker');
+    type.includes('monster') ||
+    type.includes('titanic') ||
+    type.includes('knight') ||
+    type.includes('walker');
 }
 
 /**
@@ -118,6 +118,8 @@ export interface PlannerWeights {
   threatPenalty: number;
   damageBias: number;
   distancePenalty: number;
+  coverBonus: number;
+  losBonus: number;
 }
 
 export type StrategyProfile = 'greedy' | 'aggressive' | 'defensive' | 'objective-focused';
@@ -125,14 +127,14 @@ export type StrategyProfile = 'greedy' | 'aggressive' | 'defensive' | 'objective
 export function getStrategyWeights(profile: StrategyProfile): PlannerWeights {
   switch (profile) {
     case 'aggressive':
-      return { objectiveValue: 0.5, threatPenalty: 0.3, damageBias: 1.5, distancePenalty: 0.1 };
+      return { objectiveValue: 0.5, threatPenalty: 0.3, damageBias: 1.5, distancePenalty: 0.1, coverBonus: 0.5, losBonus: 2.0 };
     case 'defensive':
-      return { objectiveValue: 0.8, threatPenalty: 1.5, damageBias: 0.2, distancePenalty: 0.3 };
+      return { objectiveValue: 0.8, threatPenalty: 1.5, damageBias: 0.2, distancePenalty: 0.3, coverBonus: 3.0, losBonus: 0.5 };
     case 'objective-focused':
-      return { objectiveValue: 2.0, threatPenalty: 0.5, damageBias: 0.2, distancePenalty: 0.1 };
+      return { objectiveValue: 2.0, threatPenalty: 0.5, damageBias: 0.2, distancePenalty: 0.1, coverBonus: 0.5, losBonus: 1.0 };
     case 'greedy':
     default:
-      return { objectiveValue: 1.0, threatPenalty: 0.7, damageBias: 0.4, distancePenalty: 0.2 };
+      return { objectiveValue: 1.0, threatPenalty: 0.7, damageBias: 0.4, distancePenalty: 0.2, coverBonus: 1.0, losBonus: 1.0 };
   }
 }
 
@@ -237,26 +239,26 @@ function buildThreatMap(active: ArmyState, opponent: ArmyState): Map<string, Thr
     const maxRange = maxWeaponRange(enemy.unit);
     const move = parseInt(enemy.unit.stats.move || '0', 10) || 0;
     const threatRadius = maxRange + move;
-    
+
     active.units.forEach(ally => {
       if (ally.remainingModels <= 0 || ally.inReserves) return;
       const d = distance(enemy.position, ally.position);
-      
+
       // Base threat from range + movement
       const baseThreat = Math.max(0, threatRadius - d) / Math.max(1, threatRadius);
-      
+
       // Boost threat if within close engagement range
       const inCloseRange = d <= 6;
       const closeThreatBoost = inCloseRange ? 1.2 : 1.0;
-      
+
       // Estimate if can charge next turn (current + move + 2d6 charge)
       const chargeDistance = move + 7; // ~average of 2d6
       const canChargeNextTurn = d <= chargeDistance;
-      
+
       const prev = map.get(ally.unit.id) || { incoming: 0, closeRange: false, chargeableTurn: false };
       const existingIncoming = prev.incoming || 0;
       const updatedThreat = existingIncoming + (baseThreat * closeThreatBoost);
-      
+
       map.set(ally.unit.id, {
         incoming: updatedThreat,
         closeRange: inCloseRange || prev.closeRange,
@@ -372,6 +374,20 @@ function generateCandidates(
   addCandidate(unit.position.x, clamp(unit.position.y + moveAllowance, -halfH, halfH), 'flank-up');
   addCandidate(unit.position.x, clamp(unit.position.y - moveAllowance, -halfH, halfH), 'flank-down');
 
+  // Seek Cover: Move towards nearby cover features
+  if (terrain.length > 0) {
+    for (const t of terrain) {
+      // Only consider cover that isn't exposed (hills) and isn't too far away
+      if ((t.traits.coverLight || t.traits.coverHeavy) && !t.traits.exposedPosition) {
+        const d = distance(unitPos, { x: t.x, y: t.y });
+        // Optimization: Only if within 2.5x movement (don't path across map for one ruin)
+        if (d < moveAllowance * 2.5) {
+          addCandidate(t.x, t.y, 'seek-cover');
+        }
+      }
+    }
+  }
+
   // Additional candidates: move around nearby terrain
   if (terrain.length > 0 && navMesh) {
     // Find nearby waypoints that could be tactical positions
@@ -412,10 +428,20 @@ function scoreCandidate(
   objectives: ObjectiveMarker[],
   threatMap: Map<string, ThreatEstimate>,
   weights: PlannerWeights,
-  activeTag: 'armyA' | 'armyB' = 'armyA'
+  activeTag: 'armyA' | 'armyB' = 'armyA',
+  terrain: TerrainFeature[] = [],
+  opponent?: ArmyState // Optional opponent to check LoS
 ): number {
   const nearestObj = findNearestObjective({ ...unit, position: { x: candidate.x, y: candidate.y } } as UnitState, objectives);
   const distToObj = nearestObj ? distance({ x: candidate.x, y: candidate.y }, { x: nearestObj.x, y: nearestObj.y }) : 0;
+
+  // Calculate how far we're moving from current position
+  const moveDistance = distance(unit.position, { x: candidate.x, y: candidate.y });
+
+  // Calculate current distance to objective (before move)
+  const currentDistToObj = nearestObj
+    ? distance(unit.position, { x: nearestObj.x, y: nearestObj.y })
+    : 0;
 
   // Prioritize primaries and enemy-held markers more heavily
   let priorityWeight = 1.0;
@@ -433,31 +459,92 @@ function scoreCandidate(
     }
   }
 
+  // Base objective value - inversely proportional to distance
   const objValue = nearestObj ? (weights.objectiveValue * priorityWeight * controlWeight) / Math.max(1, distToObj) : 0;
+
+  // CLOSING BONUS: Strongly reward getting CLOSER to objectives
+  // This is the key to encouraging movement toward objectives
+  const distanceClosed = currentDistToObj - distToObj; // Positive if getting closer
+  const closingBonus = nearestObj ? distanceClosed * weights.objectiveValue * 0.15 * priorityWeight * controlWeight : 0;
 
   const threat = threatMap.get(unit.unit.id);
   let threatPenalty = (threat?.incoming || 0) * weights.threatPenalty;
-  
+
   // Increase penalty if in close range or under charge threat
   if (threat?.closeRange) {
-    threatPenalty *= 1.3; // 30% more weight to close range threats
+    threatPenalty *= 1.3;
   }
   if (threat?.chargeableTurn) {
-    threatPenalty *= 1.1; // 10% more weight to charge threats
+    threatPenalty *= 1.1;
   }
 
-  // Favor melee closing in, ranged keeping distance by using unit role
+  // Favor melee closing in, ranged units want optimal range (12-24")
   const role = unit.role?.primary || 'mobile-firepower';
   let distanceBias = 0;
   if (role === 'melee-missile') {
     distanceBias = weights.damageBias * (1 / Math.max(ENGAGE_RANGE, distToObj));
   } else {
-    distanceBias = weights.damageBias * (Math.min(distToObj, 24) / 24);
+    // Ranged units prefer to be in their optimal firing range
+    const optimalRange = 18;
+    const rangeDeviation = Math.abs(distToObj - optimalRange);
+    const rangeScore = 1 - Math.min(rangeDeviation / 24, 1);
+    distanceBias = weights.damageBias * rangeScore;
   }
 
-  const moveCost = weights.distancePenalty * Math.abs(candidate.x - unit.position.x);
+  // Movement cost - keep it LOW so it doesn't dominate
+  // This should be a minor factor, not prevent movement entirely
+  const moveCost = weights.distancePenalty * moveDistance * 0.1;
 
-  return objValue + distanceBias - threatPenalty - moveCost;
+  // Small bonus for actually moving (to break close ties)
+  const movementBonus = moveDistance > 0.5 ? 0.02 : 0;
+
+  // NEW: Cover and LoS Scoring
+  let tacticalScore = 0;
+
+  if (terrain.length > 0) {
+    // 1. Cover Bonus: Check if this position is in cover relative to threats
+    const candidatePos = { x: candidate.x, y: candidate.y };
+    // Check coverage from 'center' as a heuristic if no opponent is provided, 
+    // or arguably just being IN terrain is valuable.
+    const coverCheck = getTerrainCover(candidatePos, { x: 0, y: 0 }, terrain);
+
+    if (coverCheck.hasCover) {
+      tacticalScore += weights.coverBonus;
+      // Heavy cover is worth more
+      if (coverCheck.coverType === 'heavy') tacticalScore += weights.coverBonus * 0.5;
+    }
+
+    // 2. LoS Bonus: Can we see targets?
+    if (opponent && weights.losBonus > 0) {
+      const targets = opponent.units.filter(u => u.remainingModels > 0);
+      let visibleTargets = 0;
+
+      // Optimization: Check nearest 3 targets only to keep performance reasonable
+      targets.sort((a, b) => distance({ x: a.position.x, y: a.position.y }, candidatePos) - distance({ x: b.position.x, y: b.position.y }, candidatePos));
+
+      for (let i = 0; i < Math.min(3, targets.length); i++) {
+        const target = targets[i];
+        const los = checkLineOfSight(
+          candidatePos,
+          { x: target.position.x, y: target.position.y },
+          terrain,
+          unitIgnoresObscuring(unit),
+          unitIgnoresObscuring(target)
+        );
+
+        if (los.hasLoS) {
+          visibleTargets++;
+        }
+      }
+
+      if (visibleTargets > 0) {
+        // Cap bonus at 3 targets
+        tacticalScore += weights.losBonus * Math.min(visibleTargets, 3);
+      }
+    }
+  }
+
+  return objValue + closingBonus + distanceBias - threatPenalty - moveCost + movementBonus + tacticalScore;
 }
 
 /** Movement plan for a single unit */
@@ -509,7 +596,7 @@ export function planGreedyMovement(
     let best: CandidateMoveWithPath = candidates[0];
     let bestScore = -Infinity;
     for (const c of candidates) {
-      const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag);
+      const score = scoreCandidate(u, c, objectives, threatMap, weights, activeTag, terrain, opponent);
       if (score > bestScore) {
         bestScore = score;
         best = c;
@@ -581,7 +668,7 @@ export function planBeamMovement(
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
         newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path });
-        const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag);
+        const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag, terrain, opponent);
         nextStates.push({ moves: newMoves, score });
       }
     }

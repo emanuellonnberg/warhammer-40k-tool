@@ -1559,10 +1559,8 @@ export function runSimpleEngagement(
         }
 
         // Apply final position
-        // Apply final position
         const dx = finalPos.x - startPos.x;
         const dy = finalPos.y - startPos.y;
-        unit.position = { x: finalPos.x, y: finalPos.y };
         unit.position = { x: finalPos.x, y: finalPos.y };
         shiftModelPositions(unit, dx, dy);
 
@@ -1676,7 +1674,7 @@ export function runSimpleEngagement(
     armyAState: stateA,
     armyBState: stateB,
     battlefield,
-    terrain: terrain.length > 0 ? terrain : undefined,
+    terrain,
     objectives,
     positions: {
       start: startPositions,

@@ -395,3 +395,4 @@ describe('Planner - Terrain-Aware Movement', () => {
     expect(result.movements[0].to).toBeDefined();
   });
 });
+
