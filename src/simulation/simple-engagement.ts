@@ -1,4 +1,5 @@
 import type { Army } from '../types';
+import { abilityParser } from './ability-parser';
 import type {
   ArmyState,
   UnitState,
@@ -128,27 +129,11 @@ function updateModelLife(unit: UnitState): void {
  * Returns 0 if no Scout ability
  */
 function getScoutDistance(unit: Unit): number {
-  const text = [
-    ...(unit.rules || []).map(r => r.toLowerCase?.() || ''),
-    ...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : ''))
-  ].join(' ');
-
-  // Look for "scout X" or "scouts X"
-  const scoutMatch = text.match(/scouts?\s+(\d+)/);
-  if (scoutMatch) {
-    return parseInt(scoutMatch[1], 10);
-  }
-
-  // Default scout distance if "scout" keyword exists
-  if (text.includes('scout')) {
-    return 6; // Default scout move
-  }
-
-  return 0;
+  return abilityParser.getScoutDistance(unit);
 }
 
 function hasScout(unit: Unit): boolean {
-  return getScoutDistance(unit) > 0;
+  return abilityParser.hasScout(unit);
 }
 
 /**
@@ -156,47 +141,11 @@ function hasScout(unit: Unit): boolean {
  * Infiltrators can deploy anywhere more than 9" from enemy deployment zone and enemy models
  */
 function hasInfiltrator(unit: Unit): boolean {
-  const text = [
-    ...(unit.rules || []).map(r => r.toLowerCase?.() || ''),
-    ...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : ''))
-  ].join(' ');
-  return text.includes('infiltrator');
+  return abilityParser.hasInfiltrator(unit);
 }
 
 function hasDeepStrike(unit: Unit, army?: Army): boolean {
-  // Collect text from rules and abilities
-  const textParts: string[] = [];
-
-  // If army rules are available, look up actual rule names/descriptions by ID
-  if (army?.rules) {
-    for (const ruleId of unit.rules || []) {
-      const rule = army.rules[ruleId];
-      if (rule) {
-        textParts.push(rule.name.toLowerCase());
-        textParts.push(rule.description.toLowerCase());
-      }
-    }
-  }
-
-  // If army abilities are available, look up actual ability names/descriptions by ID
-  if (army?.abilities) {
-    for (const abilityId of unit.abilities || []) {
-      const ability = army.abilities[abilityId];
-      if (ability) {
-        textParts.push(ability.name.toLowerCase());
-        textParts.push(ability.description.toLowerCase());
-      }
-    }
-  }
-
-  // Fallback: if no army provided, try direct string matching (for old format or tests)
-  if (!army) {
-    textParts.push(...(unit.rules || []).map(r => r.toLowerCase?.() || ''));
-    textParts.push(...(unit.abilities || []).map(a => (typeof a === 'string' ? a.toLowerCase() : '')));
-  }
-
-  const text = textParts.join(' ');
-  return text.includes('deep strike') || text.includes('deepstrike');
+  return abilityParser.hasDeepStrike(unit, army);
 }
 
 function hasStrategicReserves(unit: Unit, army?: Army): boolean {
