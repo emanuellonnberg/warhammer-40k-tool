@@ -1550,8 +1550,11 @@ export function runSimpleEngagement(
         }
       });
 
-      clampAllSpacing(stateA, stateB, terrain);
-      validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
+      // Run collision resolution iteratively to ensure stability
+      for (let i = 0; i < 3; i++) {
+        clampAllSpacing(stateA, stateB, terrain);
+        validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
+      }
       const postMoveDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       const advancedUnits = active.units.filter(u => u.advanced).map(u => u.unit.name);
       logs.push(summarizePhase('movement', round, active.tag, `Round ${round}: ${active.tag} moves.${strategyExplanation}`, undefined, postMoveDistance, undefined, advancedUnits.length ? advancedUnits : undefined, movementDetails.length ? movementDetails : undefined));
@@ -1567,8 +1570,11 @@ export function runSimpleEngagement(
 
       const chargeActions: ActionLog[] = [];
       performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh);
-      clampAllSpacing(stateA, stateB, terrain);
-      validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
+      // Run collision resolution iteratively to ensure stability
+      for (let i = 0; i < 3; i++) {
+        clampAllSpacing(stateA, stateB, terrain);
+        validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
+      }
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
       logs.push(summarizePhase('charge', round, active.tag, `Round ${round}: ${active.tag} charges.`, undefined, postChargeDistance, chargeActions));
