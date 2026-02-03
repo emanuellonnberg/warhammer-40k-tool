@@ -10,7 +10,8 @@ import type {
   CasualtyLog,
   MovementDetail,
   ObjectiveMarker,
-  UnitRoleInfo
+  UnitRoleInfo,
+  FormationStrategy,
 } from './types';
 import { classifyArmyRoles } from './role-classifier';
 import { pickStartingDistance } from './distance';
@@ -75,28 +76,159 @@ function createModelFormation(
   count: number,
   centerX: number,
   centerY: number,
-  spacing: number = DEFAULT_MODEL_SPACING
+  spacing: number = DEFAULT_MODEL_SPACING,
+  strategy: FormationStrategy = 'compact'
 ): { x: number; y: number; alive: boolean }[] {
   if (count <= 0) return [];
 
-  // Ensure spacing is at least enough for coherency (2" rule)
-  // But models should be within 2" of each other, so max spacing is ~2"
-  const coherentSpacing = Math.min(spacing, 2.0);
-
-  const perRow = Math.max(1, Math.min(MODEL_PER_ROW, Math.ceil(Math.sqrt(count))));
-  const rows = Math.ceil(count / perRow);
   const positions: { x: number; y: number; alive: boolean }[] = [];
-  const rowOffset = (rows - 1) / 2;
-  const colOffset = (perRow - 1) / 2;
 
-  for (let i = 0; i < count; i++) {
-    const row = Math.floor(i / perRow);
-    const col = i % perRow;
-    const x = centerX + (col - colOffset) * coherentSpacing;
-    const y = centerY + (row - rowOffset) * coherentSpacing;
-    positions.push({ x, y, alive: true });
+  // Determine spacing based on strategy
+  let activeSpacing = spacing;
+  if (strategy === 'spread') activeSpacing = 2.0; // Max allowable coherency
+  else if (strategy === 'linear') activeSpacing = Math.min(spacing, 2.0);
+  else activeSpacing = Math.min(spacing, 2.0);
+
+  if (strategy === 'linear') {
+    // Linear: A single line for screening
+    const totalWidth = (count - 1) * activeSpacing;
+    const startX = centerX - totalWidth / 2;
+    for (let i = 0; i < count; i++) {
+      positions.push({
+        x: startX + i * activeSpacing,
+        y: centerY,
+        alive: true
+      });
+    }
+  } else if (strategy === 'spread') {
+    // Spread: Hex packing for area coverage
+    const perRow = Math.ceil(Math.sqrt(count));
+    const rows = Math.ceil(count / perRow);
+    const rowOffset = (rows - 1) / 2;
+    const colOffset = (perRow - 1) / 2;
+
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / perRow);
+      const col = i % perRow;
+      const hexOffset = (row % 2) * (activeSpacing / 2); // Stagger rows
+      const x = centerX + (col - colOffset) * activeSpacing + hexOffset;
+      const y = centerY + (row - rowOffset) * activeSpacing;
+      positions.push({ x, y, alive: true });
+    }
+  } else {
+    // Compact (Standard grid)
+    const perRow = Math.max(1, Math.min(MODEL_PER_ROW, Math.ceil(Math.sqrt(count))));
+    const rows = Math.ceil(count / perRow);
+    const rowOffset = (rows - 1) / 2;
+    const colOffset = (perRow - 1) / 2;
+
+    for (let i = 0; i < count; i++) {
+      const row = Math.floor(i / perRow);
+      const col = i % perRow;
+      const x = centerX + (col - colOffset) * activeSpacing;
+      const y = centerY + (row - rowOffset) * activeSpacing;
+      positions.push({ x, y, alive: true });
+    }
   }
   return positions;
+}
+
+/**
+ * Re-forms the unit into a new formation at the target location.
+ * Moves only ALIVE models to the new slots.
+ * Returns true if successful.
+ */
+export function reformUnit(
+  unit: UnitState,
+  targetX: number,
+  targetY: number,
+  strategy: FormationStrategy,
+  moveCap: number = Infinity // Max distance any model can travel
+): boolean {
+  if (!unit.modelPositions) return false;
+
+  const width = unit.baseSizeInches || DEFAULT_MODEL_SPACING;
+  const spacing = Math.max(width, DEFAULT_MODEL_SPACING);
+  const aliveCount = unit.remainingModels;
+
+  let currentTargetX = targetX;
+  let currentTargetY = targetY;
+
+  // DRAG-BACK LOOP: Ensure all models can reach their new slots
+  // If not, pull the target formation back towards the start
+  for (let iteration = 0; iteration < 3; iteration++) {
+    const targetSlots = createModelFormation(aliveCount, currentTargetX, currentTargetY, spacing, strategy);
+
+    // Map slots (naive sort by Y then X for stability)
+
+    let maxExcess = 0;
+
+    // Check distances
+    let slotIndex = 0;
+    const newPositions = unit.modelPositions.map(model => {
+      if (!model.alive) return null;
+      if (slotIndex >= targetSlots.length) return null;
+
+      const slot = targetSlots[slotIndex];
+      slotIndex++;
+      return slot;
+    });
+
+    // Calculate excess
+    slotIndex = 0;
+    for (const model of unit.modelPositions) {
+      if (!model.alive) continue;
+      if (slotIndex >= targetSlots.length) break;
+
+      const slot = targetSlots[slotIndex];
+      const dist = Math.sqrt((slot.x - model.x) ** 2 + (slot.y - model.y) ** 2);
+
+      if (dist > moveCap) {
+        maxExcess = Math.max(maxExcess, dist - moveCap);
+      }
+      slotIndex++;
+    }
+
+    if (maxExcess <= 0.01) {
+      // Valid! Apply positions
+      let applyIndex = 0;
+      unit.modelPositions = unit.modelPositions.map(model => {
+        if (!model.alive) return model;
+        if (applyIndex < targetSlots.length) {
+          const slot = targetSlots[applyIndex];
+          applyIndex++;
+          return { ...model, x: slot.x, y: slot.y };
+        }
+        return model;
+      });
+      unit.formationStrategy = strategy;
+      // Update unit center position to match the actual formation center we settled on
+      unit.position = { x: currentTargetX, y: currentTargetY };
+      return true;
+    }
+
+    // Pull back towards unit center (start position)
+    // Heuristic: Pull back towards the MEAN of current model positions.
+    const centerM = unit.modelPositions.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
+    const countM = unit.modelPositions.filter(m => m.alive).length || 1;
+    const meanX = centerM.x / countM;
+    const meanY = centerM.y / countM;
+
+    const dx = currentTargetX - meanX;
+    const dy = currentTargetY - meanY;
+    const len = Math.sqrt(dx * dx + dy * dy);
+
+    if (len < 0.001) break; // Can't pull back further
+
+    // Pull back by maxExcess (plus a tiny bit for float safety)
+    const pullDist = maxExcess + 0.05;
+    const factor = Math.max(0, len - pullDist) / len;
+
+    currentTargetX = meanX + dx * factor;
+    currentTargetY = meanY + dy * factor;
+  }
+
+  return false; // Failed to find valid formation in iterations
 }
 
 /**
@@ -1708,9 +1840,30 @@ function moveArmiesTowardEachOther(
     const len = Math.max(Math.sqrt(dx * dx + dy * dy), 0.001);
     const moveX = (dx / len) * step;
     const moveY = (dy / len) * step;
+
+    // Select formation strategy based on role if not set
+    if (!u.formationStrategy) {
+      if (u.role.primary === 'utility') u.formationStrategy = 'spread';
+      else if (u.role.primary === 'skirmisher') u.formationStrategy = 'linear';
+      else u.formationStrategy = 'compact';
+    }
+
     // Update position immutably
-    u.position = { x: u.position.x + moveX, y: u.position.y + moveY };
-    shiftModelPositions(u, moveX, moveY);
+    // IMPORTANT: reformUnit will adjust position if it needs to drag back. 
+    // We optimistically set it, but reformUnit might override it efficiently?
+    // Actually reformUnit updates modelPositions. We should update unit.position to match the result of reformUnit.
+    // Logic: 
+    // 1. Calculate proposed center (position + move).
+    // 2. call reformUnit(..., moveCap).
+    // 3. reformUnit internals will update modelPositions AND unit.position if dragged back.
+
+    // However, unit.position is already updated in line 1791. 
+    // reformUnit implementation I wrote above updates unit.position at the end.
+
+    const targetX = u.position.x + moveX;
+    const targetY = u.position.y + moveY;
+
+    reformUnit(u, targetX, targetY, u.formationStrategy, moveCap);
     clampToBoard(u, battlefieldWidth, battlefieldHeight);
     u.engaged = false;
     const actualDistance = Math.sqrt((u.position.x - startPos.x) ** 2 + (u.position.y - startPos.y) ** 2);
@@ -2268,6 +2421,48 @@ function expectedShootingDamageBatch(
   return total;
 }
 
+/**
+ * Perform a 3" combat move (Pile-In or Consolidate) towards the nearest enemy unit.
+ * Uses reformUnit to ensure models stay in formation and don't exceed 3".
+ */
+export function performCombatMove(unit: UnitState, opponents: UnitState[]): void {
+  if (unit.remainingModels <= 0 || unit.inReserves) return;
+
+  // Find nearest enemy unit
+  const visibleEnemies = opponents.filter(u => u.remainingModels > 0 && !u.inReserves);
+  if (!visibleEnemies.length) return;
+
+  // Sort by distance
+  visibleEnemies.sort((a, b) => distanceBetween(unit, a) - distanceBetween(unit, b));
+  const target = visibleEnemies[0];
+  const dist = distanceBetween(unit, target);
+
+  // If already in base contact (essentially 0), maybe we don't move? 
+  // But we might want to wrap. For now, just move towards center.
+  if (dist < 0.1) return;
+
+  // Move up to 3"
+  const moveDist = Math.min(3, dist);
+
+  // Calculate vector to target
+  const dx = target.position.x - unit.position.x;
+  const dy = target.position.y - unit.position.y;
+  const len = Math.sqrt(dx * dx + dy * dy);
+
+  if (len < 0.001) return;
+
+  const moveX = (dx / len) * moveDist;
+  const moveY = (dy / len) * moveDist;
+
+  const targetX = unit.position.x + moveX;
+  const targetY = unit.position.y + moveY;
+
+  // Use reformUnit to move models. 
+  // Strategy: Compact (to fight effectively).
+  // Cap: 3"
+  reformUnit(unit, targetX, targetY, 'compact', 3);
+}
+
 function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmyState, includeOneTimeWeapons: boolean, useDiceRolls: boolean, actions?: ActionLog[], casualties?: CasualtyLog[]): number {
   let total = 0;
 
@@ -2295,6 +2490,10 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
   const friendlyAuras = collectFriendlyAuras(attackerArmy);
 
   for (const attacker of meleeAttackers) {
+    if (attacker.remainingModels <= 0) continue;
+
+    // PILE-IN: Move up to 3" towards nearest enemy before fighting
+    performCombatMove(attacker, defenders);
     if (!defenders.length) break;
 
     // Find best target
@@ -2390,6 +2589,10 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
         if (idx >= 0) defenders.splice(idx, 1);
       }
     }
+
+    // CONSOLIDATE: Move up to 3" towards nearest enemy after fighting
+    // Note: If unit wiped out the enemy, it moves towards next nearest
+    performCombatMove(attacker, defenderArmy.units);
   }
 
   return total;
@@ -2573,7 +2776,8 @@ function performCharges(
     const moveY = maxTravel.point.y - attacker.position.y;
 
     attacker.position = { x: maxTravel.point.x, y: maxTravel.point.y };
-    shiftModelPositions(attacker, moveX, moveY);
+    // Charging units should reform into compact formation for maximum combat efficacy
+    reformUnit(attacker, attacker.position.x, attacker.position.y, 'compact', chargeReach);
 
     const newDist = distanceBetween(attacker, target);
     const succeeded = newDist <= ENGAGE_RANGE;

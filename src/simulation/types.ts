@@ -17,6 +17,8 @@ export interface UnitRoleInfo {
   notes?: string[];
 }
 
+export type FormationStrategy = 'compact' | 'linear' | 'spread';
+
 export interface UnitState {
   unit: Unit;
   remainingModels: number;
@@ -30,6 +32,7 @@ export interface UnitState {
   advanced?: boolean;
   fellBack?: boolean;
   roleLabel?: string;
+  formationStrategy?: FormationStrategy;
   // Battle Shock state
   battleShocked?: boolean;
   battleShockedUntilTurn?: number; // The Command phase turn when this status expires
