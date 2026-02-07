@@ -11,6 +11,7 @@ import type {
   MovementDetail,
   ObjectiveMarker,
   UnitRoleInfo,
+  UnitRole,
   FormationStrategy,
 } from './types';
 import { classifyArmyRoles } from './role-classifier';
@@ -90,13 +91,13 @@ function createModelFormation(
   else activeSpacing = Math.min(spacing, 2.0);
 
   if (strategy === 'linear') {
-    // Linear: A single line for screening
-    const totalWidth = (count - 1) * activeSpacing;
-    const startX = centerX - totalWidth / 2;
+    // Linear: A single line for screening, parallel to front (Y-axis)
+    const totalHeight = (count - 1) * activeSpacing;
+    const startY = centerY - totalHeight / 2;
     for (let i = 0; i < count; i++) {
       positions.push({
-        x: startX + i * activeSpacing,
-        y: centerY,
+        x: centerX,
+        y: startY + i * activeSpacing,
         alive: true
       });
     }
@@ -134,6 +135,28 @@ function createModelFormation(
 }
 
 /**
+ * Returns the logical default formation strategy for a given role.
+ */
+export function getDefaultFormationForRole(role?: UnitRole): FormationStrategy {
+  if (!role) return 'compact';
+  switch (role) {
+    case 'artillery':
+    case 'gunline':
+      return 'linear';
+    case 'skirmisher':
+    case 'mobile-firepower':
+      return 'spread';
+    case 'melee-missile':
+    case 'anvil':
+    case 'transport':
+    case 'utility':
+      return 'compact';
+    default:
+      return 'compact';
+  }
+}
+
+/**
  * Re-forms the unit into a new formation at the target location.
  * Moves only ALIVE models to the new slots.
  * Returns true if successful.
@@ -143,7 +166,8 @@ export function reformUnit(
   targetX: number,
   targetY: number,
   strategy: FormationStrategy,
-  moveCap: number = Infinity // Max distance any model can travel
+  moveCap: number = Infinity, // Max distance any model can travel
+  terrain: TerrainFeature[] = []
 ): boolean {
   if (!unit.modelPositions) return false;
 
@@ -157,78 +181,143 @@ export function reformUnit(
   // DRAG-BACK LOOP: Ensure all models can reach their new slots
   // If not, pull the target formation back towards the start
   for (let iteration = 0; iteration < 3; iteration++) {
-    const targetSlots = createModelFormation(aliveCount, currentTargetX, currentTargetY, spacing, strategy);
-
-    // Map slots (naive sort by Y then X for stability)
-
+    let targetSlots = createModelFormation(aliveCount, currentTargetX, currentTargetY, spacing, strategy);
     let maxExcess = 0;
 
-    // Check distances
-    let slotIndex = 0;
-    const newPositions = unit.modelPositions.map(model => {
-      if (!model.alive) return null;
-      if (slotIndex >= targetSlots.length) return null;
+    // Filter slots in terrain
+    const isInfantry = isUnitInfantry(unit);
+    const isLarge = isUnitLargeModel(unit);
+    const baseRadius = getUnitBaseRadius(unit);
 
-      const slot = targetSlots[slotIndex];
-      slotIndex++;
-      return slot;
-    });
-
-    // Calculate excess
-    slotIndex = 0;
-    for (const model of unit.modelPositions) {
-      if (!model.alive) continue;
-      if (slotIndex >= targetSlots.length) break;
-
-      const slot = targetSlots[slotIndex];
-      const dist = Math.sqrt((slot.x - model.x) ** 2 + (slot.y - model.y) ** 2);
-
-      if (dist > moveCap) {
-        maxExcess = Math.max(maxExcess, dist - moveCap);
-      }
-      slotIndex++;
+    if (terrain.length > 0) {
+      targetSlots = targetSlots.filter(slot =>
+        !isPositionBlockedByTerrain(slot, baseRadius, terrain, isInfantry, isLarge).blocked
+      );
     }
 
-    if (maxExcess <= 0.01) {
-      // Valid! Apply positions
-      let applyIndex = 0;
-      unit.modelPositions = unit.modelPositions.map(model => {
-        if (!model.alive) return model;
-        if (applyIndex < targetSlots.length) {
-          const slot = targetSlots[applyIndex];
-          applyIndex++;
-          return { ...model, x: slot.x, y: slot.y };
-        }
-        return model;
+    // If NO slots are valid, pull back further and try again
+    if (targetSlots.length === 0 && iteration < 2) {
+      maxExcess = 2.0; // Artificial push back
+    } else {
+
+      // GREEDY REBALANCING: Map models to the NEAREST available slots
+      // This allows models that moved further to take the forward slots
+      const availableSlots = [...targetSlots];
+      const aliveModels = unit.modelPositions
+        .map((m, originalIdx) => ({ ...m, originalIdx }))
+        .filter(m => m.alive);
+
+      // Sort models by distance to the target center to prioritize forward models
+      aliveModels.sort((a, b) => {
+        const distA = Math.sqrt((a.x - currentTargetX) ** 2 + (a.y - currentTargetY) ** 2);
+        const distB = Math.sqrt((b.x - currentTargetX) ** 2 + (b.y - currentTargetY) ** 2);
+        return distA - distB;
       });
-      unit.formationStrategy = strategy;
-      // Update unit center position to match the actual formation center we settled on
-      unit.position = { x: currentTargetX, y: currentTargetY };
-      return true;
+
+      const matches: { modelIdx: number; slot: Point }[] = [];
+      for (const model of aliveModels) {
+        if (availableSlots.length === 0) break;
+
+        // Find nearest slot to this model
+        let bestSlotIdx = 0;
+        let minDist = Infinity;
+        for (let i = 0; i < availableSlots.length; i++) {
+          const d = Math.sqrt((model.x - availableSlots[i].x) ** 2 + (model.y - availableSlots[i].y) ** 2);
+          if (d < minDist) {
+            minDist = d;
+            bestSlotIdx = i;
+          }
+        }
+
+        matches.push({ modelIdx: model.originalIdx, slot: availableSlots[bestSlotIdx] });
+        if (minDist > moveCap) {
+          maxExcess = Math.max(maxExcess, minDist - moveCap);
+        }
+        availableSlots.splice(bestSlotIdx, 1);
+      }
+
+      if (maxExcess <= 0.01) {
+        // Valid! Apply positions
+        const matchedMap = new Map(matches.map(m => [m.modelIdx, m.slot]));
+        unit.modelPositions = unit.modelPositions.map((model, idx) => {
+          const matchedSlot = matchedMap.get(idx);
+          if (matchedSlot) {
+            return { ...model, x: matchedSlot.x, y: matchedSlot.y };
+          }
+          return model;
+        });
+        unit.currentFormation = strategy;
+        unit.position = { x: currentTargetX, y: currentTargetY };
+        return true;
+      }
+
+      // Pull back towards unit center (start position)
+      // Heuristic: Pull back towards the MEAN of current model positions.
+      const centerM = unit.modelPositions.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
+      const countM = unit.modelPositions.filter(m => m.alive).length || 1;
+      const meanX = centerM.x / countM;
+      const meanY = centerM.y / countM;
+
+      const dx = currentTargetX - meanX;
+      const dy = currentTargetY - meanY;
+      const len = Math.sqrt(dx * dx + dy * dy);
+
+      if (len < 0.001) break; // Can't pull back further
+
+      // Pull back by maxExcess (plus a tiny bit for float safety)
+      const pullDist = maxExcess + 0.05;
+      const factor = Math.max(0, len - pullDist) / len;
+
+      currentTargetX = meanX + dx * factor;
+      currentTargetY = meanY + dy * factor;
     }
-
-    // Pull back towards unit center (start position)
-    // Heuristic: Pull back towards the MEAN of current model positions.
-    const centerM = unit.modelPositions.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
-    const countM = unit.modelPositions.filter(m => m.alive).length || 1;
-    const meanX = centerM.x / countM;
-    const meanY = centerM.y / countM;
-
-    const dx = currentTargetX - meanX;
-    const dy = currentTargetY - meanY;
-    const len = Math.sqrt(dx * dx + dy * dy);
-
-    if (len < 0.001) break; // Can't pull back further
-
-    // Pull back by maxExcess (plus a tiny bit for float safety)
-    const pullDist = maxExcess + 0.05;
-    const factor = Math.max(0, len - pullDist) / len;
-
-    currentTargetX = meanX + dx * factor;
-    currentTargetY = meanY + dy * factor;
   }
 
   return false; // Failed to find valid formation in iterations
+}
+
+/**
+ * Enforces unit coherency by nudging models together if they drift too far apart.
+ * 10th Ed Rule: 2-6 models = 1 neighbor within 2", 7+ models = 2 neighbors within 2".
+ */
+function enforceCoherency(unit: UnitState): void {
+  if (!unit.modelPositions || unit.remainingModels <= 1) return;
+
+  const COHERENCY_DIST = 2.0;
+  const aliveModels = unit.modelPositions.filter(m => m.alive);
+  const minNeighbors = aliveModels.length >= 7 ? 2 : 1;
+
+  // Simple heuristic: if a model is out of coherency, pull it toward the group average center
+  const center = aliveModels.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
+  center.x /= aliveModels.length;
+  center.y /= aliveModels.length;
+
+  for (let i = 0; i < 3; i++) { // Max 3 iterations for stability
+    let anyMoved = false;
+    for (const model of aliveModels) {
+      let neighbors = 0;
+      for (const other of aliveModels) {
+        if (model === other) continue;
+        const dist = Math.sqrt((model.x - other.x) ** 2 + (model.y - other.y) ** 2);
+        if (dist <= COHERENCY_DIST) {
+          neighbors++;
+        }
+      }
+
+      if (neighbors < minNeighbors) {
+        // Pull toward center by 0.5"
+        const dx = center.x - model.x;
+        const dy = center.y - model.y;
+        const distToCenter = Math.sqrt(dx * dx + dy * dy);
+        if (distToCenter > 0.1) {
+          model.x += (dx / distToCenter) * 0.5;
+          model.y += (dy / distToCenter) * 0.5;
+          anyMoved = true;
+        }
+      }
+    }
+    if (!anyMoved) break;
+  }
 }
 
 /**
@@ -855,7 +944,8 @@ function createUnitState(
   xPos: number,
   yPos: number,
   inReserves?: boolean,
-  reserveType?: 'deep-strike' | 'strategic-reserves'
+  reserveType?: 'deep-strike' | 'strategic-reserves',
+  forcedFormation?: FormationStrategy
 ): UnitState {
   const modelCount = getUnitModelCount(unit);
   const woundsPerModel = parseInt(unit.stats.wounds || '1', 10) || 1;
@@ -870,14 +960,21 @@ function createUnitState(
     role,
     position: { x: xPos, y: yPos },
     engaged: false,
-    modelPositions: inReserves ? [] : createModelFormation(modelCount, xPos, yPos, spacing),
+    modelPositions: inReserves ? [] : createModelFormation(
+      modelCount,
+      xPos,
+      yPos,
+      spacing,
+      forcedFormation || getDefaultFormationForRole(role?.primary)
+    ),
     baseSizeInches,
     baseSizeMM,
     advanced: false,
     fellBack: false,
     roleLabel: role?.primary,
     inReserves,
-    reserveType
+    reserveType,
+    currentFormation: forcedFormation || getDefaultFormationForRole(role?.primary)
   };
 }
 
@@ -909,7 +1006,8 @@ function createUnitInReserves(
     fellBack: false,
     roleLabel: role?.primary,
     inReserves: true,
-    reserveType
+    reserveType,
+    currentFormation: getDefaultFormationForRole(role?.primary)
   };
 }
 
@@ -1178,7 +1276,18 @@ function deployArmiesAlternating(
       // Attacker doesn't get to react to opponent (isDefender = false)
       const yPos = calculateDeploymentY(attackerDeployed, battlefieldHeight, tag, role, defenderDeployed, unit, false);
 
-      const unitState = createUnitState(unit, role, tag, deployDepth, battlefieldWidth, xPos, yPos);
+      const unitState = createUnitState(
+        unit,
+        role,
+        tag,
+        deployDepth,
+        battlefieldWidth,
+        xPos,
+        yPos,
+        false,
+        undefined,
+        getDefaultFormationForRole(role?.primary)
+      );
       attackerDeployed.push(unitState);
 
       // Log deployment
@@ -1205,7 +1314,18 @@ function deployArmiesAlternating(
       // Defender uses threat assessment and counter-deployment (isDefender = true)
       const yPos = calculateDeploymentY(defenderDeployed, battlefieldHeight, tag, role, attackerDeployed, unit, true);
 
-      const unitState = createUnitState(unit, role, tag, deployDepth, battlefieldWidth, xPos, yPos);
+      const unitState = createUnitState(
+        unit,
+        role,
+        tag,
+        deployDepth,
+        battlefieldWidth,
+        xPos,
+        yPos,
+        false,
+        undefined,
+        getDefaultFormationForRole(role?.primary)
+      );
       defenderDeployed.push(unitState);
 
       // Log deployment
@@ -1687,72 +1807,76 @@ export function runSimpleEngagement(
         let actualDistance = 0;
         let finalPos = to;
 
-        // If we have a path with waypoints, follow it to avoid terrain
+        // Move each model individually along the unit's path, validating every segment
+        let currentPos = startPos;
+        let cumulativeDist = 0;
+
         if (path && path.length > 2 && terrain.length > 0) {
-          // Move along path, checking each segment for terrain collisions
-          let currentPos = startPos;
           for (let i = 1; i < path.length; i++) {
             const nextWaypoint = path[i];
+            const dx = nextWaypoint.x - currentPos.x;
+            const dy = nextWaypoint.y - currentPos.y;
 
-            // Check if this segment is blocked (accounting for base size)
-            const blocked = isMovementBlocked(
-              currentPos,
-              nextWaypoint,
-              terrain,
-              isInfantry,
-              isLarge,
-              baseRadius
-            );
+            // Move each model independently for this segment
+            for (const model of unit.modelPositions) {
+              if (!model.alive) continue;
+              const modelStart = { x: model.x, y: model.y };
+              const modelEnd = { x: model.x + dx, y: model.y + dy };
 
-            if (blocked.blocked) {
-              // Stop at current position if blocked
-              finalPos = currentPos;
-              break;
+              const blocked = isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius);
+              if (!blocked.blocked && !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
+                model.x = modelEnd.x;
+                model.y = modelEnd.y;
+              }
             }
 
-            // Check if destination waypoint is inside terrain
-            const posBlocked = isPositionBlockedByTerrain(
-              nextWaypoint,
-              baseRadius,
-              terrain,
-              isInfantry,
-              isLarge
-            );
-
-            if (posBlocked.blocked) {
-              // Stop at current position if next waypoint is inside terrain
-              finalPos = currentPos;
-              break;
-            }
-
-            // Add segment distance
-            const segmentDist = Math.sqrt(
-              (nextWaypoint.x - currentPos.x) ** 2 + (nextWaypoint.y - currentPos.y) ** 2
-            );
-            actualDistance += segmentDist;
+            cumulativeDist += Math.sqrt(dx * dx + dy * dy);
             currentPos = nextWaypoint;
             finalPos = nextWaypoint;
           }
+          actualDistance = cumulativeDist;
         } else {
-          // Direct movement (no path or no terrain)
-          actualDistance = Math.sqrt((to.x - startPos.x) ** 2 + (to.y - startPos.y) ** 2);
+          // Direct movement: independent validation
+          const dx = to.x - startPos.x;
+          const dy = to.y - startPos.y;
 
-          // Even for direct movement, check if blocked
-          if (terrain.length > 0) {
-            const blocked = isMovementBlocked(startPos, to, terrain, isInfantry, isLarge, baseRadius);
-            if (blocked.blocked) {
-              // If direct path is blocked, don't move
-              finalPos = startPos;
-              actualDistance = 0;
+          for (const model of unit.modelPositions) {
+            if (!model.alive) continue;
+            const modelStart = { x: model.x, y: model.y };
+            const modelEnd = { x: model.x + dx, y: model.y + dy };
+
+            if (!isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius).blocked &&
+              !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
+              model.x = modelEnd.x;
+              model.y = modelEnd.y;
             }
           }
+          finalPos = to;
+          actualDistance = Math.sqrt(dx * dx + dy * dy);
         }
 
-        // Apply final position
-        const dx = finalPos.x - startPos.x;
-        const dy = finalPos.y - startPos.y;
-        unit.position = { x: finalPos.x, y: finalPos.y };
-        shiftModelPositions(unit, dx, dy);
+        // Enforce coherency after individual moves
+        enforceCoherency(unit);
+
+        // Re-calculate unit center based on current model locations
+        const aliveModels = unit.modelPositions.filter(m => m.alive);
+        if (aliveModels.length > 0) {
+          const sumX = aliveModels.reduce((acc, m) => acc + m.x, 0);
+          const sumY = aliveModels.reduce((acc, m) => acc + m.y, 0);
+          unit.position = { x: sumX / aliveModels.length, y: sumY / aliveModels.length };
+        } else {
+          unit.position = { x: finalPos.x, y: finalPos.y };
+        }
+
+        const chosenFormation = (movements.find(m => m.unit === unit) as any)?.formation || unit.currentFormation;
+
+        // Transition to/Clean up formation
+        // We ALWAYS call reformUnit (greedy) to ensure the fluid movement 
+        // settles into a valid, rebalanced formation.
+        if (actualDistance > 0.05) {
+          reformUnit(unit, unit.position.x, unit.position.y, chosenFormation, Infinity, terrain);
+          unit.currentFormation = chosenFormation;
+        }
 
         // Store position before clamping to check if it changed
         const preclampPos = { x: unit.position.x, y: unit.position.y };
@@ -1951,10 +2075,10 @@ function moveArmiesTowardEachOther(
     const moveY = (dy / len) * step;
 
     // Select formation strategy based on role if not set
-    if (!u.formationStrategy) {
-      if (u.role.primary === 'utility') u.formationStrategy = 'spread';
-      else if (u.role.primary === 'skirmisher') u.formationStrategy = 'linear';
-      else u.formationStrategy = 'compact';
+    // Use current formation if set, otherwise default based on role
+    // This is a fallback for legacy units or unconventional state
+    if (!u.currentFormation) {
+      u.currentFormation = getDefaultFormationForRole(u.role?.primary);
     }
 
     // Update position immutably
@@ -1975,7 +2099,7 @@ function moveArmiesTowardEachOther(
     // Capture model start positions for visualization
     const modelStarts = u.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
 
-    reformUnit(u, targetX, targetY, u.formationStrategy, moveCap);
+    reformUnit(u, targetX, targetY, u.currentFormation, moveCap);
     clampToBoard(u, battlefieldWidth, battlefieldHeight);
     u.engaged = false;
     const actualDistance = Math.sqrt((u.position.x - startPos.x) ** 2 + (u.position.y - startPos.y) ** 2);

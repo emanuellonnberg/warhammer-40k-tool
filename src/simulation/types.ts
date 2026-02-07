@@ -33,7 +33,7 @@ export interface UnitState {
   advanced?: boolean;
   fellBack?: boolean;
   roleLabel?: string;
-  formationStrategy?: FormationStrategy;
+  currentFormation: FormationStrategy;
   // Battle Shock state
   battleShocked?: boolean;
   battleShockedUntilTurn?: number; // The Command phase turn when this status expires

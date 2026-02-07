@@ -12,7 +12,8 @@ function createMockUnit(id: string, x: number, y: number, role = 'utility'): Uni
         position: { x, y },
         modelPositions: [{ x, y, alive: true }],
         baseSizeInches: 1,
-        engaged: false
+        engaged: false,
+        currentFormation: 'compact'
     };
 }
 

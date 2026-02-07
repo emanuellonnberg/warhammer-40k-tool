@@ -1,4 +1,4 @@
-import type { ArmyState, ObjectiveMarker, UnitState } from './types';
+import type { ArmyState, ObjectiveMarker, UnitState, FormationStrategy } from './types';
 import type { Unit } from '../types';
 import type { TerrainFeature, Point } from './terrain';
 import type { NavMesh, PathResult } from './pathfinding';
@@ -181,6 +181,7 @@ interface CandidateMove {
   x: number;
   y: number;
   label: string;
+  formation?: FormationStrategy;
 }
 
 const ENGAGE_RANGE = 1.1;
@@ -348,7 +349,13 @@ function generateCandidates(
   const unitPos: Point = { x: unit.position.x, y: unit.position.y };
 
   // Hold - always valid
-  candidates.push({ x: unit.position.x, y: unit.position.y, label: 'hold' });
+  // Hold - always valid, must preserve current formation
+  candidates.push({
+    x: unit.position.x,
+    y: unit.position.y,
+    label: 'hold',
+    formation: unit.currentFormation
+  });
 
   const nearestObj = findNearestObjective(unit, objectives);
 
@@ -377,26 +384,33 @@ function generateCandidates(
       return; // Don't add fully blocked candidate
     }
 
-    // Check if we can reach within movement allowance
-    if (pathResult.distance <= moveAllowance) {
-      candidates.push({
-        x: targetX,
-        y: targetY,
-        label,
-        path: pathResult.path,
-        effectiveDistance: pathResult.distance,
-      });
-    } else {
-      // Can only move part way - find maximum reachable point
-      const maxTravel = getMaxTravelPoint(pathResult.path, moveAllowance, terrain);
-      candidates.push({
-        x: maxTravel.point.x,
-        y: maxTravel.point.y,
-        label: label + '-partial',
-        path: pathResult.path.slice(0, maxTravel.pathIndex + 2),
-        effectiveDistance: maxTravel.distanceTraveled,
-      });
-    }
+    // For each formation strategy, create a candidate
+    const formations: FormationStrategy[] = ['compact', 'spread', 'linear'];
+
+    formations.forEach(f => {
+      // Check if we can reach within movement allowance
+      if (pathResult.distance <= moveAllowance) {
+        candidates.push({
+          x: targetX,
+          y: targetY,
+          label: `${label}-${f}`,
+          path: pathResult.path,
+          effectiveDistance: pathResult.distance,
+          formation: f,
+        });
+      } else {
+        // Can only move part way - find maximum reachable point
+        const maxTravel = getMaxTravelPoint(pathResult.path, moveAllowance, terrain);
+        candidates.push({
+          x: maxTravel.point.x,
+          y: maxTravel.point.y,
+          label: `${label}-partial-${f}`,
+          path: pathResult.path.slice(0, maxTravel.pathIndex + 2),
+          effectiveDistance: maxTravel.distanceTraveled,
+          formation: f,
+        });
+      }
+    });
   };
 
   // Advance toward nearest objective
@@ -589,7 +603,32 @@ function scoreCandidate(
     }
   }
 
-  // AURA AWARENESS: Bonus for positions within friendly aura range
+  // 4. FORMATION SCORING
+  let formationBonus = 0;
+  const formation = candidate.formation || 'compact';
+
+  if (formation === 'spread') {
+    // Spread is good for area control on objectives or when under indirect threat
+    if (distToObj < 3) {
+      formationBonus += 0.5; // High bonus for spreading on objectives
+    }
+  } else if (formation === 'linear') {
+    // Linear is good for screening if a gunline or artillery
+    if (role === 'artillery' || role === 'gunline' || role === 'anvil') {
+      formationBonus += 0.3;
+    }
+  } else if (formation === 'compact') {
+    // Compact is good for units that want to charge (role melee-missile or near any enemy)
+    const enemies = opponent?.units.filter(u => u.remainingModels > 0) || [];
+    const nearestEnemyDist = enemies.length > 0
+      ? Math.min(...enemies.map(e => distance({ x: candidate.x, y: candidate.y }, e.position)))
+      : 99;
+
+    if (role === 'melee-missile' || nearestEnemyDist < 12) {
+      formationBonus += 0.4;
+    }
+  }
+  tacticalScore += formationBonus;
   let auraBonus = 0;
   if (friendlyAuras.length > 0) {
     const candidatePos = { x: candidate.x, y: candidate.y };
@@ -628,6 +667,8 @@ export interface PlannedMovement {
   path?: Point[];
   /** Whether unit is advancing */
   advanced?: boolean;
+  /** Targeted formation strategy */
+  formation?: FormationStrategy;
 }
 
 export function planGreedyMovement(
@@ -694,6 +735,7 @@ export function planGreedyMovement(
       to: { x: best.x, y: best.y },
       path: best.path,
       advanced: isAdvance,
+      formation: best.formation,
     });
   }
 
@@ -701,7 +743,7 @@ export function planGreedyMovement(
 }
 
 interface BeamState {
-  moves: Map<string, { x: number; y: number; path?: Point[] }>;
+  moves: Map<string, { x: number; y: number; path?: Point[]; formation?: FormationStrategy }>;
   score: number;
 }
 
@@ -759,7 +801,12 @@ export function planBeamMovement(
     for (const state of beam) {
       for (const candidate of candidates) {
         const newMoves = new Map(state.moves);
-        newMoves.set(unit.unit.id, { x: candidate.x, y: candidate.y, path: candidate.path });
+        newMoves.set(unit.unit.id, {
+          x: candidate.x,
+          y: candidate.y,
+          path: candidate.path,
+          formation: candidate.formation
+        });
         const score = state.score + scoreCandidate(unit, candidate, objectives, threatMap, weights, activeTag, terrain, opponent, friendlyAuras);
         nextStates.push({ moves: newMoves, score });
       }
@@ -782,6 +829,7 @@ export function planBeamMovement(
       to: { x: move.x, y: move.y },
       path: move.path,
       advanced: allowAdvance && actualDist > mv,
+      formation: (move as any).formation,
     });
   }
 
