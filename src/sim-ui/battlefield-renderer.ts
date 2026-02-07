@@ -287,7 +287,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     let icon = '';
     const r = (model.role || '').toLowerCase();
 
-    // Character / HQ
+    // Character / HQ - Priority 1
     if (r.includes('hq') || r.includes('character') || r.includes('leader') || r.includes('captain') || r.includes('warlord')) {
       icon = '★';
     }
@@ -297,7 +297,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     }
     // Specific Roles
     else if (r.includes('transport')) icon = '⛟';
-    else if (r.includes('artillery')) icon = '⛊';
+    else if (r.includes('artillery')) icon = '🎯'; // Target for artillery
     else if (r.includes('fast') || r.includes('bike') || r.includes('fly') || r.includes('cavalry')) icon = '⚡';
     else if (r.includes('heavy') || r.includes('devastator')) icon = '▼';
     else if (r.includes('elite') || r.includes('terminator')) icon = '◆';
@@ -307,13 +307,14 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     else if (r.includes('anvil') || r.includes('tanky')) icon = '🛡';
     else if (r.includes('utility')) icon = '🔧';
     else if (r.includes('fortification')) icon = '☗';
-    // Fallback? Maybe just dot if it's basic infantry
-    else if (r.includes('infantry') || r.includes('troops') || r.includes('line')) icon = '🛡';
-    else if (r.includes('character') || r.includes('leader') || r.includes('warlord')) icon = '★';
 
     // Default fallback if we have a role but no specific icon
     if (!icon && r.trim().length > 0) {
-      icon = '•'; // Small bullet for generic units
+      if (r.includes('infantry') || r.includes('troops') || r.includes('line')) {
+        icon = '•'; // Small bullet for generic infantry
+      } else {
+        icon = '•';
+      }
     }
 
     // Adjust font size based on radius
@@ -404,13 +405,18 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
           <span class="badge" style="background:${TERRAIN_COLORS.container.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.container.stroke}">Container</span>
           <span class="badge" style="background:${TERRAIN_COLORS.barricade.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.barricade.stroke}">Barricade</span>
         </div>
-        <div>
+        <div class="flex-grow-1">
           <strong>Roles:</strong>
-          <span class="badge bg-secondary">★ HQ</span>
-          <span class="badge bg-secondary">⬢ Vehicle</span>
-          <span class="badge bg-secondary">⚡ Fast</span>
-          <span class="badge bg-secondary">▼ Heavy</span>
-          <span class="badge bg-secondary">◆ Elite</span>
+          <span class="badge border text-dark bg-white">★ HQ</span>
+          <span class="badge border text-dark bg-white">⬢ Vehicle</span>
+          <span class="badge border text-dark bg-white">⛟ Transport</span>
+          <span class="badge border text-dark bg-white">🎯 Art./Indirect</span>
+          <span class="badge border text-dark bg-white">⚡ Fast</span>
+          <span class="badge border text-dark bg-white">▼ Heavy</span>
+          <span class="badge border text-dark bg-white">◆ Elite</span>
+          <span class="badge border text-dark bg-white">⚔ Melee</span>
+          <span class="badge border text-dark bg-white">⌖ Gunline</span>
+          <span class="badge border text-dark bg-white">🛡 Anvil</span>
         </div>
         <div>
           <strong>Objectives:</strong>
