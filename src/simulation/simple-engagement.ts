@@ -1494,6 +1494,7 @@ export function runSimpleEngagement(
       const scoutDist = getScoutDistance(u.unit);
       if (scoutDist > 0 && u.remainingModels > 0) {
         const startPos = { x: u.position.x, y: u.position.y };
+        const modelStarts = u.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
         // Move toward enemy deployment zone (toward center of battlefield)
         const direction = state.tag === 'armyA' ? 1 : -1;
         const moveX = direction * scoutDist;
@@ -1525,7 +1526,12 @@ export function runSimpleEngagement(
               from: startPos,
               to: { x: u.position.x, y: u.position.y },
               distance: actualDistance,
-              advanced: false
+              advanced: false,
+              modelMovements: u.modelPositions.map((m, i) => ({
+                from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+                to: { x: m.x, y: m.y },
+                alive: m.alive
+              }))
             });
           }
         }
@@ -1673,6 +1679,7 @@ export function runSimpleEngagement(
       const movementDetails: MovementDetail[] = [];
       movements.forEach(({ unit, to, path }) => {
         const startPos = { x: unit.position.x, y: unit.position.y };
+        const modelStarts = unit.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
         const isInfantry = isUnitInfantry(unit);
         const isLarge = isUnitLargeModel(unit);
         const baseRadius = getUnitBaseRadius(unit);
@@ -1768,7 +1775,12 @@ export function runSimpleEngagement(
             from: startPos,
             to: { x: unit.position.x, y: unit.position.y },
             distance: actualDistance,
-            advanced: unit.advanced ?? false
+            advanced: unit.advanced ?? false,
+            modelMovements: unit.modelPositions.map((m, i) => ({
+              from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+              to: { x: m.x, y: m.y },
+              alive: m.alive
+            }))
           });
         }
       });

@@ -379,7 +379,12 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
 
   // Draw individual model movements if available
   if (detail.modelMovements && detail.modelMovements.length > 0) {
-    detail.modelMovements.forEach(move => {
+    detail.modelMovements.forEach((move: any) => {
+      // Skip dead models or models that didn't move
+      if (move.alive === false) return;
+
+      const dxSq = (move.to.x - move.from.x) ** 2 + (move.to.y - move.from.y) ** 2;
+      if (dxSq < 0.001) return;
       const g = document.createElementNS(ns, 'g');
       const startX = scales.toSvgX(move.from.x).toFixed(1);
       const startY = scales.toSvgY(move.from.y).toFixed(1);

@@ -83,12 +83,21 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
   };
 
+  const escapeAttr = (str: string) => {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  };
+
   const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; modelMovements?: any[] }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
       const label = describeMovement(detail);
       const modelMoves = detail.modelMovements ? JSON.stringify(detail.modelMovements) : '';
-      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}" data-model-movements='${modelMoves}'>${label}</span></li>`;
+      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}" data-model-movements="${escapeAttr(modelMoves)}">${label}</span></li>`;
     }).join('');
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };
