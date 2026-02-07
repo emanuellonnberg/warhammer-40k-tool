@@ -7,7 +7,8 @@ export type UnitRole =
   | 'artillery'
   | 'melee-missile'
   | 'anvil'
-  | 'utility';
+  | 'utility'
+  | 'transport';
 
 export interface UnitRoleInfo {
   primary: UnitRole;
@@ -42,6 +43,11 @@ export interface UnitState {
   arrivedTurn?: number; // Track which turn the unit arrived from reserves
   // Charge tracking for Fights First
   chargedThisTurn?: boolean;
+
+  // Transport State
+  transportCapacity?: number;
+  transportedUnitIds?: string[]; // IDs of units currently inside this transport
+  transportedBy?: string;        // ID of the transport holding this unit
 }
 
 export interface ArmyState {
@@ -94,6 +100,14 @@ export interface MovementDetail {
   to: { x: number; y: number };
   distance: number;
   advanced: boolean;
+  // Charge-specific fields
+  chargeTarget?: string;      // Name of unit being charged
+  chargeTargetId?: string;    // ID of unit being charged
+  chargeRoll?: number;        // The 2D6 roll for the charge
+  chargeDistanceNeeded?: number; // Distance needed to reach target
+  chargeSuccess?: boolean;    // Whether the charge succeeded
+  chargeBlocked?: boolean;    // Whether charge was blocked by terrain/impossible
+  modelMovements?: { from: { x: number; y: number }; to: { x: number; y: number }; alive: boolean }[];
 }
 
 export interface CasualtyLog {

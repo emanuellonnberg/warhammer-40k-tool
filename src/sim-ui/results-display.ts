@@ -12,7 +12,7 @@ export function renderBattleLog(result: SimulationResult, phaseIndex: number, ar
 export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number, armyALabel: string, armyBLabel: string): string {
   const totalPhases = result.logs.length;
   if (totalPhases === 0) return '<p class="text-muted">No battle log entries</p>';
-  
+
   const logEntries = result.logs.map((log, index) => ({ log, index }));
   const activeTabs = phaseIndex >= 0
     ? logEntries.slice(0, Math.min(totalPhases, phaseIndex + 1))
@@ -23,8 +23,36 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `Round ${log.turn} · ${playerLabel} · ${log.phase}`;
   };
 
-  const describeMovement = (detail: { unitName?: string; distance: number; to: { x: number; y: number }; advanced: boolean }) => {
+  const describeMovement = (detail: {
+    unitName?: string;
+    distance: number;
+    to: { x: number; y: number };
+    advanced: boolean;
+    chargeTarget?: string;
+    chargeRoll?: number;
+    chargeDistanceNeeded?: number;
+    chargeSuccess?: boolean;
+    chargeBlocked?: boolean;
+  }) => {
     const name = detail.unitName || 'Unit';
+
+    // Handle charge-specific descriptions
+    if (detail.chargeTarget !== undefined) {
+      const neededText = detail.chargeDistanceNeeded ? `, needed ${detail.chargeDistanceNeeded.toFixed(1)}"` : '';
+      if (detail.chargeBlocked) {
+        return `❌ ${name} → ${detail.chargeTarget} BLOCKED (terrain)`;
+      }
+      if (detail.chargeSuccess === false) {
+        const rollText = detail.chargeRoll ? `rolled ${detail.chargeRoll}` : '';
+        return `❌ ${name} → ${detail.chargeTarget} FAILED (${rollText}${neededText})`;
+      }
+      if (detail.chargeSuccess === true) {
+        const rollText = detail.chargeRoll ? `rolled ${detail.chargeRoll}` : '';
+        return `✅ ${name} → ${detail.chargeTarget} (${rollText}${neededText}, moved ${detail.distance.toFixed(1)}")`;
+      }
+    }
+
+    // Normal movement
     const verb = detail.advanced ? 'advances' : 'moves';
     return `${name} ${verb} ${detail.distance.toFixed(1)}" to (${detail.to.x.toFixed(1)}, ${detail.to.y.toFixed(1)})`;
   };
@@ -55,11 +83,12 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     return `<div class="mb-2"><em>Objectives:</em><ul class="sim-objective-list mb-1 ps-3">${items}</ul></div>`;
   };
 
-  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB' }[]) => {
+  const renderMovementDetails = (details?: { unitId: string; unitName: string; from: { x: number; y: number }; to: { x: number; y: number }; distance: number; advanced: boolean; army: 'armyA' | 'armyB'; modelMovements?: any[] }[]) => {
     if (!details || !details.length) return '';
     const items = details.map(detail => {
       const label = describeMovement(detail);
-      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}">${label}</span></li>`;
+      const modelMoves = detail.modelMovements ? JSON.stringify(detail.modelMovements) : '';
+      return `<li class="sim-move-item"><span class="sim-move-entry" role="button" tabindex="0" data-unit-id="${detail.unitId}" data-army="${detail.army}" data-from-x="${detail.from.x.toFixed(2)}" data-from-y="${detail.from.y.toFixed(2)}" data-to-x="${detail.to.x.toFixed(2)}" data-to-y="${detail.to.y.toFixed(2)}" data-model-movements='${modelMoves}'>${label}</span></li>`;
     }).join('');
     return `<ul class="sim-movement-list mb-1 ps-3">${items}</ul>`;
   };
@@ -187,23 +216,23 @@ export function renderBattleLogTabs(result: SimulationResult, phaseIndex: number
     if (typeof log.distanceAfter === 'number') stats.push(`Distance ${log.distanceAfter.toFixed(1)}"`);
     if (log.advancedUnits?.length) stats.push(`Advanced: ${log.advancedUnits.join(', ')}`);
     const statsText = stats.length ? `<div class="small text-muted mb-2">${stats.join(' | ')}</div>` : '';
-    
+
     const casualtiesText = log.casualties?.length
       ? `<div class="mb-2"><em>Casualties:</em> ${log.casualties.map(c => `${c.unitName} -${c.modelsLost}`).join(', ')}</div>`
       : '';
-    
-    const movementList = log.phase === 'movement' ? renderMovementDetails(log.movementDetails) : '';
+
+    const movementList = (log.phase === 'movement' || log.phase === 'charge') ? renderMovementDetails(log.movementDetails) : '';
     const objectiveList = log.phase === 'command' ? renderObjectiveStates(log.objectiveStates, armyALabel, armyBLabel) : '';
     const attackList = (log.phase === 'shooting' || log.phase === 'melee') ? renderAttackDetails(log.actions, entry.index) : '';
-    
+
     const description = `<div class="mb-2"><strong>${formatPhaseHeader(log)}</strong></div><p>${log.description}</p>`;
-    
+
     const paneId = `log-pane-${entry.index}`;
     const tabId = `log-tab-${entry.index}`;
     const isActive = idx === activeTabs.length - 1;
     const icon = log.phase === 'movement' ? '🚀' : log.phase === 'shooting' ? '🎯' : log.phase === 'melee' ? '⚔️' : log.phase === 'charge' ? '💨' : log.phase === 'command' ? '📢' : '📋';
     const label = `${icon} R${log.turn} ${log.phase[0].toUpperCase()}`;
-    
+
     return {
       header: `<li class="nav-item" role="presentation"><button class="nav-link ${isActive ? 'active' : ''}" id="${tabId}" data-bs-toggle="tab" data-bs-target="#${paneId}" type="button" role="tab" aria-controls="${paneId}" aria-selected="${isActive}">${label}</button></li>`,
       pane: `<div class="tab-pane fade ${isActive ? 'show active' : ''}" id="${paneId}" role="tabpanel" aria-labelledby="${tabId}">${description}${objectiveList}${statsText}${casualtiesText}${movementList}${attackList}</div>`
@@ -464,32 +493,32 @@ export function renderUnitStatesTable(result: SimulationResult, phaseIndex: numb
           </thead>
           <tbody>
             ${list.map(u => {
-              const dead = u.remaining <= 0;
-              const rowClass = dead ? 'class="text-muted"' : '';
-              const woundsText = typeof u.remainingWounds === 'number' && typeof u.totalWounds === 'number'
-                ? `${Math.max(0, u.remainingWounds)}/${u.totalWounds}`
-                : '—';
+    const dead = u.remaining <= 0;
+    const rowClass = dead ? 'class="text-muted"' : '';
+    const woundsText = typeof u.remainingWounds === 'number' && typeof u.totalWounds === 'number'
+      ? `${Math.max(0, u.remainingWounds)}/${u.totalWounds}`
+      : '—';
 
-              // Determine status
-              let statusText = '';
-              let statusClass = '';
-              if (u.inReserves) {
-                const reserveLabel = u.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves';
-                statusText = `<span class="badge bg-warning text-dark" title="In Reserves">${reserveLabel}</span>`;
-                statusClass = 'class="table-warning"';
-              } else if (u.arrivedTurn !== undefined && u.arrivedTurn > 0) {
-                const reserveLabel = u.reserveType === 'deep-strike' ? 'DS' : 'SR';
-                statusText = `<span class="badge bg-info text-dark" title="Arrived from reserves turn ${u.arrivedTurn}">${reserveLabel} T${u.arrivedTurn}</span>`;
-              } else if (u.engaged) {
-                statusText = '<span class="badge bg-danger">Engaged</span>';
-              } else {
-                statusText = '<span class="text-success">Active</span>';
-              }
+    // Determine status
+    let statusText = '';
+    let statusClass = '';
+    if (u.inReserves) {
+      const reserveLabel = u.reserveType === 'deep-strike' ? 'Deep Strike' : 'Strategic Reserves';
+      statusText = `<span class="badge bg-warning text-dark" title="In Reserves">${reserveLabel}</span>`;
+      statusClass = 'class="table-warning"';
+    } else if (u.arrivedTurn !== undefined && u.arrivedTurn > 0) {
+      const reserveLabel = u.reserveType === 'deep-strike' ? 'DS' : 'SR';
+      statusText = `<span class="badge bg-info text-dark" title="Arrived from reserves turn ${u.arrivedTurn}">${reserveLabel} T${u.arrivedTurn}</span>`;
+    } else if (u.engaged) {
+      statusText = '<span class="badge bg-danger">Engaged</span>';
+    } else {
+      statusText = '<span class="text-success">Active</span>';
+    }
 
-              const finalRowClass = u.inReserves ? statusClass : rowClass;
+    const finalRowClass = u.inReserves ? statusClass : rowClass;
 
-              return `<tr ${finalRowClass}><td>${u.name || 'Unknown'}</td><td>${u.role || ''}</td><td>${u.remaining}</td><td>${woundsText}</td><td>${statusText}</td></tr>`;
-            }).join('')}
+    return `<tr ${finalRowClass}><td>${u.name || 'Unknown'}</td><td>${u.role || ''}</td><td>${u.remaining}</td><td>${woundsText}</td><td>${statusText}</td></tr>`;
+  }).join('')}
           </tbody>
         </table>
       </div>

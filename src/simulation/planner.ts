@@ -668,7 +668,7 @@ export function planGreedyMovement(
   };
 
   const sorted = [...active.units]
-    .filter(u => u.remainingModels > 0 && !u.inReserves)
+    .filter(u => u.remainingModels > 0 && !u.inReserves && !u.transportedBy)
     .sort((a, b) => priority(a) - priority(b));
 
   for (const u of sorted) {
@@ -730,7 +730,7 @@ export function planBeamMovement(
   }
 
   const sorted = [...active.units]
-    .filter(u => u.remainingModels > 0 && !u.inReserves)
+    .filter(u => u.remainingModels > 0 && !u.inReserves && !u.transportedBy)
     .sort((a, b) => {
       const priority = (u: UnitState) => {
         switch (u.role?.primary) {

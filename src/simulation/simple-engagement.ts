@@ -232,6 +232,76 @@ export function reformUnit(
 }
 
 /**
+ * Attempt to embark a unit into a transport.
+ * Requirements:
+ * 1. Transport must be friendly and capable.
+ * 2. Unit must be within 3".
+ * 3. Transport must have capacity.
+ */
+export function embarkUnit(unit: UnitState, transport: UnitState): boolean {
+  if (unit.remainingModels <= 0 || unit.transportedBy) return false;
+  if (transport.remainingModels <= 0) return false;
+
+  // Initial check for capacity existence (assuming infinite capacity if undefined for now, 
+  // or better: require explicit capacity)
+  // For now, if it has 'transport' role, assume it has capacity.
+  // Ideally we parse keywords but we don't have that easily accessible yet.
+
+  const dist = distanceBetween(unit, transport);
+  if (dist > 3.0) return false;
+
+  // Embark
+  unit.transportedBy = transport.unit.id;
+
+  if (!transport.transportedUnitIds) transport.transportedUnitIds = [];
+  transport.transportedUnitIds.push(unit.unit.id);
+
+  // Update position to match transport to "hide" it or track it
+  unit.position = { ...transport.position };
+  shiftModelPositions(unit, 0, 0); // Trigger update of model positions to center? 
+  // Actually, we should probably "remove" model positions or set them to transport center.
+  unit.modelPositions = unit.modelPositions.map(m => ({ ...m, x: transport.position.x, y: transport.position.y }));
+
+  return true;
+}
+
+/**
+ * Attempt to disembark a unit.
+ * Places unit wholly within 3" of transport.
+ */
+export function disembarkUnit(unit: UnitState, transport: UnitState): boolean {
+  if (unit.transportedBy !== transport.unit.id) return false;
+
+  // Place unit within 3"
+  // Simple heuristic: Place at random angle 2.0" away
+  const angle = Math.random() * Math.PI * 2;
+  const offset = 2.0;
+  const dx = Math.cos(angle) * offset;
+  const dy = Math.sin(angle) * offset;
+
+  const newX = transport.position.x + dx;
+  const newY = transport.position.y + dy;
+
+  // Clear flag BEFORE reform so reform works (it might check for 'transportedBy'?) 
+  // No, reform doesn't check that.
+
+  unit.transportedBy = undefined;
+  // Remove from transport list
+  if (transport.transportedUnitIds) {
+    transport.transportedUnitIds = transport.transportedUnitIds.filter(id => id !== unit.unit.id);
+  }
+
+  // Reform using 'compact' strategy at new location
+  // We give it a generous move cap (e.g. 3" + base size) since it's a placement, not a move
+  // But strict rules say "Wholly within 3".
+  // reformUnit takes a target center. If we target 2" away, and strategy is compact, 
+  // most models should be within 1" of center, so within 3" of transport.
+  reformUnit(unit, newX, newY, 'compact', 3.0);
+
+  return true;
+}
+
+/**
  * Shift model positions by the given delta (immutable operation)
  * Returns true if positions were updated, false otherwise
  */
@@ -1564,6 +1634,27 @@ export function runSimpleEngagement(
         }
       }
 
+      // Transport Phase 1: Disembark
+      // Units inside transports should disembark to participate in battle
+      active.units.forEach(u => {
+        if (u.transportedBy) {
+          const transport = active.units.find(t => t.unit.id === u.transportedBy);
+          // Auto-disembark at start of movement to allow fighting
+          // (Future: smart logic to decide if safe)
+          if (transport && transport.remainingModels > 0) {
+            if (disembarkUnit(u, transport)) {
+              // Log it?
+              logs.push({
+                phase: 'movement',
+                turn: round,
+                actor: active.tag,
+                description: `${u.unit.name} disembarked from ${transport.unit.name}.`
+              });
+            }
+          }
+        }
+      });
+
       // Planner-driven movement (with terrain awareness)
       const { movements } = planMovement(
         active,
@@ -1682,9 +1773,12 @@ export function runSimpleEngagement(
         }
       });
 
+      // Transport Phase 2: Embark
+      // (Placeholder: Auto-embark disabled to prevent loops. Logic requires 'retreat' intent.)
+
       // Run collision resolution iteratively to ensure stability
       for (let i = 0; i < 3; i++) {
-        clampAllSpacing(stateA, stateB, terrain);
+        clampAllSpacing(stateA, stateB, terrain, active.tag);
         validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
       }
       const postMoveDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
@@ -1701,15 +1795,16 @@ export function runSimpleEngagement(
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const chargeActions: ActionLog[] = [];
-      performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh);
+      const chargeMovements: MovementDetail[] = [];
+      performCharges(active, opponent, randomCharge, chargeActions, terrain, navMesh, chargeMovements);
       // Run collision resolution iteratively to ensure stability
       for (let i = 0; i < 3; i++) {
-        clampAllSpacing(stateA, stateB, terrain);
+        clampAllSpacing(stateA, stateB, terrain, active.tag);
         validateTerrainPositions(stateA, stateB, terrain, battlefield.width, battlefield.height);
       }
       setEngagements(stateA, stateB);
       const postChargeDistance = Math.max(0, minDistanceBetweenArmies(stateA, stateB));
-      logs.push(summarizePhase('charge', round, active.tag, `Round ${round}: ${active.tag} charges.`, undefined, postChargeDistance, chargeActions));
+      logs.push(summarizePhase('charge', round, active.tag, `Round ${round}: ${active.tag} charges.`, undefined, postChargeDistance, chargeActions, undefined, chargeMovements));
       timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
 
       const meleeActions: ActionLog[] = [];
@@ -1728,7 +1823,7 @@ export function runSimpleEngagement(
 
         // Log objective scoring with detailed information
         logs.push(summarizePhase(
-          'movement',
+          'command',
           round,
           'armyA',
           `END OF ROUND ${round} - VICTORY POINTS SCORED: Army A +${roundVP.armyA}VP, Army B +${roundVP.armyB}VP. Cumulative: A ${victoryPoints.armyA}VP, B ${victoryPoints.armyB}VP`,
@@ -1738,6 +1833,8 @@ export function runSimpleEngagement(
           undefined,
           undefined
         ));
+        // Add timeline entry for this log so the visualizer has a state to show (prevents jumping to 0,0)
+        timeline.push({ phaseIndex: logs.length - 1, turn: round, actor: active.tag, ...snapshotState(stateA, stateB) });
       }
 
       perTurnPositions.push({ turn: round, ...snapshotPositions(stateA, stateB) });
@@ -1863,6 +1960,9 @@ function moveArmiesTowardEachOther(
     const targetX = u.position.x + moveX;
     const targetY = u.position.y + moveY;
 
+    // Capture model start positions for visualization
+    const modelStarts = u.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
+
     reformUnit(u, targetX, targetY, u.formationStrategy, moveCap);
     clampToBoard(u, battlefieldWidth, battlefieldHeight);
     u.engaged = false;
@@ -1876,7 +1976,12 @@ function moveArmiesTowardEachOther(
         from: startPos,
         to: { x: u.position.x, y: u.position.y },
         distance: actualDistance,
-        advanced: u.advanced ?? false
+        advanced: u.advanced ?? false,
+        modelMovements: u.modelPositions.map((m, i) => ({
+          from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+          to: { x: m.x, y: m.y },
+          alive: m.alive
+        }))
       });
     }
   });
@@ -1920,31 +2025,80 @@ function setEngagements(stateA: ArmyState, stateB: ArmyState): void {
   });
 }
 
-function clampAllSpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = []): void {
-  clampArmySpacing(stateA, terrain);
-  clampArmySpacing(stateB, terrain);
-  clampInterArmySpacing(stateA, stateB, terrain);
+function clampAllSpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = [], activeTag?: string): void {
+  const lockedUnitIds = new Set<string>();
+
+  // If activeTag is provided, we only want to adjust the active army
+  // The inactive army's units are considered "locked" and should not move
+  if (activeTag) {
+    const inactiveArmy = stateA.tag === activeTag ? stateB : stateA;
+    inactiveArmy.units.forEach(u => u.remainingModels > 0 && lockedUnitIds.add(u.unit.id));
+
+    // Only clamp active army internal spacing
+    if (stateA.tag === activeTag) clampArmySpacing(stateA, terrain);
+    if (stateB.tag === activeTag) clampArmySpacing(stateB, terrain);
+  } else {
+    // Initial setup or other scenario where both can move
+    clampArmySpacing(stateA, terrain);
+    clampArmySpacing(stateB, terrain);
+  }
+
+  clampInterArmySpacing(stateA, stateB, terrain, activeTag ? lockedUnitIds : undefined);
 }
 
 function clampArmySpacing(state: ArmyState, terrain: TerrainFeature[] = []): void {
+  // For FRIENDLY units, we only need to check for actual base overlap,
+  // not collision radius. Friendly units can be adjacent.
   const units = state.units.filter(u => u.remainingModels > 0 && !u.inReserves);
   for (let i = 0; i < units.length; i++) {
     for (let j = i + 1; j < units.length; j++) {
       const a = units[i];
       const b = units[j];
-      resolveOverlap(a, b, terrain);
+      // Use only base radius for friendly units (not full collision radius)
+      resolveFriendlyOverlap(a, b, terrain);
     }
   }
 }
 
-function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = []): void {
+/**
+ * Gentler overlap resolution for friendly units - only push if bases actually overlap
+ */
+function resolveFriendlyOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = []): void {
+  if (a.remainingModels <= 0 || b.remainingModels <= 0) return;
+
+  // For friendly units, only separate if their physical bases would overlap
+  const minDist = baseRadius(a) + baseRadius(b) + 0.05; // Much smaller threshold
+  const dx = b.position.x - a.position.x;
+  const dy = b.position.y - a.position.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  if (dist >= minDist) return; // No overlap, nothing to do
+
+  // Only push apart if actually overlapping bases
+  const primaryDx = dist > 0.001 ? dx : (a.position.x <= b.position.x ? -0.01 : 0.01);
+  const primaryDy = dist > 0.001 ? dy : 0;
+  const actualDist = dist > 0.001 ? dist : 0.01;
+  const scale = (minDist - actualDist) / Math.max(actualDist, 0.001) / 2;
+
+  const adjustAx = -primaryDx * scale;
+  const adjustAy = -primaryDy * scale;
+  const adjustBx = primaryDx * scale;
+  const adjustBy = primaryDy * scale;
+
+  a.position = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
+  b.position = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
+  shiftModelPositions(a, adjustAx, adjustAy);
+  shiftModelPositions(b, adjustBx, adjustBy);
+}
+
+function clampInterArmySpacing(stateA: ArmyState, stateB: ArmyState, terrain: TerrainFeature[] = [], lockedUnitIds?: Set<string>): void {
   stateA.units
     .filter(a => a.remainingModels > 0 && !a.inReserves)
     .forEach(a => {
       stateB.units
         .filter(b => b.remainingModels > 0 && !b.inReserves)
         .forEach(b => {
-          resolveOverlap(a, b, terrain);
+          resolveOverlap(a, b, terrain, lockedUnitIds);
         });
     });
 }
@@ -1969,8 +2123,14 @@ function isUnitPositionBlockedByTerrain(
  * Resolve overlap between two units by pushing them apart (immutable position updates)
  * Now checks for terrain collisions and adjusts push direction if needed
  */
-function resolveOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = []): void {
+function resolveOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = [], lockedUnitIds?: Set<string>): void {
   if (a.remainingModels <= 0 || b.remainingModels <= 0) return;
+
+  // CRITICAL: Do NOT push apart units that are engaged in melee!
+  // In 40k, engaged units MUST be within 1" of each other.
+  // If both units are engaged, they are likely fighting - leave them alone.
+  if (a.engaged && b.engaged) return;
+
   const minDist = unitCollisionRadius(a) + unitCollisionRadius(b) + 0.1;
   const dx = b.position.x - a.position.x;
   const dy = b.position.y - a.position.y;
@@ -1986,6 +2146,20 @@ function resolveOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = 
   let adjustAy = -primaryDy * scale;
   let adjustBx = primaryDx * scale;
   let adjustBy = primaryDy * scale;
+
+  // Check if units are locked
+  const aLocked = lockedUnitIds?.has(a.unit.id);
+  const bLocked = lockedUnitIds?.has(b.unit.id);
+
+  if (aLocked && bLocked) return;
+
+  if (aLocked) {
+    adjustAx = 0; adjustAy = 0;
+    adjustBx *= 2; adjustBy *= 2;
+  } else if (bLocked) {
+    adjustAx *= 2; adjustAy *= 2;
+    adjustBx = 0; adjustBy = 0;
+  }
 
   // Calculate proposed new positions
   const newPosA = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
@@ -2036,11 +2210,11 @@ function resolveOverlap(a: UnitState, b: UnitState, terrain: TerrainFeature[] = 
   }
 
   // Apply final adjustments
-  if (adjustAx !== 0 || adjustAy !== 0) {
+  if ((adjustAx !== 0 || adjustAy !== 0) && !aLocked) {
     a.position = { x: a.position.x + adjustAx, y: a.position.y + adjustAy };
     shiftModelPositions(a, adjustAx, adjustAy);
   }
-  if (adjustBx !== 0 || adjustBy !== 0) {
+  if ((adjustBx !== 0 || adjustBy !== 0) && !bLocked) {
     b.position = { x: b.position.x + adjustBx, y: b.position.y + adjustBy };
     shiftModelPositions(b, adjustBx, adjustBy);
   }
@@ -2467,7 +2641,21 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
   let total = 0;
 
   // Filter eligible melee attackers
-  let meleeAttackers = attackerArmy.units.filter(u => u.remainingModels > 0 && !u.inReserves && (u.engaged || u.role.primary === 'melee-missile'));
+  // Per 40k rules: A unit can fight if:
+  // 1. It's within Engagement Range (1") of an enemy, OR
+  // 2. It charged this turn, OR
+  // 3. It's marked as engaged (from being charged or previous combat)
+  const allDefenders = defenderArmy.units.filter(d => d.remainingModels > 0 && !d.inReserves);
+
+  const isWithinEngagementRange = (attacker: UnitState) => {
+    return allDefenders.some(def => distanceBetween(attacker, def) <= 1.1);
+  };
+
+  let meleeAttackers = attackerArmy.units.filter(u =>
+    u.remainingModels > 0 &&
+    !u.inReserves &&
+    (u.engaged || u.chargedThisTurn || isWithinEngagementRange(u))
+  );
 
   // Sort by combat priority: Fights First/Chargers → Normal → Fights Last
   // Per 10th edition: Fights First step includes units that charged this turn
@@ -2496,18 +2684,27 @@ function expectedMeleeDamageBatch(attackerArmy: ArmyState, defenderArmy: ArmySta
     performCombatMove(attacker, defenders);
     if (!defenders.length) break;
 
-    // Find best target
-    const best = defenders
+    // Find best target - ONLY consider enemies within Engagement Range (1")
+    // After pile-in, we should be close to at least one enemy
+    const eligibleTargets = defenders.filter(def => {
+      const dist = distanceBetween(attacker, def);
+      return dist <= 1.1; // Engagement Range is 1", we use 1.1 for floating point tolerance
+    });
+
+    if (eligibleTargets.length === 0) {
+      // No enemies in range after pile-in - can't fight
+      continue;
+    }
+
+    const best = eligibleTargets
       .map(def => ({
         def,
         dmg: expectedMeleeDamage(attacker, def, includeOneTimeWeapons, useDiceRolls)
       }))
       .sort((a, b) => b.dmg - a.dmg)[0];
 
-    const dist = distanceBetween(attacker, best.def);
-    const inRange = dist <= 1.1 || attacker.engaged;
-
-    if (best && best.dmg > 0 && inRange) {
+    if (best && best.dmg > 0) {
+      const dist = distanceBetween(attacker, best.def); // For logging
       const defenderToughness = parseInt(best.def.unit.stats.toughness || '4', 10);
       const defenderSave = best.def.unit.stats.save || null;
 
@@ -2679,7 +2876,8 @@ function performCharges(
   randomCharge: boolean,
   actions?: ActionLog[],
   terrain: TerrainFeature[] = [],
-  navMesh?: NavMesh | NavMeshSet
+  navMesh?: NavMesh | NavMeshSet,
+  movementDetails?: MovementDetail[]
 ): void {
   const ENGAGE_RANGE = 1.0;
   const rollCharge = () => randomCharge ? rollMultipleD6(2) : 7;
@@ -2713,6 +2911,14 @@ function performCharges(
     const target = targetsAlive[0];
     const straightDist = distanceBetween(attacker, target);
 
+    // Max charge distance is 12" (2D6 max = 12)
+    // Don't bother attempting charges beyond this range
+    const MAX_CHARGE_DISTANCE = 12;
+    if (straightDist > MAX_CHARGE_DISTANCE) {
+      // Target is too far - skip this charge attempt
+      return;
+    }
+
     // Check if already engaged
     if (straightDist <= ENGAGE_RANGE) {
       attacker.engaged = true;
@@ -2741,6 +2947,21 @@ function performCharges(
         pathDist = pathResult.distance;
       } else {
         // Path blocked by terrain - charge impossible
+        movementDetails?.push({
+          unitId: attacker.unit.id,
+          unitName: attacker.unit.name,
+          army: stateA.units.includes(attacker) ? 'armyA' : 'armyB',
+          from: { x: attacker.position.x, y: attacker.position.y },
+          to: { x: attacker.position.x, y: attacker.position.y }, // No movement
+          distance: 0,
+          advanced: false,
+          chargeTarget: target.unit.name,
+          chargeTargetId: target.unit.id,
+          chargeRoll: 0,
+          chargeDistanceNeeded: straightDist,
+          chargeSuccess: false,
+          chargeBlocked: true
+        });
         actions?.push({
           attackerId: attacker.unit.id,
           attackerName: attacker.unit.name,
@@ -2757,6 +2978,22 @@ function performCharges(
 
     const chargeReach = rollCharge();
     if (pathDist > chargeReach) {
+      // Charge failed - log it with details
+      movementDetails?.push({
+        unitId: attacker.unit.id,
+        unitName: attacker.unit.name,
+        army: stateA.units.includes(attacker) ? 'armyA' : 'armyB',
+        from: { x: attacker.position.x, y: attacker.position.y },
+        to: { x: attacker.position.x, y: attacker.position.y }, // No movement on failed charge
+        distance: 0,
+        advanced: false,
+        chargeTarget: target.unit.name,
+        chargeTargetId: target.unit.id,
+        chargeRoll: chargeReach,
+        chargeDistanceNeeded: pathDist,
+        chargeSuccess: false,
+        chargeBlocked: false
+      });
       actions?.push({
         attackerId: attacker.unit.id,
         attackerName: attacker.unit.name,
@@ -2775,6 +3012,9 @@ function performCharges(
     const moveX = maxTravel.point.x - attacker.position.x;
     const moveY = maxTravel.point.y - attacker.position.y;
 
+    // Capture model start positions for visualization
+    const modelStarts = attacker.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
+
     attacker.position = { x: maxTravel.point.x, y: maxTravel.point.y };
     // Charging units should reform into compact formation for maximum combat efficacy
     reformUnit(attacker, attacker.position.x, attacker.position.y, 'compact', chargeReach);
@@ -2785,6 +3025,50 @@ function performCharges(
       attacker.engaged = true;
       attacker.chargedThisTurn = true; // For Fights First priority
       target.engaged = true;
+
+      // Log movement detail for visualization
+      movementDetails?.push({
+        unitId: attacker.unit.id,
+        unitName: attacker.unit.name,
+        army: stateA.units.includes(attacker) ? 'armyA' : 'armyB',
+        from: { x: chargePath[0].x, y: chargePath[0].y }, // Start
+        to: { x: attacker.position.x, y: attacker.position.y }, // End
+        distance: maxTravel.distanceTraveled,
+        advanced: false, // Charges aren't advances
+        chargeTarget: target.unit.name,
+        chargeTargetId: target.unit.id,
+        chargeRoll: chargeReach,
+        chargeDistanceNeeded: pathDist,
+        chargeSuccess: true,
+        chargeBlocked: false,
+        modelMovements: attacker.modelPositions.map((m, i) => ({
+          from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+          to: { x: m.x, y: m.y },
+          alive: m.alive
+        }))
+      });
+    } else {
+      // Charge fell short after starting move - still log the attempt
+      movementDetails?.push({
+        unitId: attacker.unit.id,
+        unitName: attacker.unit.name,
+        army: stateA.units.includes(attacker) ? 'armyA' : 'armyB',
+        from: { x: chargePath[0].x, y: chargePath[0].y },
+        to: { x: attacker.position.x, y: attacker.position.y },
+        distance: maxTravel.distanceTraveled,
+        advanced: false,
+        chargeTarget: target.unit.name,
+        chargeTargetId: target.unit.id,
+        chargeRoll: chargeReach,
+        chargeDistanceNeeded: pathDist,
+        chargeSuccess: false,
+        chargeBlocked: false,
+        modelMovements: attacker.modelPositions.map((m, i) => ({
+          from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+          to: { x: m.x, y: m.y },
+          alive: m.alive
+        }))
+      });
     }
     actions?.push({
       attackerId: attacker.unit.id,

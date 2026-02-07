@@ -209,11 +209,13 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
   };
 
   const flattenModels = (
-    units: Array<{ name: string; x: number; y: number; remaining?: number; role?: string; baseSizeMM?: number; models?: { index: number; x: number; y: number; alive?: boolean }[] }>,
+    units: Array<{ name: string; x: number; y: number; remaining?: number; role?: string; baseSizeMM?: number; inReserves?: boolean; models?: { index: number; x: number; y: number; alive?: boolean }[] }>,
     armyTag: 'armyA' | 'armyB',
     includeAlive: boolean
   ): FlattenedModel[] => {
-    return units.flatMap(unit => {
+    // Filter out units that are in reserves - they shouldn't be shown on the map
+    const visibleUnits = units.filter(unit => !unit.inReserves);
+    return visibleUnits.flatMap(unit => {
       const baseRadiusValue = estimateBaseRadiusFromName(unit.name);
       const totalModels = unit.models?.length ?? unit.remaining ?? 0;
       const unitName = unit.name || 'Unit';
@@ -268,6 +270,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     return `<circle class="sim-start-dot" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${pxRadius(model, 0.5).toFixed(1)}" fill="${color}" fill-opacity="0.08" stroke="${color}" stroke-opacity="0.1" />`;
   }).join('');
 
+  // Generate model markers with icons
   const currentMarkers = currentModels.map(model => {
     const color = model.army === 'armyA' ? '#1f77b4' : '#d62728';
     const cx = sx(model.x);
@@ -280,8 +283,50 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     const baseText = model.baseSizeMM ?? '';
     const dataAttrs = `data-name="${nameText}" data-role="${roleText}" data-unit-remaining="${remainingText}" data-unit-total="${totalText}" data-model-index="${model.modelIndex ?? 0}" data-model-alive="${model.alive ? 'true' : 'false'}" data-base-mm="${baseText}"`;
 
+    // Determine icon based on role
+    let icon = '';
+    const r = (model.role || '').toLowerCase();
+
+    // Character / HQ
+    if (r.includes('hq') || r.includes('character') || r.includes('leader') || r.includes('captain') || r.includes('warlord')) {
+      icon = '★';
+    }
+    // Vehicles / Large
+    else if (r.includes('vehicle') || r.includes('monster') || r.includes('walker') || r.includes('dread') || r.includes('tank')) {
+      icon = '⬢';
+    }
+    // Specific Roles
+    else if (r.includes('transport')) icon = '⛟';
+    else if (r.includes('artillery')) icon = '⛊';
+    else if (r.includes('fast') || r.includes('bike') || r.includes('fly') || r.includes('cavalry')) icon = '⚡';
+    else if (r.includes('heavy') || r.includes('devastator')) icon = '▼';
+    else if (r.includes('elite') || r.includes('terminator')) icon = '◆';
+    else if (r.includes('melee') || r.includes('assault')) icon = '⚔';
+    else if (r.includes('gunline') || r.includes('firepower') || r.includes('shooty')) icon = '⌖';
+    else if (r.includes('skirmish')) icon = '👣';
+    else if (r.includes('anvil') || r.includes('tanky')) icon = '🛡';
+    else if (r.includes('utility')) icon = '🔧';
+    else if (r.includes('fortification')) icon = '☗';
+    // Fallback? Maybe just dot if it's basic infantry
+    else if (r.includes('infantry') || r.includes('troops') || r.includes('line')) icon = '🛡';
+    else if (r.includes('character') || r.includes('leader') || r.includes('warlord')) icon = '★';
+
+    // Default fallback if we have a role but no specific icon
+    if (!icon && r.trim().length > 0) {
+      icon = '•'; // Small bullet for generic units
+    }
+
+    // Adjust font size based on radius
+    const fontSize = Math.max(9, radius * 1.3);
+    const textYOffset = radius * 0.35; // Center vertically visually
+
     if (model.alive) {
-      return `<circle class="sim-unit-dot" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius.toFixed(1)}" fill="${color}" fill-opacity="0.9" stroke="#111" stroke-width="1.5" tabindex="0" role="button" ${dataAttrs}></circle>`;
+      return `
+        <g class="sim-unit-group" tabindex="0" role="button" ${dataAttrs}>
+          <circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${radius.toFixed(1)}" fill="${color}" fill-opacity="0.9" stroke="#111" stroke-width="1.5" />
+          ${icon ? `<text x="${cx.toFixed(1)}" y="${(cy + textYOffset).toFixed(1)}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="#fff" pointer-events="none">${icon}</text>` : ''}
+        </g>
+      `;
     }
 
     const crossSize = Math.max(5, radius * 0.75);
@@ -348,9 +393,37 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
     `;
   }).join('');
 
+  // Add Legend HTML
+  const legendHtml = `
+    <div class="mt-2 p-2 border rounded bg-light small">
+      <div class="d-flex flex-wrap gap-3">
+        <div>
+          <strong>Terrain:</strong>
+          <span class="badge" style="background:${TERRAIN_COLORS.ruins.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.ruins.stroke}">Ruins</span>
+          <span class="badge" style="background:${TERRAIN_COLORS.woods.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.woods.stroke}">Woods</span>
+          <span class="badge" style="background:${TERRAIN_COLORS.container.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.container.stroke}">Container</span>
+          <span class="badge" style="background:${TERRAIN_COLORS.barricade.fill}; color:#fff; border:1px solid ${TERRAIN_COLORS.barricade.stroke}">Barricade</span>
+        </div>
+        <div>
+          <strong>Roles:</strong>
+          <span class="badge bg-secondary">★ HQ</span>
+          <span class="badge bg-secondary">⬢ Vehicle</span>
+          <span class="badge bg-secondary">⚡ Fast</span>
+          <span class="badge bg-secondary">▼ Heavy</span>
+          <span class="badge bg-secondary">◆ Elite</span>
+        </div>
+        <div>
+          <strong>Objectives:</strong>
+          <span class="text-primary">★ Primary</span>
+          <span class="text-secondary">⬢ Secondary</span>
+        </div>
+      </div>
+    </div>
+  `;
+
   return `
-    <svg id="battlefieldSvg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Unit positions">
-      <rect x="0" y="0" width="${width}" height="${height}" fill="#f8f9fa" stroke="#ddd" />
+    <svg id="battlefieldSvg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="Unit positions" style="background: #f8f9fa; border: 1px solid #ddd; display: block; margin-bottom: 0.5rem;">
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#f8f9fa" />
       <rect x="0" y="0" width="${(field.deployDepth * scaleX).toFixed(1)}" height="${height}" fill="#e8f0ff" fill-opacity="0.25" />
       <rect x="${(width - field.deployDepth * scaleX).toFixed(1)}" y="0" width="${(field.deployDepth * scaleX).toFixed(1)}" height="${height}" fill="#ffe8e8" fill-opacity="0.25" />
       <line x1="${sx(0).toFixed(1)}" y1="0" x2="${sx(0).toFixed(1)}" y2="${height}" stroke="#888" stroke-dasharray="4 4" />
@@ -364,6 +437,7 @@ export function renderBattlefield(result: SimulationResult, phaseIndex?: number)
       <g id="movementHighlight"></g>
       <g id="attackHighlight"></g>
     </svg>
+    ${legendHtml}
   `;
 }
 

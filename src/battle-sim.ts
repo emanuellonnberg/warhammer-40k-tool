@@ -319,14 +319,23 @@ function setupBattlefieldInteractions(): void {
   const movementEntries = document.querySelectorAll<HTMLElement>('.sim-move-entry');
   movementEntries.forEach(entry => {
     entry.addEventListener('mouseenter', () => {
-      const { fromX, fromY, toX, toY, army } = entry.dataset;
+      const { fromX, fromY, toX, toY, army, modelMovements } = entry.dataset;
+      let parsedMovements: any[] | undefined = undefined;
+
+      if (modelMovements) {
+        try {
+          parsedMovements = JSON.parse(modelMovements);
+        } catch (e) { console.error('Error parsing model movements', e); }
+      }
+
       if (fromX && fromY && toX && toY && army) {
         highlightMovement({
           fromX: parseFloat(fromX),
           fromY: parseFloat(fromY),
           toX: parseFloat(toX),
           toY: parseFloat(toY),
-          army: army as 'armyA' | 'armyB'
+          army: army as 'armyA' | 'armyB',
+          modelMovements: parsedMovements
         }, scales);
       }
     });
@@ -359,7 +368,7 @@ function setupBattlefieldInteractions(): void {
 /**
  * Highlight movement on battlefield (hover-driven)
  */
-function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB' }, scales: ReturnType<typeof getScaleFactors>): void {
+function highlightMovement(detail: { fromX: number; fromY: number; toX: number; toY: number; army: 'armyA' | 'armyB'; modelMovements?: { from: { x: number, y: number }, to: { x: number, y: number } }[] }, scales: ReturnType<typeof getScaleFactors>): void {
   const svg = document.getElementById('battlefieldSvg') as SVGSVGElement | null;
   const overlay = svg?.querySelector('#movementHighlight') as SVGGElement | null;
   if (!overlay) return;
@@ -368,6 +377,49 @@ function highlightMovement(detail: { fromX: number; fromY: number; toX: number; 
   const color = detail.army === 'armyB' ? '#d62728' : '#1f77b4';
   const ns = 'http://www.w3.org/2000/svg';
 
+  // Draw individual model movements if available
+  if (detail.modelMovements && detail.modelMovements.length > 0) {
+    detail.modelMovements.forEach(move => {
+      const g = document.createElementNS(ns, 'g');
+      const startX = scales.toSvgX(move.from.x).toFixed(1);
+      const startY = scales.toSvgY(move.from.y).toFixed(1);
+      const endX = scales.toSvgX(move.to.x).toFixed(1);
+      const endY = scales.toSvgY(move.to.y).toFixed(1);
+
+      // Dash line for model movement
+      const mLine = document.createElementNS(ns, 'line');
+      mLine.setAttribute('x1', startX);
+      mLine.setAttribute('y1', startY);
+      mLine.setAttribute('x2', endX);
+      mLine.setAttribute('y2', endY);
+      mLine.setAttribute('stroke', color);
+      mLine.setAttribute('stroke-width', '1');
+      mLine.setAttribute('stroke-dasharray', '2 1');
+      mLine.setAttribute('opacity', '0.6');
+      g.appendChild(mLine);
+
+      // Small dots for start/end
+      const mStart = document.createElementNS(ns, 'circle');
+      mStart.setAttribute('cx', startX);
+      mStart.setAttribute('cy', startY);
+      mStart.setAttribute('r', '1.5');
+      mStart.setAttribute('fill', color);
+      mStart.setAttribute('opacity', '0.4');
+      g.appendChild(mStart);
+
+      const mEnd = document.createElementNS(ns, 'circle');
+      mEnd.setAttribute('cx', endX);
+      mEnd.setAttribute('cy', endY);
+      mEnd.setAttribute('r', '1.5');
+      mEnd.setAttribute('fill', color);
+      mEnd.setAttribute('opacity', '0.6');
+      g.appendChild(mEnd);
+
+      overlay.appendChild(g);
+    });
+  }
+
+  // Draw unit center movement (thicker, more prominent)
   const line = document.createElementNS(ns, 'line');
   line.setAttribute('x1', scales.toSvgX(detail.fromX).toFixed(1));
   line.setAttribute('y1', scales.toSvgY(detail.fromY).toFixed(1));
@@ -543,24 +595,59 @@ function setupUnitTooltips(): void {
     return parts.join(' ');
   };
 
-  const unitDots = document.querySelectorAll<SVGElement>('.sim-unit-dot[data-name]');
+  const unitDots = document.querySelectorAll<SVGElement>('.sim-unit-dot[data-name], .sim-unit-group[data-name]');
   unitDots.forEach(dot => {
     dot.addEventListener('mouseenter', (evt) => {
-      const tip = ensureTooltip();
-      tip.textContent = formatTooltip(dot);
-      tip.style.display = 'block';
+      const target = evt.currentTarget as Element;
+      const text = formatTooltip(target);
+      const t = ensureTooltip();
+      t.innerText = text;
+      t.style.display = 'block';
+
       const mouseEvt = evt as MouseEvent;
-      tip.style.left = `${mouseEvt.clientX + 12 + window.scrollX}px`;
-      tip.style.top = `${mouseEvt.clientY + 12 + window.scrollY}px`;
+      t.style.left = `${mouseEvt.clientX + 12 + window.scrollX}px`;
+      t.style.top = `${mouseEvt.clientY + 12 + window.scrollY}px`;
+
+      // Highlight the specific model
+      if (target.tagName.toLowerCase() === 'g') {
+        const circle = target.querySelector('circle');
+        if (circle) {
+          circle.setAttribute('stroke', '#fff');
+          circle.setAttribute('stroke-width', '2.5');
+        }
+      } else {
+        target.setAttribute('stroke', '#fff');
+        target.setAttribute('stroke-width', '3');
+      }
     });
+
     dot.addEventListener('mousemove', (evt) => {
-      const tip = ensureTooltip();
+      const t = ensureTooltip();
       const mouseEvt = evt as MouseEvent;
-      tip.style.left = `${mouseEvt.clientX + 12 + window.scrollX}px`;
-      tip.style.top = `${mouseEvt.clientY + 12 + window.scrollY}px`;
+      t.style.left = `${mouseEvt.clientX + 12 + window.scrollX}px`;
+      t.style.top = `${mouseEvt.clientY + 12 + window.scrollY}px`;
     });
-    dot.addEventListener('mouseleave', () => {
-      if (tooltip) tooltip.style.display = 'none';
+
+    dot.addEventListener('mouseleave', (evt) => {
+      const target = evt.currentTarget as Element;
+      const t = ensureTooltip();
+      t.style.display = 'none';
+
+      // Reset stroke
+      const isDead = target.classList.contains('sim-model-dead');
+      const baseStroke = isDead ? '#444' : '#111';
+      const baseWidth = isDead ? '2' : '1.5';
+
+      if (target.tagName.toLowerCase() === 'g') {
+        const circle = target.querySelector('circle');
+        if (circle) {
+          circle.setAttribute('stroke', baseStroke);
+          circle.setAttribute('stroke-width', baseWidth);
+        }
+      } else {
+        target.setAttribute('stroke', baseStroke);
+        target.setAttribute('stroke-width', baseWidth);
+      }
     });
   });
 }
