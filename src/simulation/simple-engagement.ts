@@ -86,7 +86,7 @@ function createModelFormation(
 
   // Determine spacing based on strategy
   let activeSpacing = spacing;
-  if (strategy === 'spread') activeSpacing = 2.0; // Max allowable coherency
+  if (strategy === 'spread') activeSpacing = 1.75; // Max allowable coherency (approx 2" diagonal)
   else if (strategy === 'linear') activeSpacing = Math.min(spacing, 2.0);
   else activeSpacing = Math.min(spacing, 2.0);
 
@@ -280,17 +280,17 @@ export function reformUnit(
  * Enforces unit coherency by nudging models together if they drift too far apart.
  * 10th Ed Rule: 2-6 models = 1 neighbor within 2", 7+ models = 2 neighbors within 2".
  */
-function enforceCoherency(unit: UnitState): void {
-  if (!unit.modelPositions || unit.remainingModels <= 1) return;
+export function enforceCoherency(unit: UnitState): boolean {
+  if (!unit.modelPositions || unit.remainingModels <= 1) return false;
 
   const COHERENCY_DIST = 2.0;
   const aliveModels = unit.modelPositions.filter(m => m.alive);
   const minNeighbors = aliveModels.length >= 7 ? 2 : 1;
 
   // Simple heuristic: if a model is out of coherency, pull it toward the group average center
-  const center = aliveModels.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
-  center.x /= aliveModels.length;
-  center.y /= aliveModels.length;
+  const center = getUnitCentroid(aliveModels);
+
+  let somethingMoved = false;
 
   for (let i = 0; i < 3; i++) { // Max 3 iterations for stability
     let anyMoved = false;
@@ -313,11 +313,67 @@ function enforceCoherency(unit: UnitState): void {
           model.x += (dx / distToCenter) * 0.5;
           model.y += (dy / distToCenter) * 0.5;
           anyMoved = true;
+          somethingMoved = true;
         }
       }
     }
     if (!anyMoved) break;
   }
+  return somethingMoved;
+}
+
+function getUnitCentroid(models: { x: number, y: number }[]): { x: number, y: number } {
+  if (models.length === 0) return { x: 0, y: 0 };
+  const center = models.reduce((acc, m) => ({ x: acc.x + m.x, y: acc.y + m.y }), { x: 0, y: 0 });
+  center.x /= models.length;
+  center.y /= models.length;
+  return center;
+}
+
+/**
+ * Checks if unit coherency is significantly broken (requiring a full reform).
+ * Heuristic: If any model is isolated (0 neighbors within 2") OR 
+ * if the group span is suspiciously large compared to model count.
+ */
+export function checkCoherencyBroken(unit: UnitState): boolean {
+  if (!unit.modelPositions || unit.remainingModels <= 1) return false;
+  const aliveModels = unit.modelPositions.filter(m => m.alive);
+  if (aliveModels.length <= 1) return false;
+
+  const COHERENCY_DIST = 2.0;
+  const minNeighbors = aliveModels.length >= 7 ? 2 : 1;
+  let isolateCount = 0;
+
+  for (const model of aliveModels) {
+    let neighbors = 0;
+    for (const other of aliveModels) {
+      if (model === other) continue;
+      const dist = Math.sqrt((model.x - other.x) ** 2 + (model.y - other.y) ** 2);
+      if (dist <= COHERENCY_DIST) {
+        neighbors++;
+      }
+    }
+    if (neighbors < minNeighbors) isolateCount++;
+  }
+
+  // If more than 30% of unit is isolated, it's broken
+  if (isolateCount > aliveModels.length * 0.3) return true;
+
+  // Check span: Max distance between any two models shouldn't exceed (N * base + 2" buffer) roughly
+  // This catches "split in two groups" scenario where local coherency is fine but group is split
+  // Simple check: Distance of furthest model from centroid > (N * 1" + 2")?
+  const center = getUnitCentroid(aliveModels);
+  const maxDist = aliveModels.reduce((max, m) => {
+    const d = Math.sqrt((m.x - center.x) ** 2 + (m.y - center.y) ** 2);
+    return Math.max(max, d);
+  }, 0);
+
+  // Very rough heuristic: if spread > 3" + (count * 1"), something is weird.
+  // For small unit (5), spread ~8". If > 12", split.
+  const allowedRadius = 4 + (aliveModels.length * 1.0);
+  if (maxDist > allowedRadius) return true;
+
+  return false;
 }
 
 /**
@@ -935,7 +991,7 @@ function calculateDeploymentY(
 /**
  * Initialize a single unit's state for deployment
  */
-function createUnitState(
+export function createUnitState(
   unit: Unit,
   role: ReturnType<typeof classifyArmyRoles>[string],
   tag: 'armyA' | 'armyB',
@@ -953,6 +1009,8 @@ function createUnitState(
   const baseSizeInches = baseSizeMM ? baseSizeMM * INCHES_PER_MM : undefined;
   const spacing = Math.max(baseSizeInches ?? DEFAULT_MODEL_SPACING, DEFAULT_MODEL_SPACING);
 
+  const initialFormation = forcedFormation || getDefaultFormationForRole(role?.primary);
+
   return {
     unit,
     remainingModels: modelCount,
@@ -965,7 +1023,7 @@ function createUnitState(
       xPos,
       yPos,
       spacing,
-      forcedFormation || getDefaultFormationForRole(role?.primary)
+      initialFormation
     ),
     baseSizeInches,
     baseSizeMM,
@@ -974,7 +1032,7 @@ function createUnitState(
     roleLabel: role?.primary,
     inReserves,
     reserveType,
-    currentFormation: forcedFormation || getDefaultFormationForRole(role?.primary)
+    currentFormation: initialFormation
   };
 }
 
@@ -1796,116 +1854,33 @@ export function runSimpleEngagement(
         navMesh
       );
 
+      console.log(`Round ${round} ${active.tag} Plans: ${movements.length} moves`);
+      if (movements.length > 0) {
+        console.log(`Example: ${movements[0].unit.unit.name} to (${movements[0].to.x.toFixed(1)}, ${movements[0].to.y.toFixed(1)})`);
+      }
+
       const movementDetails: MovementDetail[] = [];
-      movements.forEach(({ unit, to, path }) => {
-        const startPos = { x: unit.position.x, y: unit.position.y };
-        const modelStarts = unit.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
-        const isInfantry = isUnitInfantry(unit);
-        const isLarge = isUnitLargeModel(unit);
-        const baseRadius = getUnitBaseRadius(unit);
 
-        let actualDistance = 0;
-        let finalPos = to;
+      // Collect all enemy units for collision checking
+      const enemyUnits = opponent.units.filter(u => u.remainingModels > 0);
 
-        // Move each model individually along the unit's path, validating every segment
-        let currentPos = startPos;
-        let cumulativeDist = 0;
+      movements.forEach(({ unit, to, path, formation }) => { // planner might return formation
+        const chosenFormation = formation || unit.currentFormation;
 
-        if (path && path.length > 2 && terrain.length > 0) {
-          for (let i = 1; i < path.length; i++) {
-            const nextWaypoint = path[i];
-            const dx = nextWaypoint.x - currentPos.x;
-            const dy = nextWaypoint.y - currentPos.y;
+        const detail = applyUnitMovement(
+          unit,
+          to,
+          path,
+          chosenFormation,
+          terrain,
+          { width: battlefield.width, height: battlefield.height },
+          allowAdvance,
+          active.tag,
+          enemyUnits
+        );
 
-            // Move each model independently for this segment
-            for (const model of unit.modelPositions) {
-              if (!model.alive) continue;
-              const modelStart = { x: model.x, y: model.y };
-              const modelEnd = { x: model.x + dx, y: model.y + dy };
-
-              const blocked = isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius);
-              if (!blocked.blocked && !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
-                model.x = modelEnd.x;
-                model.y = modelEnd.y;
-              }
-            }
-
-            cumulativeDist += Math.sqrt(dx * dx + dy * dy);
-            currentPos = nextWaypoint;
-            finalPos = nextWaypoint;
-          }
-          actualDistance = cumulativeDist;
-        } else {
-          // Direct movement: independent validation
-          const dx = to.x - startPos.x;
-          const dy = to.y - startPos.y;
-
-          for (const model of unit.modelPositions) {
-            if (!model.alive) continue;
-            const modelStart = { x: model.x, y: model.y };
-            const modelEnd = { x: model.x + dx, y: model.y + dy };
-
-            if (!isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius).blocked &&
-              !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
-              model.x = modelEnd.x;
-              model.y = modelEnd.y;
-            }
-          }
-          finalPos = to;
-          actualDistance = Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // Enforce coherency after individual moves
-        enforceCoherency(unit);
-
-        // Re-calculate unit center based on current model locations
-        const aliveModels = unit.modelPositions.filter(m => m.alive);
-        if (aliveModels.length > 0) {
-          const sumX = aliveModels.reduce((acc, m) => acc + m.x, 0);
-          const sumY = aliveModels.reduce((acc, m) => acc + m.y, 0);
-          unit.position = { x: sumX / aliveModels.length, y: sumY / aliveModels.length };
-        } else {
-          unit.position = { x: finalPos.x, y: finalPos.y };
-        }
-
-        const chosenFormation = (movements.find(m => m.unit === unit) as any)?.formation || unit.currentFormation;
-
-        // Transition to/Clean up formation
-        // We ALWAYS call reformUnit (greedy) to ensure the fluid movement 
-        // settles into a valid, rebalanced formation.
-        if (actualDistance > 0.05) {
-          reformUnit(unit, unit.position.x, unit.position.y, chosenFormation, Infinity, terrain);
-          unit.currentFormation = chosenFormation;
-        }
-
-        // Store position before clamping to check if it changed
-        const preclampPos = { x: unit.position.x, y: unit.position.y };
-        clampToBoard(unit, battlefield.width, battlefield.height);
-
-        // Only recalculate distance if clamping moved the unit (use straight-line from start)
-        // Otherwise preserve the accumulated path distance which accounts for terrain navigation
-        if (unit.position.x !== preclampPos.x || unit.position.y !== preclampPos.y) {
-          actualDistance = Math.sqrt(
-            (unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2
-          );
-        }
-        unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
-
-        if (actualDistance > 0.05) {
-          movementDetails.push({
-            unitId: unit.unit.id,
-            unitName: unit.unit.name,
-            army: active.tag,
-            from: startPos,
-            to: { x: unit.position.x, y: unit.position.y },
-            distance: actualDistance,
-            advanced: unit.advanced ?? false,
-            modelMovements: unit.modelPositions.map((m, i) => ({
-              from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
-              to: { x: m.x, y: m.y },
-              alive: m.alive
-            }))
-          });
+        if (detail) {
+          movementDetails.push(detail);
         }
       });
 
@@ -2983,6 +2958,7 @@ function snapshotUnit(u: UnitState) {
     inReserves: u.inReserves,
     reserveType: u.reserveType,
     arrivedTurn: u.arrivedTurn,
+    currentFormation: u.currentFormation,
     models: u.modelPositions.map((pos, idx) => ({
       index: idx,
       x: pos.x,
@@ -3227,7 +3203,267 @@ function performCharges(
   });
   stateB.units.forEach(b => {
     if (b.role.primary === 'melee-missile') {
-      attemptCharge(b, stateA.units);
     }
   });
+}
+
+export function applyUnitMovement(
+  unit: UnitState,
+  to: { x: number; y: number },
+  path: { x: number; y: number }[] | undefined,
+  chosenFormation: FormationStrategy,
+  terrain: TerrainFeature[],
+  battlefield: { width: number; height: number },
+  allowAdvance: boolean,
+  armyTag: 'armyA' | 'armyB',
+  enemyUnits: UnitState[]
+): MovementDetail | null {
+  const startPos = { x: unit.position.x, y: unit.position.y };
+  const modelStarts = unit.modelPositions.map(m => ({ x: m.x, y: m.y, alive: m.alive }));
+  const isInfantry = isUnitInfantry(unit);
+  const isLarge = isUnitLargeModel(unit);
+  const baseRadius = getUnitBaseRadius(unit);
+
+  let actualDistance = 0;
+  let finalPos = to;
+
+  // Move each model individually along the unit's path, validating every segment
+  let currentPos = startPos;
+  let cumulativeDist = 0;
+
+  if (path && path.length > 2 && terrain.length > 0) {
+    for (let i = 1; i < path.length; i++) {
+      const nextWaypoint = path[i];
+      const dx = nextWaypoint.x - currentPos.x;
+      const dy = nextWaypoint.y - currentPos.y;
+
+      // Move each model independently for this segment
+      for (const model of unit.modelPositions) {
+        if (!model.alive) continue;
+        const modelStart = { x: model.x, y: model.y };
+        const modelEnd = { x: model.x + dx, y: model.y + dy };
+
+        const blocked = isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius);
+        const unitBlocked = isMovementBlockedByUnits(modelStart, modelEnd, enemyUnits, baseRadius);
+        if (!blocked.blocked && !unitBlocked.blocked && !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
+          model.x = modelEnd.x;
+          model.y = modelEnd.y;
+        }
+      }
+
+      cumulativeDist += Math.sqrt(dx * dx + dy * dy);
+      currentPos = nextWaypoint;
+      finalPos = nextWaypoint;
+    }
+    actualDistance = cumulativeDist;
+  } else {
+    // Direct movement: independent validation
+    const dx = to.x - startPos.x;
+    const dy = to.y - startPos.y;
+
+    for (const model of unit.modelPositions) {
+      if (!model.alive) continue;
+      const modelStart = { x: model.x, y: model.y };
+      const modelEnd = { x: model.x + dx, y: model.y + dy };
+
+      const unitBlocked = isMovementBlockedByUnits(modelStart, modelEnd, enemyUnits, baseRadius);
+
+      if (!isMovementBlocked(modelStart, modelEnd, terrain, isInfantry, isLarge, baseRadius).blocked &&
+        !unitBlocked.blocked &&
+        !isPositionBlockedByTerrain(modelEnd, baseRadius, terrain, isInfantry, isLarge).blocked) {
+        model.x = modelEnd.x;
+        model.y = modelEnd.y;
+      }
+    }
+    finalPos = to;
+    actualDistance = Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Enforce coherency after individual moves
+  enforceCoherency(unit);
+
+  // Re-calculate unit center based on current model locations
+  const aliveModels = unit.modelPositions.filter(m => m.alive);
+  if (aliveModels.length > 0) {
+    const sumX = aliveModels.reduce((acc, m) => acc + m.x, 0);
+    const sumY = aliveModels.reduce((acc, m) => acc + m.y, 0);
+    unit.position = { x: sumX / aliveModels.length, y: sumY / aliveModels.length };
+  } else {
+    unit.position = { x: finalPos.x, y: finalPos.y };
+  }
+
+  const formationChanged = chosenFormation !== unit.currentFormation;
+
+  // RELAXED FORMATION: Only snap to grid if:
+  // 1. Formation strategy explicitly changed (e.g. planner wants 'linear')
+  // 2. OR unit is significantly out of coherency/shape (maintenance)
+  // Otherwise, let models stay where they flowed ("fluid" behavior)
+  const isCoherencyBroken = checkCoherencyBroken(unit);
+
+  if (formationChanged || isCoherencyBroken) {
+    if (isCoherencyBroken) {
+      // If broken, effectively "teleport" back to a valid shape to rescue the unit
+      reformUnit(unit, unit.position.x, unit.position.y, unit.currentFormation || chosenFormation, Infinity, terrain);
+    } else {
+      // Standard formation change
+      reformUnit(unit, unit.position.x, unit.position.y, chosenFormation, Infinity, terrain);
+      unit.currentFormation = chosenFormation;
+    }
+  } else {
+    // Just enforce coherency for legal play
+    enforceCoherency(unit);
+  }
+
+  // Store position before clamping to check if it changed
+  const preclampPos = { x: unit.position.x, y: unit.position.y };
+  clampToBoard(unit, battlefield.width, battlefield.height);
+
+  // Only recalculate distance if clamping moved the unit (use straight-line from start)
+  // Otherwise preserve the accumulated path distance which accounts for terrain navigation
+  if (unit.position.x !== preclampPos.x || unit.position.y !== preclampPos.y) {
+    actualDistance = Math.sqrt(
+      (unit.position.x - startPos.x) ** 2 + (unit.position.y - startPos.y) ** 2
+    );
+  }
+  unit.advanced = allowAdvance && actualDistance > parseInt(unit.unit.stats.move || '0', 10);
+
+  if (actualDistance > 0.05) {
+    return {
+      unitId: unit.unit.id,
+      unitName: unit.unit.name,
+      army: armyTag,
+      from: startPos,
+      to: { x: unit.position.x, y: unit.position.y },
+      distance: actualDistance,
+      advanced: unit.advanced ?? false,
+      modelMovements: unit.modelPositions.map((m, i) => ({
+        from: { x: modelStarts[i]?.x ?? m.x, y: modelStarts[i]?.y ?? m.y },
+        to: { x: m.x, y: m.y },
+        alive: m.alive
+      }))
+    };
+  }
+  return null;
+}
+
+function isMovementBlockedByUnits(
+  start: { x: number; y: number },
+  end: { x: number; y: number },
+  units: UnitState[],
+  myBaseRadius: number
+): { blocked: boolean; point?: { x: number; y: number } } {
+  const ENGAGEMENT_RANGE = 1.0;
+
+  let nearestCollision: { distance: number; point: { x: number; y: number } } | null = null;
+  const moveDist = Math.sqrt((end.x - start.x) ** 2 + (end.y - start.y) ** 2);
+
+  if (moveDist < 0.01) return { blocked: false };
+
+  const dx = (end.x - start.x) / moveDist;
+  const dy = (end.y - start.y) / moveDist;
+
+  for (const unit of units) {
+    // Quick unit-level check
+    // If unit is far away, skip models
+    const distToUnit = Math.sqrt((unit.position.x - start.x) ** 2 + (unit.position.y - start.y) ** 2);
+    // Rough check: unit radius ~5" + moveDist + myBase
+    if (distToUnit > moveDist + 10) continue;
+
+    // Enemy models act as obstacles with radius = baseRadius + Engagement Range
+    // effectively preventing movement within Engagement Range
+    const enemyBase = getUnitBaseRadius(unit);
+    const effectiveRadius = enemyBase + myBaseRadius + ENGAGEMENT_RANGE - 0.05; // 0.05 epsilon to allow touching
+    const effectiveRadiusSq = effectiveRadius * effectiveRadius;
+
+    for (const model of unit.modelPositions) {
+      if (!model.alive) continue;
+
+      // Vector from start to model center
+      const mx = model.x - start.x;
+      const my = model.y - start.y;
+
+      // Project circle center onto line (dot product)
+      const t = mx * dx + my * dy;
+
+      // Find closest point on line segment to circle center
+      let closestX, closestY;
+
+      if (t < 0) {
+        closestX = start.x;
+        closestY = start.y;
+      } else if (t > moveDist) {
+        closestX = end.x;
+        closestY = end.y;
+      } else {
+        closestX = start.x + t * dx;
+        closestY = start.y + t * dy;
+      }
+
+      // Distance from circle center to closest point
+      const distX = closestX - model.x;
+      const distY = closestY - model.y;
+      const distSq = distX * distX + distY * distY;
+
+      if (distSq < effectiveRadiusSq) {
+        // Collision!
+        // We need the entry point along the ray.
+        // t_proj = t (projection along line)
+        // distance from center to line = sqrt(distSq at projection)
+        // Actually, if we are here, we are intersecting.
+        // We want the FIRST point of intersection.
+
+        // Solve t for intersection:
+        // |start + t*D - center|^2 = r^2
+        // |M - t*D|^2 = r^2 (where M is vector from Center to Start? No, Start to Center is M)
+        // Let V = Start - Center.
+        // |V + t*D|^2 = r^2
+        // t^2 + 2(V.D)t + |V|^2 - r^2 = 0
+
+        const vx = start.x - model.x;
+        const vy = start.y - model.y;
+
+        // a = 1
+        // b = 2 * (vx*dx + vy*dy)
+        // c = (vx*vx + vy*vy) - r^2
+
+        const b = 2 * (vx * dx + vy * dy);
+        const c = (vx * vx + vy * vy) - effectiveRadiusSq;
+
+        const discriminant = b * b - 4 * c;
+
+        if (discriminant >= 0) {
+          // Two solutions, we want smallest positive t
+          const sqrtDisc = Math.sqrt(discriminant);
+          const t1 = (-b - sqrtDisc) / 2;
+          const t2 = (-b + sqrtDisc) / 2;
+
+          let tCollision = -1;
+          if (t1 >= 0 && t1 <= moveDist) tCollision = t1;
+          else if (t2 >= 0 && t2 <= moveDist) tCollision = t2;
+
+          // If start point is inside, t could be negative?
+          // If inside, we are already illegal? allow move out?
+          // Assume we start legal.
+
+          if (tCollision >= 0) {
+            if (!nearestCollision || tCollision < nearestCollision.distance) {
+              nearestCollision = {
+                distance: tCollision,
+                point: {
+                  x: start.x + tCollision * dx,
+                  y: start.y + tCollision * dy
+                }
+              };
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (nearestCollision) {
+    return { blocked: true, point: nearestCollision.point };
+  }
+
+  return { blocked: false };
 }
